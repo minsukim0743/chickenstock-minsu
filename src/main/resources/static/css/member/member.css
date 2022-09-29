@@ -1,0 +1,102 @@
+*{margin: 0;padding: 0;}
+
+body{
+    background-color: #FAF2DE;
+}
+
+.wrap{
+    width: 450px;
+    height: 600px;
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    border-radius: 15px;
+    box-shadow: 5px 5px 10px rgba(128, 128, 128, 0.5);
+}
+
+.box{
+    width: 350px;
+    height: 400px;
+    margin: 20px 50px;
+}
+
+#updatePwd{
+    float: right;
+    font-size: 14px;
+    color: black;
+    margin-top: 10px ;
+}
+
+.copyright{
+    font-style: italic;
+    font-size: 12px ;
+    text-align: center;
+    margin-top: 100px;
+}
+
+.form_box::placeholder{
+    font-size: 18px;
+    padding-left: 8px;
+}
+
+.form_box{
+    margin-bottom: 5px;
+    width: 100%;
+    box-sizing: border-box;
+    height: 50px;
+    font-size: 18px;
+    border: 1px solid #b4b4b4;
+}
+
+#btn{
+    width: 100%;
+    border: none;
+    height: 50px;
+    font-size: 20px;
+    color: white;
+    border-radius: 5px;
+    margin-top: 15px;
+}
+
+/* login.html */
+.logo{
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+.logo img{
+    width: 200px;
+}
+
+/* ckEmail.html */
+h3{
+    margin: 85px 0 20px;
+    font-weight: 500;
+}
+
+.box p{
+    font-size: 14px;
+    margin-bottom: 65px;
+}
+
+#email{
+    width: 73%;
+}
+
+#code_btn{
+    float: right;
+    font-size: 12px;
+    height: 50px;
+    width: 25%;
+    border: none;
+    color: white;
+    border-radius: 5px;
+    background-color: #FEC107;
+}
+
+/* updatePwd */
+#pwd{
+    width: 100%;
+}

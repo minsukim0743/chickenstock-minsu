@@ -1,0 +1,81 @@
+.text-area {
+    padding-top: 40px;
+    padding-bottom: 50px;
+    text-align: center;
+    font-size: 20px;
+}
+.text-area span {
+    color: #ffc107;
+}
+
+.dimm {
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0,0,0,0.8);
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 2;
+    display: none;
+}
+.account_popup {
+    width: 500px;
+    max-height: 80vh;
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 3;
+    background-color: #fff;
+    display: none;
+}
+.account_popup h4 {
+    background-color: #ffc107;
+    color: #fff;
+    padding: 10px;
+    box-sizing: border-box;
+    font-size: 18px;
+    position: relative;
+}
+.account_popup h4 .btn-close {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: transparent;
+    border: none;
+    outline: none;
+    cursor: pointer;
+}
+.account_popup h4 .btn-close:after {
+    display: block;
+    content: 'X';
+    width: 20px;
+    height: 20px;
+    color: #fff;
+}
+.account_popup .popup_inner {
+    padding: 15px 50px 30px;
+    box-sizing: border-box;
+}
+.account_popup .popup_inner table {
+    width: 100%;
+}
+.account_popup .popup_inner th{
+    width: 35%;
+    padding: 10px 0;
+}
+.account_popup .popup_inner td {
+    text-align: right;
+    padding: 10px 0;
+}
+.account_popup .popup_inner td input[type="text"] {
+    width: 100%;
+    border: 1px solid #ccc;
+    height: 30px;
+    border-radius: 3px;
+}
+.account_popup .popup_inner .btn-area {
+    margin-top: 30px;
+    text-align: center;
+}

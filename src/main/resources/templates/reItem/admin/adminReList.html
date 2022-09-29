@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"/>
+
+    <title>chicken stock</title>
+    <link rel="shortcut icon" th:href="@{ /images/logo.png }" type="image/x-icon">
+
+    <link rel="stylesheet" type="text/css" th:href="@{/css/common/common.css}"/>
+    <!-- datepicker js & css -->
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+
+    <!-- table css -->
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/common/style.css}"/>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script th:src="@{/js/common.js}"></script>
+</head>
+<body>
+<div class="wrap">
+
+    <!-- header -->
+    <div th:include="common/adminHeader.html"></div>
+
+    <!-- S: container -->
+    <div class="container px-0">
+        <!-- sidebar -->
+        <div th:replace="common/adminSidebar.html"></div>
+        <!-- S: main layout -->
+        <div class="main_layout">
+            <div class="main_layout_inner">
+
+                <!-- 작업 영역 -->
+                <!-- S: table -->
+                <div class="container-fluid" style="margin-top:30px">
+                    <h3>반품 관리</h3>
+                    <br>
+                    <form id="searchForm" th:action="@{ /reItem/admin/adminReList }" method="get" style="display: inline-block">
+                        <div class="input-group mb-3 col-12 float-start">
+                            <select id="searchCondition" name="searchCondition" class="form-control col-2" style="max-width: max-content; display: inline-block;">
+                                <option> - 선택 - </option>
+                                <option th:selected="${ selectCriteria.getSearchCondition() == 'storeName' }" name="STORE_NAME store" value="storeName">가맹점명</option>
+                                <option th:selected="${ selectCriteria.getSearchCondition() == 'returnProgress' }" name="RETURN_PROGRESS returnProgress" value="returnProgress">반품상태</option>
+                                <option th:selected="${ selectCriteria.getSearchCondition() == 'rProgress' }" name="R_PROGRESS rProgress" value="rProgress">처리상태</option>
+                            </select>
+                            <input class="form-control me-2 col-4" type="search" id="searchValue" name="searchValue" th:value="${ selectCriteria.getSearchValue() }" placeholder="내용을 입력해주세요." style="max-width: max-content;">
+                            <button class="btn btn-warning" type="submit" style="color:#fff">검색</button>
+                        </div>
+                    </form>
+
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th>번호</th>
+                            <th>지점</th>
+                            <th>점주</th>
+                            <th>요청일</th>
+                            <th>반품상태</th>
+                            <th>처리상태</th>
+                            <th>상세보기</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+
+                        <tr th:each=" re : ${ returnList }">
+                            <td th:text="${ re.rNo }"></td>
+
+                            <td th:text="${ re.storeName }"></td>
+                            <td th:text="${ re.storeRep }"></td>
+                            <td th:text="${ re.rDate }"></td>
+                            <td th:text="${ re.returnProgress }"></td>
+                            <td th:if="${ re.rProgress eq NULL }" th:text="${ re.rProgress }"></td>
+                            <td th:if="${ re.rProgress eq '폐기' }" th:text="${ re.rProgress }"></td>
+                            <td th:if="${ re.rProgress eq '재등록 완료' }" th:text="${ re.rProgress }">
+                                <button class="btn btn-light me-1" style="background: #ccc;"  disabled>재등록 완료</button>
+                            </td>
+                            <td th:if="${ re.rProgress eq '재등록' }" >
+                                <form id="insertReItemForm" th:action="@{/reItem/admin/adminReList}" method="post">
+                                    <button class="btn btn-warning me-1" onclick="insertReItem()">재등록</button>
+                                    <input type="hidden" name="rNo" th:value="${ re.rNo }">
+                                </form>
+                            </td>
+                            <td>
+                                <button class="btn btn-warning me-1" style="color: #fff" th:onclick="|location.href='@{/reItem/admin/adminReItem(rNo=${ re.rNo }, storeName=${ re.storeName }, returnProgress=${ re.returnProgress })}'|">상세보기</button>
+                            </td>
+                        </tr>
+
+                        </tbody>
+                    </table>
+                </div>
+                <!-- E: table -->
+                <!-- S: paging -->
+                <div class="d-flex justify-content-center"  style="z-index: 0">
+                    <!-- 맨 앞으로 이동 버튼 -->
+                    <button type="button" class="btn btn-light" id="startPage"
+                            th:onclick="'location.href=\'/reItem/admin/adminReList?currentPage='+ @{${selectCriteria.startPage}} + '&searchCondition=' + @{${ selectCriteria.searchCondition }} + '&searchValue=' + @{${ selectCriteria.searchValue }} +  '\''"
+                            th:disabled="${ selectCriteria.pageNo == 1}"
+                    >
+                        <<
+                    </button>
+                    <!-- 이전 페이지 버튼 -->
+                    <button type="button" class="btn btn-light mx-1 disabled"
+                            th:onclick="'location.href=\'/reItem/admin/adminReList?currentPage='+ @{${selectCriteria.pageNo - 1}} + '&searchCondition=' + @{${ selectCriteria.searchCondition }} + '&searchValue=' + @{${ selectCriteria.searchValue }} +  '\''"
+                            th:disabled="${ selectCriteria.pageNo == 1}"
+                    >
+                        <
+                    </button>
+                    <!-- 숫자 버튼 -->
+                    <th:block th:each="page : ${#numbers.sequence(selectCriteria.startPage, selectCriteria.endPage)}">
+                        <button type="button" class="btn btn-warning mx-1" disabled style="color:white"
+                                th:text="${ page }"
+                                th:onclick="'location.href=\'/reItem/admin/adminReList?currentPage='+ @{${page}} + '&searchCondition=' + @{${ selectCriteria.searchCondition }} + '&searchValue=' + @{${ selectCriteria.searchValue }} +  '\''"
+                                th:disabled="${ selectCriteria.pageNo eq page }">
+                        </button>
+                    </th:block>
+
+                    <!-- 다음 페이지 버튼 -->
+                    <button type="button" class="btn btn-light mx-1"
+                            th:onclick="'location.href=\'/reItem/admin/adminReList?currentPage='+ @{${selectCriteria.pageNo + 1}} + '&searchCondition=' + @{${ selectCriteria.searchCondition }} + '&searchValue=' + @{${ selectCriteria.searchValue }} +  '\''"
+                            th:disabled="${ selectCriteria.pageNo == selectCriteria.maxPage}"
+                    >
+                        >
+                    </button>
+                    <!-- 마지막 페이지로 이동 버튼 -->
+                    <button type="button" class="btn btn-light" id="maxPage"
+                            th:onclick="'location.href=\'/reItem/admin/adminReList?currentPage='+ @{${selectCriteria.maxPage}} + '&searchCondition=' + @{${ selectCriteria.searchCondition }} + '&searchValue=' + @{${ selectCriteria.searchValue }} +  '\''"
+                            th:disabled="${selectCriteria.pageNo == selectCriteria.maxPage}"
+                    >
+                        >>
+                    </button>
+                </div>
+                <!-- E: paging -->
+
+            </div>
+        </div>
+        <!-- E: main layout -->
+
+    </div>
+    <!-- E: container -->
+</div>
+<script>
+
+    function insertReItem() {
+
+        var result = confirm("제품을 재등록 하시겠습니까?");
+
+        if (result) {
+
+            $('#searchForm').submit();
+            alert('제품 재등록이 완료되었습니다.');
+
+            return false;
+        }
+    }
+
+
+
+
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+</body>
+</html>

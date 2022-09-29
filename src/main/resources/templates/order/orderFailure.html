@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"/>
+
+  <title>chicken stock</title>
+    <link rel="shortcut icon" th:href="@{ /images/logo.png }" type="image/x-icon">
+
+  <link rel="stylesheet" th:href="@{/css/common/common.css}"/>
+
+  <!-- orderSuccess css -->
+  <link rel="stylesheet" type="text/css" th:href="@{/css/order/orderResult.css}">
+
+  <!-- table css -->
+  <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+  <link rel="stylesheet" type="text/css" th:href="@{/css/common/style.css}">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+
+  <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+    <script th:src="@{/js/common.js}"></script>
+
+  <!-- font awesome -->
+  <script src="https://kit.fontawesome.com/da4b1b94bb.js" crossorigin="anonymous"></script>
+
+</head>
+<body>
+  <div class="wrap">
+
+    <!-- header -->
+    <div th:include="common/userHeader.html"></div>
+
+    <!-- S: container -->
+    <div class="container px-0">
+
+      <!-- S: aside -->
+      <div th:replace="common/userSidebar.html"></div>
+      <!-- E: aside -->
+
+      <!-- S: main layout -->
+      <div class="main_layout">
+        <div class="main_layout_inner">
+
+          <!-- 작업 영역 -->
+          <!-- S: table -->
+          <div class="container-fluid" style="margin-top:30px">
+            <h3><i class="fa-solid fa-ban"></i> 발주 실패</h3>
+			      <br>
+            <div class="mainBox">
+                <div class="infoBox" style="font-size: 18px;">
+                    잔액이 부족하여 주문이 불가합니다.<br>
+                    <b>예치금 납입 및 승인 요청</b> 후 다시 시도해주세요.
+                </div>
+                <div class="buttonBox">
+                    <button class="btn btn-warning" style="color:#fff; cursor: pointer;" th:onclick="'location.href=\'/account/user/list\''">예치금 납입</button>
+                    <button class="btn btn-warning" style="color:#fff; cursor: pointer;" th:onclick="'location.href=\'/order/cart/list\''">이전으로</button>
+                </div>
+            </div>
+          </div>
+          <!-- E: table -->
+        </div>
+      </div>
+      <!-- E: main layout -->
+    </div>
+    <!-- E: container -->
+  </div>
+  <!-- table js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+
+
+</body>
+</html>

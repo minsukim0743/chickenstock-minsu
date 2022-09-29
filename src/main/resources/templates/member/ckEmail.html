@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>이메일 인증</title>
+    <link rel="shortcut icon" th:href="@{ /images/logo.png }" type="image/x-icon">
+
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/member/member.css}"/>
+<!--    <script src="https://code.jquery.com/jquery-3.6.0.js"/>-->
+
+<!--    <script>-->
+<!--        function send(){-->
+
+<!--            let empId = $("#empId").val();-->
+<!--            let email = $("#email").val();-->
+<!--            console.log(empId);-->
+<!--            console.log(email);-->
+
+<!--            $.ajax({-->
+<!--                url: "/member/sendEmail",-->
+<!--                type: "post",-->
+<!--                data: {-->
+<!--                    empId : empId,-->
+<!--                    email : email-->
+<!--                },-->
+<!--                success:function (result){-->
+<!--                    if(result > 0){-->
+
+<!--                        alert("이메일이 전송되었습니다. 메일함을 확인해주세요.")-->
+<!--                    } else {-->
+
+<!--                        alert("오류가 발생하였습니다. 다시 시도해주세요.")-->
+<!--                    }-->
+<!--                }-->
+<!--            })-->
+<!--        }-->
+<!--    </script>-->
+</head>
+<body>
+<div class="wrap">
+    <div class="box">
+        <h3>이메일 인증</h3>
+        <p>비밀번호 재설정을 위한 이메일 인증을 진행합니다. <br> 등록된 이메일을 입력해주세요.</p>
+
+        <form action="/member/ckEmail" method="post">
+            <input type="text" class="form_box" id="empId" name="ckId" placeholder="아이디 입력"/>
+            <input type="email" class="form_box" id="email" name="ckEmail" placeholder="이메일 입력"/>
+            <button type="submit" id="code_btn" onclick="send();">인증코드 발송</button>
+<!--            <input type="text" class="form_box" id="code" name="code" placeholder="인증코드 입력"/>-->
+
+<!--            <input type="password" class="form_box" id="pwd" name="new_pwd" placeholder="새 비밀번호 입력해주세요"/>-->
+<!--            <input type="password" class="form_box" id="re_pwd" name="re_pwd" placeholder="다시 한번 입력해주세요."/>-->
+<!--            <button type="submit" id="newPwd_btn" class="btn btn-warning">비밀번호 재설정</button>-->
+        </form>
+        <p class="copyright">Copyright © 2022 chickenstock. All rights reserved.</p>
+    </div>
+</div>
+</body>
+</html>

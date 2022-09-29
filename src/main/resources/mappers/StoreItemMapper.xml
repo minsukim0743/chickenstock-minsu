@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chicken.project.storeItem.model.dao.StoreItemMapper">
+    <resultMap id="storeItemListResultMap" type="StoreItemListDTO">
+        <result property="storeName" column="STORE_NAME"/>
+        <result property="storeAmount" column="STORE_AMOUNT"/>
+        <result property="storeAccount" column="STORE_ACCOUNT"/>
+        <result property="itemNo" column="ITEM_NO"/>
+        <result property="categoryNo" column="CATEGORY_NO"/>
+        <association property="itemInfoDTO" resultMap="itemInfoResultMap"/>
+        <association property="itemCategoryDTO" resultMap="itemCategoryResultMap"/>
+        <association property="itemFileDTO" resultMap="itemFileResultMap"/>
+    </resultMap>
+
+    <resultMap id="itemInfoResultMap" type="com.chicken.project.item.model.dto.ItemInfoDTO">
+        <id property="itemNo" column="ITEM_NO"/>
+        <result property="itemName" column="ITEM_NAME"/>
+        <result property="itemStandard" column="ITEM_STANDARD"/>
+        <result property="itemPurchase" column="ITEM_PURCHASE"/>
+        <result property="itemSales" column="ITEM_SALES"/>
+        <result property="itemSoldoutYn" column="ITEM_SOLDOUT_YN"/>
+        <result property="itemMake" column="ITEM_MAKE"/>
+        <result property="categoryNo" column="CATEGORY_NO"/>
+        <result property="itemAmount" column="ITEM_AMOUNT"/>
+        <result property="soldout" column="soldout"/>
+        <result property="rNum" column="RNUM"/>
+        <result property="categoryName" column="CATEGORY_NAME"/>
+        <association property="itemFile" resultMap="itemFileResultMap"/>
+    </resultMap>
+
+    <resultMap id="itemFileResultMap" type="com.chicken.project.item.model.dto.ItemFileDTO">
+        <id property="fileNo" column="FILE_NO"/>
+        <result property="originName" column="ORIGIN_NAME"/>
+        <result property="fileName" column="FILE_NAME"/>
+        <result property="categoryNo" column="CATEGORY_NO"/>
+        <result property="itemNo" column="ITEM_NO"/>
+    </resultMap>
+
+    <resultMap id="itemCategoryResultMap" type="com.chicken.project.item.model.dto.ItemCategoryDTO">
+        <id property="categoryNo" column="CATEGORY_NO"/>
+        <result property="categoryName" column="CATEGORY_NAME"/>
+        <result property="preCategory" column="PRE_CATEGORY"/>
+    </resultMap>
+
+
+
+    <select id="itemListSelect" resultMap="storeItemListResultMap">
+        SELECT
+              C.RNUM
+            , C.ITEM_NO
+            , C.STORE_AMOUNT
+            , C.ITEM_NAME
+            , C.ITEM_STANDARD
+            , C.ITEM_PURCHASE
+            , C.ITEM_SALES
+            , C.ITEM_SOLDOUT_YN
+            , C.ITEM_MAKE
+            , C.ITEM_AMOUNT
+            , C.CATEGORY_NAME
+            , C.FILE_NAME
+            , C.soldout
+       FROM (SELECT
+                   ROWNUM RNUM
+                 , B.ITEM_NO
+                 , B.STORE_AMOUNT
+                 , B.ITEM_NAME
+                 , B.ITEM_STANDARD
+                 , B.ITEM_PURCHASE
+                 , B.ITEM_SALES
+                 , B.ITEM_SOLDOUT_YN
+                 , B.ITEM_MAKE
+                 , B.ITEM_AMOUNT
+                 , B.CATEGORY_NAME
+                 , B.FILE_NAME
+                 , B.soldout
+            FROM (SELECT
+                         A.ITEM_NO
+                       , A.STORE_AMOUNT
+                       , B.ITEM_NAME
+                       , B.ITEM_STANDARD
+                       , B.ITEM_PURCHASE
+                       , B.ITEM_SALES
+                       , B.ITEM_SOLDOUT_YN
+                       , B.ITEM_MAKE
+                       , B.ITEM_AMOUNT
+                       , C.CATEGORY_NAME
+                       , D.FILE_NAME
+                       , CASE WHEN B.ITEM_AMOUNT = 0 THEN '품절' ELSE '보유' END soldout
+                    FROM STO_ITEM_INFO A
+                    JOIN ITEM_INFO B ON (A.ITEM_NO = B.ITEM_NO)
+                    JOIN ITEM_CATEGORY C ON(B.CATEGORY_NO = C.CATEGORY_NO)
+                    JOIN ITEM_FILE D ON(A.ITEM_NO = D.ITEM_NO)
+                    WHERE A.STORE_NAME = #{ storeName }
+                <if test="searchCondition == 'searchItemName'">
+                    AND B.ITEM_NAME LIKE '%' || #{ searchValue } || '%'
+                </if>
+                ORDER BY A.ITEM_NO ASC ) B
+         <![CDATA[ WHERE ROWNUM <= #{ endRow } ]]>) C
+        WHERE C.RNUM >= #{ startRow }
+        ORDER BY 1 ASC
+    </select>
+
+    <select id="selectTotalCount" resultType="_int" parameterType="hashmap">
+        SELECT
+             COUNT(*)
+        FROM STO_ITEM_INFO A
+        JOIN ITEM_INFO B ON (A.ITEM_NO = B.ITEM_NO)
+        JOIN ITEM_CATEGORY C ON(B.CATEGORY_NO = C.CATEGORY_NO)
+        JOIN ITEM_FILE D ON(A.ITEM_NO = D.ITEM_NO)
+        WHERE A.STORE_NAME = #{ storeName }
+            <if test="searchCondition == 'searchItemName'">
+              AND  B.ITEM_NAME LIKE '%' || #{ searchValue } || '%'
+            </if>
+    </select>
+
+    <update id="storeItemUpdate">
+        UPDATE STO_ITEM_INFO
+           SET STORE_AMOUNT = #{ storeAmount }
+         WHERE ITEM_NO = #{ itemNo }
+           AND STORE_NAME = #{ storeName }
+    </update>
+
+    <select id="amountSelect" resultType="_int">
+        SELECT
+               STORE_AMOUNT
+          FROM STO_ITEM_INFO
+        WHERE ITEM_NO = #{ itemNo }
+          AND STORE_NAME = #{ storeName }
+    </select>
+
+    <select id="selectMainStoreItem" resultMap="storeItemListResultMap">
+        SELECT
+                   A.ITEM_NO
+                 , A.STORE_AMOUNT
+                 , B.ITEM_NAME
+                 , B.ITEM_STANDARD
+                 , B.ITEM_PURCHASE
+                 , B.ITEM_SALES
+                 , B.ITEM_SOLDOUT_YN
+                 , B.ITEM_MAKE
+                 , B.ITEM_AMOUNT
+                 , C.CATEGORY_NAME
+                 , D.FILE_NAME
+                 , CASE WHEN B.ITEM_AMOUNT = 0 THEN '품절' ELSE '보유' END soldout
+             FROM STO_ITEM_INFO A
+             JOIN ITEM_INFO B ON (A.ITEM_NO = B.ITEM_NO)
+             JOIN ITEM_CATEGORY C ON(B.CATEGORY_NO = C.CATEGORY_NO)
+             JOIN ITEM_FILE D ON(A.ITEM_NO = D.ITEM_NO)
+            WHERE A.STORE_NAME = #{ storeName }
+    </select>
+</mapper>

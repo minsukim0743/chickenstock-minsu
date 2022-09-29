@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"/>
+
+    <title>chicken stock</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/common/common.css}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/returnItem/storeReItem.css}"/>
+
+    <!-- datepicker js & css -->
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+
+    <!-- table css -->
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/common/style.css}"/>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script th:src="@{/js/common.js}"></script>
+</head>
+<body>
+<div class="wrap">
+
+    <!-- S: header -->
+    <div th:include="common/userHeader.html"></div>
+    <!-- S: header -->
+
+    <!-- S: container -->
+    <div class="container px-0">
+
+        <!-- sidebar -->
+        <div th:replace="common/userSidebar.html"></div>
+
+        <!-- S: main layout -->
+        <div class="main_layout">
+            <div class="main_layout_inner">
+
+                <!-- 작업 영역 -->
+                <!-- S: table -->
+                <div class="container-fluid" style="margin-top:30px">
+                    <h3><i class="fa-solid fa-list-check"></i> 반품 내역</h3>
+                    <br>
+                    <div class="input-group mb-3 col-12">
+                        <div class="dateList1"> 반품 신청일 :
+                            <span id="dueDate" th:text="${ viewReItem.rDate }"></span>
+                        </div>
+                        <div class="dateList2" style="font-weight: bold;"> 반품사유 :
+                            <span id="deadline" th:text="${ viewReItem.rReason }"></span>
+                        </div>
+                        <div class="dateList3" style="font-weight: bold;"> 반품총액 :
+                            <span id="deadline2" th:text="|${ #numbers.formatInteger(viewReItem.returnTotalMoney, 0, 'COMMA') }원|"></span>
+                        </div>
+                    </div>
+
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th>상품코드</th>
+                            <th>썸네일</th>
+                            <th>상품명</th>
+                            <th>카테고리</th>
+                            <th>규격</th>
+                            <th>제조사(원산지)</th>
+                            <th>가격</th>
+                            <th>반품수량</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each=" stv : ${ viewReItems }">
+                            <td th:text="${ stv.itemNo }"></td>
+                            <td>
+                                <div class="img-info">
+                                    <div class="img-info__img">
+                                        <img th:src="'/itemImage/' + ${ stv.fileName }" alt="">
+                                    </div>
+                                </div>
+                            </td>
+                            <td th:text="${ stv.itemName }"></td>
+                            <td th:text="${ stv.categoryName }"></td>
+                            <td th:text="${ stv.itemStandard }"></td>
+                            <td th:text="${ stv.itemMake }"></td>
+                            <td th:text="|${ #numbers.formatInteger(stv.itemSales, 0, 'COMMA') }원|"></td>
+                            <td th:text="|${ stv.returnCount }개|"></td>
+                        </tbody>
+                    </table>
+                    <button class="btn btn-warning me-1" onclick="location.href='/reItem/user/storeReList';" style="color: #fff;">뒤로가기</button>
+                </div>
+                <!-- E: table -->
+
+            </div>
+        </div>
+        <!-- E: main layout -->
+    </div>
+    <!-- E: container -->
+</div>
+<!-- table js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+</body>
+</html>

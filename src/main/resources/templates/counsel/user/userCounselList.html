@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+<head>
+  <meta charset="utf-8"/>
+  <title>chicken stock</title>
+  <link rel="shortcut icon" th:href="@{ /images/logo.png }" type="image/x-icon">
+
+  <link rel="stylesheet" type="text/css" th:href="@{/css/common/common.css}"/>
+  <link rel="stylesheet" type="text/css" th:href="@{/css/common/style.css}"/>
+  <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+  <link rel="stylesheet" type="text/css" th:href="@{/css/notice/notice.css}"/>
+  <link rel="stylesheet" type="text/css" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+
+  <script type="text/javascript" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script th:src="@{/js/common.js}"></script>
+</head>
+<body>
+  <div class="wrap">
+    <!-- S: header -->
+    <div th:include="common/userHeader.html"></div>
+    <!-- E: header -->
+
+    <!-- S: container -->
+    <div class="container px-0">
+
+      <!-- S: aside -->
+      <div th:replace="common/userSidebar.html"></div>
+      <!-- E: aside -->
+
+      <!-- S: main layout -->
+      <div class="main_layout">
+        <div class="main_layout_inner">
+
+          <!-- 작업 영역 -->
+          <!-- S: table -->
+          <div class="container-fluid" style="margin-top:30px">
+            <h3>1:1 문의</h3>
+			      <br>
+
+            <table class="table">
+              <colgroup>
+                <col>
+                <col>
+                <col>
+                <col>
+              </colgroup>
+              <thead>
+                <tr>
+                  <th>문의 번호</th>
+                  <th>문의 제목</th>
+                  <th>문의 등록일</th>
+                  <th>문의 답변상태</th>
+                </tr>
+              </thead>
+              <tbody style="cursor:pointer">
+                <tr th:each="counsel : ${ counselList }">
+                  <td th:text="${ counsel.counselNo }"></td>
+                  <td th:text="${ counsel.counselName }"></td>
+                  <td th:text="${ counsel.counselRegistDate }"></td>
+                  <td th:text="${ counsel.counselYn }"></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <!-- E: table -->   
+        </div>
+      </div> 
+      <!-- E: main layout -->
+    </div>
+    <!-- E: container -->
+  </div>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+  <script>
+    if(document.getElementsByTagName("td")) {
+      const $tds = document.getElementsByTagName("td");
+      for (let i = 0; i < $tds.length; i++) {
+
+        $tds[i].onclick = function () {
+          const counselNo = this.parentNode.children[0].innerText;
+          location.href = "/counsel/user/detail?counselNo=" + counselNo
+        }
+      }
+    }
+  </script>
+</body>
+</html>

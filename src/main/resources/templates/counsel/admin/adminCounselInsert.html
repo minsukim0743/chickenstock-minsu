@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+<head>
+  <meta charset="utf-8"/>
+  <title>chicken stock</title>
+  <link rel="shortcut icon" th:href="@{ /images/logo.png }" type="image/x-icon">
+
+  <link rel="stylesheet" type="text/css" th:href="@{/css/common/common.css}"/>
+  <link rel="stylesheet" type="text/css" th:href="@{/css/common/style.css}"/>
+  <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+  <link rel="stylesheet" type="text/css" th:href="@{/css/notice/notice.css}"/>
+  <link rel="stylesheet" type="text/css" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+
+  <script type="text/javascript" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script th:src="@{/js/common.js}"></script>
+</head>
+<body>
+  <div class="wrap">
+
+    <!-- S: header -->
+    <div th:include="common/adminHeader.html"></div>
+    <!-- E: header -->
+
+    <!-- S: container -->
+    <div class="container px-0">
+
+      <!-- S: aside -->
+      <div th:replace="common/adminSidebar.html"></div>
+      <!-- E: aside -->
+
+      <!-- S: main layout -->
+      <div class="main_layout">
+        <div class="main_layout_inner">
+
+          <!-- 작업 영역 -->
+          <!-- S: table -->
+          <div class="container-fluid" style="margin-top:30px">
+            <h3>1:1 문의 답변 작성</h3>
+			      <br>
+
+            <form th:action="@{/counsel/admin/insert}" method="post">
+              <table class="table">
+                <colgroup>
+                  <col style="width:170px">
+                  <col>
+                  <col>
+                </colgroup>
+                <tbody>
+                  <tr>
+                    <th>제목</th>
+                    <td>
+                      <span th:text="${ counsel.counselName }"></span>
+                      <input type="hidden" name="counselNo" th:value="${ counsel.counselNo }"/>
+                      <input type="hidden" name="empName" th:value="${ #authentication.getPrincipal().getEmpName()}">
+                    </td>
+                  </tr>
+                  <tr>
+                    <th>문의 내용</th>
+                    <td>
+                      <span th:text="${ counsel.counselContent }"></span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <th>답변 내용</th>
+                    <td>
+                      <textarea name="answerContent"></textarea>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+                <div class="input-group mb-3 col-7">
+                  <button class="btn btn-warning ml-1" type="submit" style="color:#fff" >답변 등록</button>
+                  <button class="btn btn-warning ml-1" type="submit" style="color:#fff"
+                          th:onclick="'location.href=\'/counsel/admin/list\''">취소</button>
+                </div>
+            </form>
+          </div>
+        </div>
+        <!-- E: table -->
+        <!-- E: main layout -->
+      
+    </div>
+    <!-- E: container -->
+  </div>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+</body>
+</html>

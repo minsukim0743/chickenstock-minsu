@@ -1,0 +1,270 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chicken.project.billTax.model.dao.BillTaxMapper">
+    <resultMap id="billTaxResultMap" type="BillTaxDTO">
+        <id property="taxNo" column="TAX_NO"/>
+        <result property="storeNo" column="STORE_NO"/>
+        <result property="storeName" column="STORE_NAME"/>
+        <result property="storeAddress" column="STORE_ADDRESS"/>
+        <result property="taxDate" column="TAX_DATE"/>
+        <result property="itemName" column="ITEM_NAME"/>
+        <result property="itemStandard" column="ITEM_STANDARD"/>
+        <result property="itemSales" column="ITEM_SALES"/>
+        <result property="storeRep" column="STORE_REP"/>
+        <result property="recDate" column="REC_DATE"/>
+        <result property="recAmount" column="REC_AMOUNT"/>
+        <result property="recMoney" column="REC_MONEY"/>
+        <result property="recTotalMoney" column="REC_TOTALMONEY"/>
+        <result property="recCode" column="REC_CODE"/>
+        <result property="recSupply" column="REC_SUPPLY"/>
+        <result property="recTax" column="REC_TAX"/>
+    </resultMap>
+
+    <resultMap id="tsBillTaxResultMap" type="tsBillTaxDTO">
+        <id property="tsNo" column="TS_NO"/>
+        <result property="storeNo" column="STORE_NO"/>
+        <result property="storeName" column="STORE_NAME"/>
+        <result property="storeAddress" column="STORE_ADDRESS"/>
+        <result property="tsDate" column="TS_TAX_DATE"/>
+        <result property="itemName" column="ITEM_NAME"/>
+        <result property="itemStandard" column="ITEM_STANDARD"/>
+        <result property="itemSales" column="ITEM_SALES"/>
+        <result property="storeRep" column="STORE_REP"/>
+        <result property="recDate" column="REC_DATE"/>
+        <result property="recAmount" column="REC_AMOUNT"/>
+        <result property="recMoney" column="REC_MONEY"/>
+        <result property="recTotalMoney" column="REC_TOTALMONEY"/>
+        <result property="recCode" column="REC_CODE"/>
+        <result property="recSupply" column="REC_SUPPLY"/>
+        <result property="recTax" column="REC_TAX"/>
+        <result property="tsRecSupply" column="TS_REC_SUPPLY"/>
+        <result property="tsRecTax" column="TS_REC_TAX"/>
+    </resultMap>
+
+    <select id="selectBillTaxList" resultMap="billTaxResultMap">
+        SELECT
+               A.RNUM
+             , A.TAX_NO
+             , A.TAX_DATE
+             , S.STORE_NO
+             , S.STORE_NAME
+             , S.STORE_ADDRESS
+             , S.STORE_REP
+             , RS.REC_TOTALMONEY
+             , A.REC_CODE
+          FROM (SELECT ROWNUM RNUM
+                     , B.TAX_NO
+                     , B.TAX_DATE
+                     , B.REC_CODE
+                  FROM (SELECT
+                               C.TAX_NO
+                             , TO_CHAR(C.TAX_DATE,'yyyy-MM-dd') AS TAX_DATE
+                             , C.REC_CODE
+                          FROM TAXBILL C
+                        <if test="searchCondition == 'storeName'">
+                            JOIN RECEIVE_STORE RS ON(RS.REC_CODE = C.REC_CODE)
+                        </if>
+                        <where>
+                            <if test="searchCondition == 'storeName'">
+                                RS.STORE_NAME LIKE '%' || #{ searchValue } || '%'
+                            </if>
+                        </where>
+                         ORDER BY C.TAX_NO ASC ) B
+                 <![CDATA[
+                WHERE ROWNUM <= #{ endRow }
+                  ]]>
+            ) A
+         JOIN RECEIVE_STORE RS ON (RS.REC_CODE = A.REC_CODE)
+         JOIN STORE_ORDER SO ON (RS.ORDER_NO = SO.ORDER_NO)
+         JOIN STORE S ON(S.STORE_NAME = RS.STORE_NAME)
+        WHERE A.RNUM >= #{ startRow }
+          AND RS.STORE_NAME = #{ storeName }
+        ORDER BY A.TAX_NO ASC
+    </select>
+
+    <select id="selectBillList" resultMap="billTaxResultMap">
+        SELECT
+        A.RNUM
+        , A.TAX_NO
+        , A.TAX_DATE
+        , S.STORE_NO
+        , S.STORE_NAME
+        , S.STORE_ADDRESS
+        , S.STORE_REP
+        , RS.REC_TOTALMONEY
+        , A.REC_CODE
+        FROM (SELECT ROWNUM RNUM
+        , B.TAX_NO
+        , B.TAX_DATE
+        , B.REC_CODE
+        FROM (SELECT
+        C.TAX_NO
+        , TO_CHAR(C.TAX_DATE,'yyyy-MM-dd') AS TAX_DATE
+        , C.REC_CODE
+        FROM TAXBILL C
+        <if test="searchCondition == 'storeName'">
+            JOIN RECEIVE_STORE RS ON(RS.REC_CODE = C.REC_CODE)
+        </if>
+        <where>
+            <if test="searchCondition == 'storeName'">
+                RS.STORE_NAME LIKE '%' || #{ searchValue } || '%'
+            </if>
+        </where>
+        ORDER BY C.TAX_NO DESC ) B
+        <![CDATA[
+                WHERE ROWNUM <= #{ endRow }
+                  ]]>
+        ) A
+        JOIN RECEIVE_STORE RS ON (RS.REC_CODE = A.REC_CODE)
+        JOIN STORE_ORDER SO ON (RS.ORDER_NO = SO.ORDER_NO)
+        JOIN STORE S ON(S.STORE_NAME = RS.STORE_NAME)
+        WHERE A.RNUM >= #{ startRow }
+        ORDER BY A.TAX_NO DESC
+    </select>
+
+    <select id="selectTotalCount" resultType="_int" parameterType="hashmap">
+        SELECT
+        COUNT(*)
+        FROM TAXBILL T
+        <if test="searchCondition == 'storeName'">
+            JOIN RECEIVE_STORE RS ON(RS.REC_CODE = T.REC_CODE)
+        </if>
+        <where>
+            <if test="searchCondition == 'storeName'">
+                RS.STORE_NAME LIKE '%' || #{ searchValue } || '%'
+            </if>
+        </where>
+    </select>
+
+    <select id="selectTotalCountS" resultType="_int" parameterType="hashmap">
+        SELECT
+        COUNT(*)
+        FROM TAXBILL T
+        JOIN RECEIVE_STORE RS ON(RS.REC_CODE = T.REC_CODE)
+       WHERE RS.STORE_NAME = #{ storeName }
+    </select>
+
+    <select id="selectTaxMenuList" resultMap="billTaxResultMap" parameterType="String">
+        SELECT
+               II.ITEM_NAME
+             , II.ITEM_STANDARD
+             , II.ITEM_SALES
+             , TO_CHAR(RS.REC_DATE, 'MM-dd') AS REC_DATE
+             , RSI.REC_AMOUNT
+             , RSI.REC_MONEY
+             , RS.REC_CODE
+             , RSI.REC_SUPPLY
+             , RSI.REC_TAX
+        FROM RECEIVE_STORE RS
+        JOIN RECEIVE_STORE_ITEM RSI ON (RSI.REC_CODE = RS.REC_CODE)
+        JOIN ITEM_INFO II ON (II.ITEM_NO = RSI.ITEM_NO)
+       WHERE RSI.REC_CODE = '${ recCode }'
+    </select>
+
+    <select id="selectTsBillTaxList" resultMap="tsBillTaxResultMap">
+        SELECT
+               A.RNUM
+             , A.TS_NO
+             , A.TS_TAX_DATE
+             , S.STORE_NO
+             , S.STORE_NAME
+             , S.STORE_ADDRESS
+             , S.STORE_REP
+             , RS.REC_TOTALMONEY
+             , TRUNC(RS.REC_TOTALMONEY / 1.1) AS TS_REC_SUPPLY
+             , TRUNC(RS.REC_TOTALMONEY / 11) AS TS_REC_TAX
+             , A.REC_CODE
+          FROM (SELECT ROWNUM RNUM
+                     , B.TS_NO
+                     , B.TS_TAX_DATE
+                     , B.REC_CODE
+                  FROM (SELECT
+                               C.TS_NO
+                             , TO_CHAR(C.TS_TAX_DATE,'yyyy-MM-dd') AS TS_TAX_DATE
+                             , C.REC_CODE
+                          FROM TSBILL C
+                       <if test="searchCondition == 'storeName'">
+                          JOIN RECEIVE_STORE RS ON(RS.REC_CODE = C.REC_CODE)
+                       </if>
+                       <where>
+                         <if test="searchCondition == 'storeName'">
+                             RS.STORE_NAME LIKE '%' || #{ searchValue } || '%'
+                         </if>
+                       </where>
+                        ORDER BY C.TS_NO ASC
+                        ) B
+                    <![CDATA[
+                        WHERE ROWNUM <= #{ endRow }
+                    ]]>
+                ) A
+        JOIN RECEIVE_STORE RS ON (RS.REC_CODE = A.REC_CODE)
+        JOIN STORE_ORDER SO ON (RS.ORDER_NO = SO.ORDER_NO)
+        JOIN STORE S ON(S.STORE_NAME = RS.STORE_NAME)
+        WHERE A.RNUM >= #{ startRow }
+          AND RS.STORE_NAME = #{ storeName }
+        ORDER BY A.TS_NO ASC
+    </select>
+
+    <select id="selectTsList" resultMap="tsBillTaxResultMap">
+        SELECT
+        A.RNUM
+        , A.TS_NO
+        , A.TS_TAX_DATE
+        , S.STORE_NO
+        , S.STORE_NAME
+        , S.STORE_ADDRESS
+        , S.STORE_REP
+        , RS.REC_TOTALMONEY
+        , TRUNC(RS.REC_TOTALMONEY / 1.1) AS TS_REC_SUPPLY
+        , TRUNC(RS.REC_TOTALMONEY / 11) AS TS_REC_TAX
+        , A.REC_CODE
+        FROM (SELECT ROWNUM RNUM
+        , B.TS_NO
+        , B.TS_TAX_DATE
+        , B.REC_CODE
+        FROM (SELECT
+        C.TS_NO
+        , TO_CHAR(C.TS_TAX_DATE,'yyyy-MM-dd') AS TS_TAX_DATE
+        , C.REC_CODE
+        FROM TSBILL C
+        <if test="searchCondition == 'storeName'">
+            JOIN RECEIVE_STORE RS ON(RS.REC_CODE = C.REC_CODE)
+        </if>
+        <where>
+            <if test="searchCondition == 'storeName'">
+                RS.STORE_NAME LIKE '%' || #{ searchValue } || '%'
+            </if>
+        </where>
+        ORDER BY C.TS_NO DESC
+        ) B
+        <![CDATA[
+                        WHERE ROWNUM <= #{ endRow }
+                    ]]>
+        ) A
+        JOIN RECEIVE_STORE RS ON (RS.REC_CODE = A.REC_CODE)
+        JOIN STORE_ORDER SO ON (RS.ORDER_NO = SO.ORDER_NO)
+        JOIN STORE S ON(S.STORE_NAME = RS.STORE_NAME)
+        WHERE A.RNUM >= #{ startRow }
+        ORDER BY A.TS_NO DESC
+    </select>
+
+    <select id="selectTsMenuList" resultMap="tsBillTaxResultMap" parameterType="String">
+        SELECT
+               II.ITEM_NAME
+             , II.ITEM_STANDARD
+             , II.ITEM_SALES
+             , TO_CHAR(RS.REC_DATE, 'MM-dd') AS REC_DATE
+             , RSI.REC_AMOUNT
+             , RSI.REC_MONEY
+             , RS.REC_CODE
+             , RSI.REC_SUPPLY
+             , RSI.REC_TAX
+          FROM RECEIVE_STORE RS
+          JOIN RECEIVE_STORE_ITEM RSI ON (RSI.REC_CODE = RS.REC_CODE)
+          JOIN ITEM_INFO II ON (II.ITEM_NO = RSI.ITEM_NO)
+         WHERE RSI.REC_CODE = '${ recCode }'
+    </select>
+
+</mapper>

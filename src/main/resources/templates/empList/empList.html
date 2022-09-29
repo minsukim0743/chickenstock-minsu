@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"/>
+
+  <title>chicken stock</title>
+  <link rel="shortcut icon" th:href="@{ /images/logo.png }" type="image/x-icon">
+
+  <link rel="stylesheet" type="text/css" th:href="@{/css/common/common.css}"/>
+  <!-- table css -->
+  <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"/>
+  <link rel="stylesheet" type="text/css" th:href="@{/css/common/style.css}"/>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"/>
+
+  <script src="https://code.jquery.com/jquery-3.6.0.js"/>
+  <script th:src="@{/js/common.js}"/>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+
+
+</head>
+<body>
+<div class="wrap">
+  <!-- modal 추가 -->
+  <div class="modal fade" id="registModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+       aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">정보를 입력하세요.</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <form th:action="@{/empList/empList}" method="post">
+          <div class="modal-body">
+            <div class="form-group">
+              <label for="id" class="col-form-label">아이디</label>
+              <input type="text" class="form-control col-8" id="id" name="empId" required>
+              <label for="pwd" class="col-form-label">비밀번호</label>
+              <input type="password" class="form-control" id="pwd" name="empPwd" required>
+              <label for="name" class="col-form-label">이름</label>
+              <input type="text" class="form-control" id="name" name="empName" required>
+              <label for="email" class="col-form-label">이메일</label>
+              <input type="email" class="form-control" id="email" name="empEmail" required>
+              <label for="phone" class="col-form-label">전화번호</label>
+              <input type="tel" class="form-control" id="phone" name="empPhone" required>
+              <label for="birth" class="col-form-label">생년월일</label>
+              <input type="date" class="form-control col-6" id="birth" name="birth" required>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-warning" id="addRegist">추가</button>
+            <button type="button" class="btn btn-secondary" data-dismiss="modal"
+                    id="sprintSettingModalClose">취소</button>
+          </div>
+        </form>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- S: header -->
+  <div th:include="/common/adminHeader.html"></div>
+  <!-- S: header -->
+
+  <!-- S: container -->
+  <div class="container px-0">
+
+    <!-- S: aside -->
+    <div th:include="/common/adminSidebar.html"></div>
+    <!-- E: aside -->
+
+    <!-- S: main layout -->
+    <div class="main_layout">
+      <div class="main_layout_inner">
+
+        <!-- 작업 영역 -->
+        <!-- S: table -->
+
+        <div class="container-fluid" style="margin-top:30px">
+          <h3 style="float: left">직원 관리</h3>
+          <div class="d-flex justify-content-end">
+            <button type="button" class="btn" onclick="regist();" style="margin-right: 30px;">직원 추가</button>
+          </div>
+          <br>
+
+          <table class="table">
+            <thead>
+            <tr>
+              <th>번호</th>
+              <th>아이디</th>
+              <th>이름</th>
+              <th>이메일</th>
+              <th>전화번호</th>
+              <th>생년월일</th>
+              <th>권한부여</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="emp: ${ empList }">
+              <td class="empId" th:text="${ emp.rnum }"></td>
+              <td th:text="${ emp.empId }"></td>
+              <td th:text="${ emp.empName }"></td>
+              <td th:text="${ emp.empEmail }"></td>
+              <td th:text="${ emp.empPhone }"></td>
+              <td th:text="${ emp.birth }"></td>
+              <td><button class="btn btn-warning" style="color: white;" onclick="test(this);" >권한 부여</button></td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+        <!-- E: table -->
+        <!-- S: paging -->
+        <div class="pagingArea" align="center">
+          <!-- 맨 앞으로 이동 버튼 -->
+          <button class="btn btn-light mx-1" style="cursor:pointer; background: #ccc; color: #fff;"
+                  th:onclick="'location.href=\'/emplist/emplist/list?currentPage='+ @{${selectCriteria.startPage}} "
+                  th:disabled="${selectCriteria.pageNo == 1}"
+          >
+            <<
+          </button>
+          <!-- 이전 페이지 버튼 -->
+          <button class="btn btn-light mx-1" style="cursor:pointer; background: #ccc; color: #fff;"
+                  th:onclick="'location.href=\'/emplist/emplist/list?currentPage='+ @{${selectCriteria.pageNo - 1}} "
+                  th:disabled="${selectCriteria.pageNo == 1}"
+          >
+            <
+          </button>
+          <!-- 숫자 버튼 -->
+          <th:block th:each="page : ${#numbers.sequence(selectCriteria.startPage, selectCriteria.endPage)}">
+            <button class="btn btn-warning mx-1" style="cursor:pointer; color: #fff;"
+                    th:text="${page}"
+                    th:onclick="'location.href=\'/emplist/emplist/list?currentPage='+ @{${page}}"
+                    th:disabled="${ selectCriteria.pageNo eq page }">
+            </button>
+          </th:block>
+
+          <!-- 다음 페이지 버튼 -->
+          <button class="btn btn-light mx-1" style="cursor:pointer; background: #ccc; color: #fff;"
+                  th:onclick="'location.href=\'/emplist/emplist/list?currentPage='+ @{${selectCriteria.pageNo + 1}}"
+                  th:disabled="${selectCriteria.pageNo == selectCriteria.maxPage}"
+          >
+            >
+          </button>
+          <!-- 마지막 페이지로 이동 버튼 -->
+          <button class="btn btn-light mx-1" style="cursor:pointer; background: #ccc; color: #fff;"
+                  th:onclick="'location.href=\'/emplist/emplist/list?currentPage='+ @{${selectCriteria.maxPage}}"
+                  th:disabled="${selectCriteria.pageNo == selectCriteria.maxPage}"
+          >
+            >>
+          </button>
+        </div>
+        <!-- E: paging -->
+
+      </div>
+    </div>
+    <!-- E: main layout -->
+
+  </div>
+  <!-- E: container -->
+</div>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+<script>
+  function test(e) {
+
+    if (confirm("관리자 권한을 부여하시겠습니까?")) {
+
+      let empId = e.parentElement.parentElement.children[1].innerText;
+      alert('아이디 ' + empId + '에 관리자 권한을 부여합니다.');
+
+      $.ajax({
+        url: "/empList/auth",
+        type: "POST",
+        data: {
+          empId : empId
+        },
+        success:function (data){
+          console.log(data);
+          if(data == "emp"){
+
+            alert("관리자 권한을 부여하였습니다.")
+          } else if(data == "admin"){
+
+            alert("이미 권한이 부여되어있습니다.")
+          } else {
+
+            alert('권한 부여에 실패하셨습니다.')
+          }
+        },
+        error:function (result){
+          alert('error : 권한부여에 실패하셨습니다.');
+        }
+      });
+    } else {
+      alert("취소");
+    }
+  };
+
+  function regist(){
+    $("#registModal").modal("show");
+  };
+
+  const result = "${message}"
+  if(result == "success"){
+    alert("직원 정보 등록에 성공하셨습니다.")
+  } else if(result == "fail"){
+    alert("직원 정보 등록에 실패하셨습니다.")
+  }
+</script>
+
+
+</body>
+</html>

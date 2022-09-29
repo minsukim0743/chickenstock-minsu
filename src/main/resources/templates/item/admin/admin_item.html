@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"/>
+
+  <title>chicken stock</title>
+  <link rel="shortcut icon" th:href="@{ /images/logo.png }" type="image/x-icon">
+
+  <link rel="stylesheet" type="text/css" th:href="@{/css/common/common.css}"/>
+  <!-- table css -->
+  <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+  <link rel="stylesheet" type="text/css" th:href="@{/css/item/item_receive.css}"/>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+  <!-- datepicker js & css -->
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/jquery/latest/jquery.min.js"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+  <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+
+  <script th:src="@{/js/common.js}"></script>
+  <script>
+
+    let check = '[[${ check }]]';
+
+    if(check){
+      alert('[[${ message }]]');
+      opener.location.reload();
+      window.close();
+
+    }
+  </script>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- S: header -->
+  <div th:include="common/adminHeader.html"></div>
+  <!-- E: header -->
+
+  <!-- S: container -->
+  <div class="container px-0">
+    <!-- S: aside -->
+    <div th:include="common/adminSidebar.html"></div>
+    <!-- E: aside -->
+
+    <!-- S: main layout -->
+    <div class="main_layout">
+      <div class="main_layout_inner" style="margin-bottom: 40px;">
+
+        <!-- 작업 영역 -->
+        <!-- S: table -->
+        <div class="container-fluid" style="margin-top:30px">
+          <h3>품목 관리</h3>
+          <br>
+          <div class="col-6">
+            <form th:action="@{ /item/admin/list }">
+              <div class="input-group mb-3">
+                <select class="form-select" id="searchCondition" name="searchCondition" style="max-width: max-content;">
+                  <option value="itemName" th:selected="${ selectCriteria.getSearchCondition() == 'itemName'}">상품명</option>
+                  <option value="category" th:selected="${ selectCriteria.getSearchCondition() == 'category'}">카테고리</option>
+                  <option value="make" th:selected="${ selectCriteria.getSearchCondition() == 'make'}">제조사</option>
+                </select>
+                <input class="form-control col-3" type="text" id="searchValue" name="searchValue" th:value="${ selectCriteria.getSearchValue() }" placeholder="검색어를 입력해주세요." style="max-width: 400px;">
+                <button class="btn btn-warning me-3" type="submit" style="color:#fff; border-radius: 0 5px 5px 0; z-index: auto;">검색</button>
+              </div>
+            </form>
+          </div>
+
+          <div class="col-11 d-flex justify-content-end" style="margin-left: 8%;">
+            <button class="btn btn-warning mx-2" type="submit" style="color:#fff;" onclick="openLayer('layerPopRegist',9, 15)">신규 등록</button>
+            <button class="btn btn-light" type="submit" style="color:#fff; background-color: #ccc;" onclick="getCheckboxValue()">선택 삭제</button>
+          </div>
+
+          <div th:include="item/admin/admin_item_new.html"></div>
+
+          <table class="table">
+            <thead>
+            <tr>
+              <th>
+                <div class="form-check pb-3">
+                  <input type="checkbox" class="form-check-input" id="cbx_chkAll1" required/>
+                </div>
+              </th>
+              <th>번호</th>
+              <th>상품번호</th>
+              <th>썸네일</th>
+              <th>상품명</th>
+              <th>카테고리</th>
+              <th>규격</th>
+              <th>제조사</th>
+              <th>매입단가</th>
+              <th>매출단가</th>
+              <th>재고량</th>
+              <th>품절여부</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="item, stat : ${ itemList }">
+              <td>
+                <div class="form-check">
+                  <input type="checkbox" class="form-check-input" name="chk1" th:value="${ item.itemNo }"/>
+                  <label class="form-check-label" for="check"></label>
+                </div>
+              </td>
+              <td th:text="${ item.rNum }">1</td>
+              <td id="itemNo" class="itemNo" th:text="${ item.itemNo }" th:value="${ item.itemNo }">100000</td>
+              <td>
+                <div class="img-info">
+                  <div class="img-info__img">
+                    <img th:src="'/itemImage/' + ${ item.itemFile.fileName }" alt="">
+                  </div>
+                </div>
+              </td>
+              <td th:text="${ item.itemName }">닭다리</td>
+              <td th:text="${ item.categoryName }">식재료</td>
+              <td th:text="${ item.itemStandard }">1kg</td>
+              <td th:text="${ item.itemMake }">하림(국내산)</td>
+              <td th:text="${ item.itemPurchase }">5,500</td>
+              <td th:text="${ item.itemSales }">6,000</td>
+              <td th:text="${ item.itemAmount }">100</td>
+              <td th:if="${ item.itemSoldoutYn eq 'Y' }" >
+                <span class="active-circle bg-danger"></span><span th:text="${ '품절' }"></span>
+              </td>
+              <td th:if="${ item.itemSoldoutYn eq 'N' }" >
+                <span class="active-circle bg-success"></span><span th:text="${ '보유' }"></span>
+              </td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+        <!-- E: table -->
+
+        <div class="pagingArea" align="center">
+          <!-- 맨 앞으로 이동 버튼 -->
+          <button class="btn btn-light mx-1" style="cursor:pointer; background: #ccc; color: #fff;"
+                  th:onclick="'location.href=\'/item/admin/list?currentPage='+ @{${selectCriteria.startPage}} + '&searchCondition=' + @{${ selectCriteria.searchCondition }} + '&searchValue=' + @{${ selectCriteria.searchValue }} + '\''"
+                  th:disabled="${selectCriteria.pageNo == 1}"
+          >
+            <<
+          </button>
+          <!-- 이전 페이지 버튼 -->
+          <button class="btn btn-light" style="cursor:pointer; background: #ccc; color: #fff;"
+                  th:onclick="'location.href=\'/item/admin/list?currentPage='+ @{${selectCriteria.pageNo - 1}} + '&searchCondition=' + @{${ selectCriteria.searchCondition }} + '&searchValue=' + @{${ selectCriteria.searchValue }} + '\''"
+                  th:disabled="${selectCriteria.pageNo == 1}"
+          >
+            <
+          </button>
+          <!-- 숫자 버튼 -->
+          <th:block th:each="page : ${#numbers.sequence(selectCriteria.startPage, selectCriteria.endPage)}">
+            <button class="btn btn-warning mx-1" style="cursor:pointer; color: #fff;"
+                    th:text="${ page }"
+                    th:onclick="'location.href=\'/item/admin/list?currentPage='+ @{${page}} + '&searchCondition=' + @{${ selectCriteria.searchCondition }} + '&searchValue=' + @{${ selectCriteria.searchValue }} + '\''"
+                    th:disabled="${ selectCriteria.pageNo eq page }">
+            </button>
+          </th:block>
+
+          <!-- 다음 페이지 버튼 -->
+          <button class="btn btn-light mx-1" style="cursor:pointer; background: #ccc; color: #fff;"
+                  th:onclick="'location.href=\'/item/admin/list?currentPage='+ @{${selectCriteria.pageNo + 1}} + '&searchCondition=' + @{${ selectCriteria.searchCondition }} + '&searchValue=' + @{${ selectCriteria.searchValue }} + '\''"
+                  th:disabled="${selectCriteria.pageNo == selectCriteria.maxPage}"
+          >
+            >
+          </button>
+          <!-- 마지막 페이지로 이동 버튼 -->
+          <button class="btn btn-light mx-1" style="cursor:pointer; background: #ccc; color: #fff;"
+                  th:onclick="'location.href=\'/item/admin/list?currentPage='+ @{${selectCriteria.maxPage}} + '&searchCondition=' + @{${ selectCriteria.searchCondition }} + '&searchValue=' + @{${ selectCriteria.searchValue }} + '\''"
+                  th:disabled="${selectCriteria.pageNo == selectCriteria.maxPage}"
+          >
+            >>
+          </button>
+        </div>
+
+        <!-- E: paging -->
+
+        <!--        <div th:include="item/admin/admin_item_detail.html"></div>-->
+
+      </div>
+    </div>
+    <!-- E: main layout -->
+
+  </div>
+  <!-- E: container -->
+</div>
+
+<!-- table js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+
+<!-- datepicker js -->
+<script src="../assets/js/daterange.js"></script>
+
+<!-- 팝업으로 이동 -->
+<script>
+
+  var form = document.getElementsByClassName('form-check');
+
+  $(document).ready(function(){
+    // 1. 상품 상세 조회
+    $("tbody tr").click(function(){
+
+      // start
+      let row = $(this).closest('tr');
+      let no = row.find("#itemNo").text();
+      console.log(no);
+
+      let form = document.createElement('form');
+
+      let itemNo = document.createElement('input');
+      itemNo.setAttribute('type', 'hidden');
+      itemNo.setAttribute('name', 'itemNo');
+      itemNo.setAttribute('value', no);
+
+      form.appendChild(itemNo);
+
+
+
+      /* 팝업 */
+
+      //창 크기 지정
+      var width = 1200;
+      var height = 800;
+
+      //pc화면기준 가운데 정렬
+      var left = (window.screen.width / 2) - (width/2);
+      var top = (window.screen.height / 4);
+
+      //윈도우 속성 지정
+      var windowStatus = 'width='+width+', height='+height+', left='+left+', top='+top+', scrollbars=yes, status=yes, resizable=yes, titlebar=yes';
+
+      //연결하고싶은url
+      const url = "/item/admin/itemDetail?itemNo=" + itemNo.value;
+
+      //등록된 url 및 window 속성 기준으로 팝업창을 연다.
+      window.open(url, "품목 상세 조회", windowStatus);
+      // form.setAttribute('method', 'get');
+      // form.setAttribute('action', url);
+      // document.body.appendChild(form);
+      // form.submit();
+
+
+
+      // openLayer('layerPopDetail', 9, 10);
+      // location.href="/admin_item_detail.html";
+    });
+    $("tbody tr input").click(function(event){
+      event.stopPropagation();
+    });
+    // 2. 상품 등록
+    $("#btnInsertItem").click(function(){
+      location.href = 'javascript:showInsertItem()';
+    });
+  });
+</script>
+
+<!-- 체크 박스 전체 선택 -->
+<script type="text/javascript">
+  function selectAll(selectAll)  {
+    const checkboxes = document.getElementsByName('option');
+
+    checkboxes.forEach((checkbox) => {
+      checkbox.checked = selectAll.checked;
+    })
+  }
+</script>
+
+<!-- 선택 삭제 버튼 메시지 띄우기 -->
+<script>
+  function deleteItem(){
+    var answer = confirm('선택한 항목을 삭제하시겠습니까?');
+
+
+    if(answer){
+      var answer2 = confirm('선택한 항목을 삭제합니다.');
+      if(answer2){
+        alert('선택한 항목이 삭제되었습니다.'); // 나중에 삭제된 후 alert되도록 수정하기
+      }
+    }
+
+  }
+</script>
+
+<!-- 레이어 팝업 -->
+<script>
+  function openLayer(IdName, tpos, lpos){
+    var pop = document.getElementById(IdName);
+    pop.style.display = "block";
+    pop.style.top = tpos + "%";
+    pop.style.left = lpos + "%";
+  }
+  function closeLayer(IdName){
+    var pop = document.getElementById(IdName);
+    pop.style.display = "none";
+  }
+</script>
+
+<!-- 파일 이미지 -->
+<script>
+  $(function() {
+    $("#input-file-regist").on('change', function(){
+      readURL(this);
+
+      function readURL(input) {
+        if (input.files && input.files[0]) {
+          var reader = new FileReader();
+          reader.onload = function (e) {
+            $('.input-file-button-regist #View').attr('src', e.target.result);
+            $('.input-file-button-regist #View').removeClass('d-none');
+            $('.input-file-button-regist .fa').remove();
+          }
+          reader.readAsDataURL(input.files[0]);
+        }
+      }
+    });
+  });
+</script>
+<script>
+  $(function() {
+    $("#input-file-detail").on('change', function(){
+      readURL(this);
+
+      function readURL(input) {
+        if (input.files && input.files[0]) {
+          var reader = new FileReader();
+          reader.onload = function (e) {
+            $('.input-file-button-detail #View2').attr('src', e.target.result);
+            $('.input-file-button-detail #View2').removeClass('d-none');
+            $('.input-file-button-detail .fa').remove();
+          }
+          reader.readAsDataURL(input.files[0]);
+        }
+      }
+    });
+  });
+</script>
+
+<!-- 선택된 체크박스 값 가져오기 (삭제) -->
+<script>
+  function getCheckboxValue()  {
+    // 선택된 목록 가져오기
+    const query = 'input[name="chk1"]:checked';
+    const selectedEls =
+            document.querySelectorAll(query);
+
+    // 선택된 목록에서 value 찾기
+    let result = '';
+    let itemNoVal = [];
+    selectedEls.forEach((el) => {
+      itemNoVal[itemNoVal.length] = el.value;
+      result += el.value + ' ';
+    });
+
+    if($("input:checkbox[name='chk1']:checked").length === 0){
+      alert("삭제할 항목을 선택해주세요.");
+      return;
+    } else{
+      var answer = confirm('선택한 항목을 삭제하시겠습니까?');
+
+      if(answer){
+        var answer2 = confirm('선택한 항목을 삭제합니다.');
+        if(answer2){
+          let form = document.createElement('form');
+
+          let itemNoList = document.createElement('input');
+          itemNoList.setAttribute('type', 'hidden');
+          itemNoList.setAttribute('name', 'itemNoList');
+          itemNoList.setAttribute('value', itemNoVal.toString());
+          form.appendChild(itemNoList);
+          form.setAttribute('method', 'post');
+          form.setAttribute('action', '/item/admin/delete');
+          document.body.appendChild(form);
+          form.submit();
+
+        }
+      }
+    }
+
+
+  }
+</script>
+
+<script type="text/javascript">
+  $(document).ready(function() {
+    $("#cbx_chkAll1").click(function() {
+      if($("#cbx_chkAll1").is(":checked")) $("input[name=chk1]").prop("checked", true);
+      else $("input[name=chk1]").prop("checked", false);
+    });
+
+    $("input[name=chk1]").click(function() {
+      var total = $("input[name=chk1]").length;
+      var checked = $("input[name=chk1]:checked").length;
+
+      if(total != checked) $("#cbx_chkAll1").prop("checked", false);
+      else $("#cbx_chkAll1").prop("checked", true);
+    });
+  });
+</script>
+
+<!-- 상품 상세 페이지 팝업 띄우기 -->
+<!--<script type="text/javascript">-->
+<!--  function showItemDetail() {-->
+
+<!--    //창 크기 지정-->
+<!--    var width = 1200;-->
+<!--    var height = 800;-->
+
+<!--    //pc화면기준 가운데 정렬-->
+<!--    var left = (window.screen.width / 2) - (width/2);-->
+<!--    var top = (window.screen.height / 4);-->
+
+<!--    //윈도우 속성 지정-->
+<!--    var windowStatus = 'width='+width+', height='+height+', left='+left+', top='+top+', scrollbars=yes, status=yes, resizable=yes, titlebar=yes';-->
+
+<!--    //연결하고싶은url-->
+<!--    const url = "admin_item_detail.html";-->
+
+<!--    //등록된 url 및 window 속성 기준으로 팝업창을 연다.-->
+<!--    window.open(url, "hello popup", windowStatus);-->
+<!--  }-->
+<!--</script>-->
+</body>
+</html>

@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"/>
+
+  <title>chicken stock</title>
+  <script type="text/javascript" th:src="@{http://code.jquery.com/jquery-3.6.0.min.js}"></script>
+
+</head>
+<body>
+      <!-- S: aside -->
+      <div class="aside">
+        <div class="accordion">
+          <!-- 하위 메뉴가 없을때 -->
+          <div class="accordion_dep type1 ">
+            <a th:href="@{/member/moveMain}" title=""><img src="/images/home.png" width="18px" height="18px"> 홈</a>
+          </div>
+
+          <div class="accordion_dep type1 ">
+            <a th:href="@{/mypage/store_mypage}" title=""><img src="/images/items.png" width="18px" height="18px"> 비밀번호 수정</a>
+          </div>
+
+          <div class="accordion_dep type2">
+            <a href="#" title=""><img src="/images/money.png" width="18px" height="18px"> 예치금관리</a>
+            <ul>
+              <li>
+                <a href="/account/user/list" title="">입금신청</a>
+              </li>
+              <li>
+                <a href="/account/user/bank" title="">입출금 내역</a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="accordion_dep type1 ">
+            <a href="/storeItem/itemListSelect" title=""><img src="/images/items.png" width="18px" height="18px"> 품목관리</a>
+          </div>
+
+          <div class="accordion_dep type2 ">
+            <a href="/order/list" title=""><img src="/images/order.png" width="18px" height="18px"> 발주관리</a>
+            <ul>
+              <li>
+                <a href="/order/list" title="">상품 조회</a>
+              </li>
+              <li>
+                <a href="/order/cart/list" title="">장바구니</a>
+              </li>
+              <li>
+                <a href="/order/history" title="">발주 내역</a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="accordion_dep type1 ">
+            <a href="/storeReceive/user/list" title=""><img src="/images/container.png" width="18px" height="18px"> 입고조회</a>
+          </div>
+
+          <div class="accordion_dep type2">
+            <a href="#" title=""><img src="/images/re.png" width="18px" height="18px"> 반품관리</a>
+            <ul>
+              <li>
+                <a href="/reItem/user/insertReItem" title="">반품신청</a>
+              </li>
+              <li>
+                <a href="/reItem/user/storeReList" title="">반품요청목록조회</a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="accordion_dep type1 ">
+            <a href="/billTax/billList" title=""><img src="/images/tax.png" width="18px" height="18px"> 세금계산서</a>
+          </div>
+
+          <div class="accordion_dep type1 ">
+            <a href="/billTax/tsbillList" title=""><img src="/images/bill.png" width="18px" height="18px"> 거래명세서</a>
+          </div>
+
+          <div class="accordion_dep type1 ">
+            <a href="/notice/user/list" title=""><img src="/images/notice.png" width="18px" height="18px"> 공지사항</a>
+          </div>
+          
+          <div class="accordion_dep type1 ">
+            <a href="/store/user/list" title=""><img src="/images/shop.png" width="18px" height="18px"> 가맹점 조회</a>
+          </div>
+
+          <div class="accordion_dep type2">
+            <a href="#" title=""><img src="/images/phone.JPG" width="18px" height="18px"> 1:1 문의</a>
+            <ul>
+              <li>
+                <a href="/counsel/user/list" title="">내가 쓴 1:1 문의</a>
+              </li>
+              <li>
+                <a href="/counsel/user/insert" title="">1:1 문의 등록</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <!-- E: aside -->
+</body>
+</html>

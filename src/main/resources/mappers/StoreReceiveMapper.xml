@@ -1,0 +1,424 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chicken.project.storeReceive.model.dao.StoreReceiveMapper">
+    <resultMap id="recCartResultMap" type="com.chicken.project.storeReceive.model.dto.RecCartDTO">
+        <id property="cartNo" column="CART_NO"/>
+        <result property="itemNo" column="ITEM_NO"/>
+        <result property="categoryNo" column="CATEGORY_NO"/>
+        <result property="storeName" column="STORE_NAME"/>
+        <result property="cartAmount" column="CART_AMOUNT"/>
+        <result property="cartYn" column="CART_YN"/>
+    </resultMap>
+
+    <resultMap id="receiveStoreResultMap" type="com.chicken.project.storeReceive.model.dto.ReceiveStoreDTO">
+        <id property="orderNo" column="ORDER_NO"/>
+        <result property="recCode" column="REC_CODE"/>
+        <result property="recTotalAmount" column="REC_AMOUNT"/>
+        <result property="recDate" column="REC_DATE"/>
+        <result property="recStatus" column="REC_STATUS"/>
+        <result property="storeName" column="STORE_NAME"/>
+        <result property="recTotalMoney" column="REC_TOTALMONEY"/>
+        <result property="orderCode" column="orderCode"/>
+        <result property="countRecCode" column="countRecCode"/>
+        <result property="sumRecAmount" column="sumRecAmount"/>
+        <result property="rNum" column="RNUM"/>
+    </resultMap>
+
+    <resultMap id="receiveStoreItemResultMap" type="com.chicken.project.storeReceive.model.dto.ReceiveStoreItemDTO">
+        <id property="recItemNo" column="REC_ITEM_NO"/>
+        <result property="itemNo" column="ITEM_NO"/>
+        <result property="recCode" column="REC_CODE"/>
+        <result property="recAmount" column="REC_AMOUNT"/>
+        <result property="recMoney" column="REC_MONEY"/>
+        <result property="recSupply" column="REC_SUPPLY"/>
+        <result property="recTax" column="REC_TAX"/>
+    </resultMap>
+
+    <resultMap id="receiveStoreOrderResultMap" type="com.chicken.project.storeReceive.model.dto.ReceiveStoreOrderDTO">
+        <id property="storeOrderNum" column="STORE_ORDER_NUM"/>
+        <result property="relCode" column="REL_CODE"/>
+        <result property="orderNo" column="ORDER_NO"/>
+        <result property="checkYn" column="CHECK_YN"/>
+    </resultMap>
+
+    <resultMap id="recOrderHandlerResultMap" type="com.chicken.project.storeReceive.model.dto.RecOrderHandlerDTO">
+        <id property="cartNo" column="CART_NO"/>
+        <result property="orderNo" column="ORDER_NO"/>
+        <result property="totalPrice" column="TOTAL_PRICE"/>
+    </resultMap>
+
+    <resultMap id="recReleaseResultMap" type="com.chicken.project.storeReceive.model.dto.RecReleaseDTO">
+        <id property="relCode" column="REL_CODE"/>
+        <result property="relName" column="REL_NAME"/>
+        <result property="relDate" column="REL_DATE"/>
+        <result property="relYn" column="REL_YN"/>
+        <result property="storeName" column="STORE_NAME"/>
+        <result property="totalMoney" column="TOTAL_MONEY"/>
+        <result property="relListDate" column="REL_LIST_DATE"/>
+        <result property="orderNo" column="ORDER_NO"/>
+        <result property="rNum" column="RNUM"/>
+        <result property="orderCode" column="orderCode"/>
+        <result property="recCode" column="REC_CODE"/>
+        <result property="recAmount" column="REC_AMOUNT"/>
+        <result property="recTotalMoney" column="REC_TOTALMONEY"/>
+        <result property="orderDate" column="ORDER_DATE"/>
+        <result property="recDate" column="REC_DATE"/>
+        <collection property="receiveStore" resultMap="receiveStoreResultMap"/>
+        <collection property="recReleaseItem" resultMap="recReleaseItemResultMap"/>
+        <collection property="recStoreOrder" resultMap="recStoreOrderResultMap"/>
+    </resultMap>
+
+    <resultMap id="recReleaseItemResultMap" type="com.chicken.project.storeReceive.model.dto.RecReleaseItemDTO">
+        <result property="relYn" column="REL_YN"/>
+        <result property="relAmount" column="REL_AMOUNT"/>
+        <result property="relCode" column="REL_CODE"/>
+        <result property="itemNo" column="ITEM_NO"/>
+        <result property="orderAmount" column="ORDER_AMOUNT"/>
+        <result property="relDate" column="REL_DATE"/>
+        <result property="relItemRequestDate" column="RELITEM_REQUEST_DATE"/>
+        <result property="storeName" column="STORE_NAME"/>
+        <result property="totalMoney" column="TOTAL_MONEY"/>
+        <result property="orderNo" column="ORDER_NO"/>
+        <result property="relCodeDetail" column="REL_CODE_DETAIL"/>
+        <result property="relListYn" column="REL_LIST_YN"/>
+        <result property="orderCode" column="orderCode"/>
+        <result property="recCode" column="REC_CODE"/>
+        <result property="fileName" column="FILE_NAME"/>
+        <result property="itemName" column="ITEM_NAME"/>
+        <result property="categoryName" column="CATEGORY_NAME"/>
+        <result property="itemStandard" column="ITEM_STANDARD"/>
+        <result property="itemMake" column="ITEM_MAKE"/>
+        <result property="recAmount" column="REC_AMOUNT"/>
+        <result property="itemSales" column="ITEM_SALES"/>
+        <result property="recMoney" column="REC_MONEY"/>
+        <result property="orderDate" column="ORDER_DATE"/>
+        <result property="recDate" column="REC_DATE"/>
+       <association property="itemInfo" resultMap="itemInfoResultMap"/>
+       <association property="itemCategory" resultMap="itemCategoryResultMap"/>
+       <association property="itemFile" resultMap="itemFileResultMap"/>
+       <association property="recStoreOrder" resultMap="recStoreOrderResultMap"/>
+       <association property="recReleaseItemHistory" resultMap="recReleaseItemHistoryResultMap"/>
+       <association property="receiveStore" resultMap="receiveStoreResultMap"/>
+       <association property="receiveStoreItem" resultMap="receiveStoreItemResultMap"/>
+
+    </resultMap>
+
+    <resultMap id="recReleaseItemHistoryResultMap" type="com.chicken.project.storeReceive.model.dto.RecReleaseItemHistoryDTO">
+        <result property="relAmountDetail" column="REL_AMOUNT_DETAIL"/>
+        <result property="relDateDetail" column="REL_DATE_DETAIL"/>
+        <result property="relCodeDetail" column="REL_CODE_DETAIL"/>
+    </resultMap>
+
+    <resultMap id="recRelOrdHandlerResultMap" type="com.chicken.project.storeReceive.model.dto.RecRelOrdHandlerDTO">
+        <id property="cartNo" column="CART_NO"/>
+        <result property="relCodeDetail" column="REL_CODE_DETAIL"/>
+    </resultMap>
+
+    <resultMap id="recStoreOrderResultMap" type="com.chicken.project.storeReceive.model.dto.RecStoreOrderDTO">
+        <id property="orderNo" column="ORDER_NO"/>
+        <result property="orderDate" column="ORDER_DATE"/>
+        <result property="orderCode" column="orderCode"/>
+        <result property="countOrderNo" column="countOrderNo"/>
+        <result property="rNum" column="RNUM"/>
+    </resultMap>
+
+    <resultMap id="recTaxBillResultMap" type="com.chicken.project.storeReceive.model.dto.RecTaxBillDTO">
+        <id property="taxNo" column="TAX_NO"/>
+        <result property="taxDate" column="TAX_DATE"/>
+        <result property="recCode" column="REC_CODE"/>
+    </resultMap>
+
+    <resultMap id="recTsBillResultMap" type="com.chicken.project.storeReceive.model.dto.RecTsBillDTO">
+        <id property="tsNo" column="TS_NO"/>
+        <result property="tsTaxDate" column="TS_TAX_DATE"/>
+        <result property="recCode" column="REC_CODE"/>
+    </resultMap>
+
+    <resultMap id="itemInfoResultMap" type="com.chicken.project.item.model.dto.ItemInfoDTO">
+        <id property="itemNo" column="ITEM_NO"/>
+        <result property="itemName" column="ITEM_NAME"/>
+        <result property="itemStandard" column="ITEM_STANDARD"/>
+        <result property="itemPurchase" column="ITEM_PURCHASE"/>
+        <result property="itemSales" column="ITEM_SALES"/>
+        <result property="itemSoldoutYn" column="ITEM_SOLDOUT_YN"/>
+        <result property="itemMake" column="ITEM_MAKE"/>
+        <result property="categoryNo" column="CATEGORY_NO"/>
+        <result property="itemAmount" column="ITEM_AMOUNT"/>
+        <result property="soldout" column="soldout"/>
+        <result property="categoryName" column="CATEGORY_NAME"/>
+        <result property="itemDeleteYn" column="ITEM_DELETE_YN"/>
+        <association property="itemFile" resultMap="itemFileResultMap"/>
+    </resultMap>
+
+    <resultMap id="itemCategoryResultMap" type="com.chicken.project.item.model.dto.ItemCategoryDTO">
+        <id property="categoryNo" column="CATEGORY_NO"/>
+        <result property="categoryName" column="CATEGORY_NAME"/>
+        <result property="preCategory" column="PRE_CATEGORY"/>
+    </resultMap>
+
+    <resultMap id="itemFileResultMap" type="com.chicken.project.item.model.dto.ItemFileDTO">
+        <id property="fileNo" column="FILE_NO"/>
+        <result property="originName" column="ORIGIN_NAME"/>
+        <result property="fileName" column="FILE_NAME"/>
+        <result property="categoryNo" column="CATEGORY_NO"/>
+        <result property="itemNo" column="ITEM_NO"/>
+    </resultMap>
+
+    <resultMap id="recStoItemInfoResultMap" type="com.chicken.project.storeReceive.model.dto.RecStoItemInfoDTO">
+        <id property="itemNo" column="ITEM_NO"/>
+        <result property="categoryNo" column="CATEGORY_NO"/>
+        <result property="storeAmount" column="STORE_AMOUNT"/>
+        <result property="storeName" column="STORE_NAME"/>
+        <result property="storeAccount" column="STORE_ACCOUNT"/>
+    </resultMap>
+
+    <select id="selectTotalCount" resultType="_int" parameterType="hashmap">
+        SELECT
+               COUNT(DISTINCT(R.REL_CODE))
+          FROM RELEASE R
+          JOIN RELEASE_ITEM RI ON (RI.REL_CODE = R.REL_CODE)
+          LEFT JOIN RECEIVE_STORE RS ON (RI.ORDER_NO = RS.ORDER_NO)
+          JOIN STORE_ORDER SO ON (RI.ORDER_NO = SO.ORDER_NO)
+          JOIN ITEM_INFO I ON (I.ITEM_NO = RI.ITEM_NO)
+        <where>
+            R.STORE_NAME = #{ storeName }
+            <if test="searchCondition == 'itemName'">
+                AND I.ITEM_NAME LIKE '%' || #{ searchValue } || '%'
+            </if>
+            <if test="startDate != null and !startDate.equals('')">
+                AND (TO_CHAR(SO.ORDER_DATE, 'YYYY-MM-DD') BETWEEN #{ startDate } AND #{ endDate }
+                OR TO_CHAR(RS.REC_DATE, 'YYYY-MM-DD') BETWEEN #{ startDate } AND #{ endDate })
+            </if>
+        </where>
+    </select>
+
+    <select id="selectAllRelease" resultMap="recReleaseResultMap">
+SELECT
+    A.RNUM
+, A.REL_CODE
+, A.orderCode
+, A.REL_NAME
+, A.REL_DATE
+, A.REL_YN
+, A.STORE_NAME
+, A.TOTAL_MONEY
+, A.REL_LIST_DATE
+, A.ORDER_NO
+, A.REC_CODE
+, A.REC_AMOUNT
+, A.REC_TOTALMONEY
+, A.ORDER_DATE
+, A.REC_DATE
+FROM  (SELECT
+         ROWNUM RNUM
+     , B.REL_CODE
+     , B.orderCode
+     , B.REL_NAME
+     , B.REL_DATE
+     , B.REL_YN
+     , B.STORE_NAME
+     , B.TOTAL_MONEY
+     , B.REL_LIST_DATE
+     , B.ORDER_NO
+     , B.REC_CODE
+     , B.REC_AMOUNT
+     , B.REC_TOTALMONEY
+     , B.ORDER_DATE
+     , B.REC_DATE
+FROM (SELECT
+               DISTINCT (R.REL_CODE)
+             , (TO_CHAR('O' || LPAD(RI.ORDER_NO, 4, '0'))) orderCode
+             , R.REL_NAME
+             , R.REL_DATE
+             , R.REL_YN
+             , R.STORE_NAME
+             , R.TOTAL_MONEY
+             , R.REL_LIST_DATE
+             , RI.ORDER_NO
+             , RS.REC_CODE
+             , RS.REC_AMOUNT
+             , RS.REC_TOTALMONEY
+             , SO.ORDER_DATE
+             , RS.REC_DATE
+          FROM RELEASE R
+          JOIN RELEASE_ITEM RI ON (RI.REL_CODE = R.REL_CODE)
+          LEFT JOIN RECEIVE_STORE RS ON (RI.ORDER_NO = RS.ORDER_NO)
+          JOIN STORE_ORDER SO ON (RI.ORDER_NO = SO.ORDER_NO)
+        <where>
+            R.STORE_NAME = #{ storeName }
+            <if test="searchCondition == 'itemName'">
+               AND R.REL_CODE IN (SELECT DISTINCT(RI.REL_CODE) FROM RELEASE_ITEM RI JOIN ITEM_INFO I ON(I.ITEM_NO = RI.ITEM_NO) WHERE I.ITEM_NAME LIKE '%' || #{ searchValue } || '%')
+            </if>
+            <if test="startDate != null and !startDate.equals('')">
+                AND (TO_CHAR(SO.ORDER_DATE, 'YYYY-MM-DD') BETWEEN #{ startDate } AND #{ endDate }
+                OR TO_CHAR(RS.REC_DATE, 'YYYY-MM-DD') BETWEEN #{ startDate } AND #{ endDate })
+            </if>
+        </where>
+         ORDER BY RS.REC_CODE DESC,
+                  RI.ORDER_NO) B
+<![CDATA[
+     WHERE ROWNUM <= #{ endRow }
+                ]]>
+        ) A
+     WHERE A.RNUM >= #{ startRow }
+     ORDER BY 1 ASC
+    </select>
+
+    <select id="selectAllItem" resultMap="recReleaseItemResultMap">
+        SELECT
+            (TO_CHAR('O' || LPAD(SO.ORDER_NO, 4, '0'))) orderCode
+             , SO.ORDER_NO
+             , RS.REC_CODE
+             , I.ITEM_NO
+             , IF.FILE_NAME
+             , I.ITEM_NAME
+             , IC.CATEGORY_NAME
+             , I.ITEM_STANDARD
+             , I.ITEM_MAKE
+             , RLI.ORDER_AMOUNT
+             , RLI.REL_AMOUNT
+             , RSI.REC_AMOUNT
+             , I.ITEM_SALES
+             , RSI.REC_MONEY
+             , SO.ORDER_DATE
+             , RS.REC_DATE
+             , RLI.REL_CODE
+             , IC.CATEGORY_NO
+        FROM RELEASE_ITEM RLI
+                 JOIN ITEM_INFO I ON (RLI.ITEM_NO = I.ITEM_NO)
+                 JOIN ITEM_CATEGORY IC ON (I.CATEGORY_NO = IC.CATEGORY_NO)
+                 JOIN ITEM_FILE IF ON (I.ITEM_NO = IF.ITEM_NO)
+                 JOIN STORE_ORDER SO ON (RLI.ORDER_NO = SO.ORDER_NO)
+                 LEFT JOIN RELEASE_ITEM_HISTORY RIH ON (RLI.REL_CODE_DETAIL = RIH.REL_CODE_DETAIL)
+                 LEFT JOIN RECEIVE_STORE RS ON (RLI.ORDER_NO = RS.ORDER_NO)
+                 LEFT JOIN RECEIVE_STORE_ITEM RSI ON RLI.ITEM_NO = RSI.ITEM_NO AND RSI.REC_CODE = RS.REC_CODE
+        GROUP BY SO.ORDER_NO
+               , RS.REC_CODE
+               , RLI.REL_CODE
+               , I.ITEM_NO
+               , IF.FILE_NAME
+               , I.ITEM_NAME
+               , IC.CATEGORY_NAME
+               , I.ITEM_STANDARD
+               , I.ITEM_MAKE
+               , RLI.ORDER_AMOUNT
+               , RLI.REL_AMOUNT
+               , RSI.REC_AMOUNT
+               , I.ITEM_SALES
+               , RSI.REC_MONEY
+               , SO.ORDER_DATE
+               , RS.REC_DATE
+               , IC.CATEGORY_NO
+        HAVING RLI.REL_CODE = #{ relCode }
+        ORDER BY I.ITEM_NO
+    </select>
+
+    <insert id="insertReceiveStore" parameterType="hashMap">
+        INSERT
+          INTO RECEIVE_STORE
+        (
+            ORDER_NO
+          , REC_CODE
+          , REC_AMOUNT
+          , STORE_NAME
+          , REC_TOTALMONEY
+        )
+        VALUES
+        (
+           #{ orderNo }
+        , (TO_CHAR('SI' || LPAD(SEQ_STO_REC_CODE.NEXTVAL, 4, '0')))
+        , #{ recTotalAmount }
+        , #{ storeName }
+        , #{ recTotalMoney }
+        )
+    </insert>
+
+    <insert id="insertTaxBill">
+        INSERT
+          INTO TAXBILL
+        (
+            REC_CODE
+        )
+        VALUES
+        (
+            (TO_CHAR('SI' || LPAD(SEQ_STO_REC_CODE.CURRVAL, 4, '0')))
+        )
+    </insert>
+
+    <insert id="insertTsBill">
+        INSERT
+          INTO TSBILL
+        (
+            REC_CODE
+        )
+        VALUES
+        (
+            (TO_CHAR('SI' || LPAD(SEQ_STO_REC_CODE.CURRVAL, 4, '0')))
+        )
+    </insert>
+
+    <insert id="insertReceiveStoreItem" parameterType="hashMap">
+        INSERT
+          INTO RECEIVE_STORE_ITEM
+        (
+            ITEM_NO
+          , REC_CODE
+          , REC_AMOUNT
+          , REC_MONEY
+          , REC_SUPPLY
+          , REC_TAX
+        )
+        VALUES
+        (
+            #{ recItemNo }
+          , (TO_CHAR('SI' || LPAD(SEQ_STO_REC_CODE.CURRVAL, 4, '0')))
+          , #{ recAmount }
+          , #{ recMoney }
+          , #{ recSupply }
+          , #{ recTax }
+        )
+    </insert>
+
+    <select id="selectOneItem" resultType="_int">
+        SELECT
+               COUNT(*)
+          FROM STO_ITEM_INFO
+         WHERE ITEM_NO = #{ recItemNo }
+           AND STORE_NAME = #{ storeName }
+    </select>
+
+    <update id="updateOneItem">
+        UPDATE STO_ITEM_INFO
+           SET STORE_AMOUNT = (SELECT
+                                      STORE_AMOUNT
+                                 FROM STO_ITEM_INFO
+                                WHERE ITEM_NO = #{ recItemNo }
+                                  AND STORE_NAME = #{ storeName })
+            + #{ recAmount }
+        WHERE ITEM_NO = #{ recItemNo }
+          and store_name = #{ storeName }
+    </update>
+
+    <insert id="insertOneItem" parameterType="hashMap">
+        INSERT
+          INTO STO_ITEM_INFO
+        (
+            STORE_AMOUNT
+          , CATEGORY_NO
+          , ITEM_NO
+          , STORE_NAME
+          , STORE_ACCOUNT
+        )
+        VALUES
+        (
+            #{ recAmount }
+          , #{ categoryNo }
+          , #{ recItemNo }
+          , #{ storeName }
+          , #{ storeAccount }
+        )
+    </insert>
+
+</mapper>

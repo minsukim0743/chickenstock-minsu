@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>chicken stock</title>
+  <link rel="shortcut icon" th:href="@{ /images/logo.png }" type="image/x-icon">
+  <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+  <script th:src="@{/js/common.js}"></script>
+</head>
+<body>
+<div id="layerPopRegist" style="display:none; width: 70%; height: 770px; position: absolute; z-index: 1;">
+  <div class="bg-white rounded-lg d-block d-sm-flex" style="height: max-content;">
+    <!-- <div class="profile-tab-nav border-right">
+      <div class="p-4">
+        <div class="img-rounded text-center mb-3">
+          <img src="../assets/images/logo.png" alt="Image" class="shadow">
+        </div>
+        <h4 class="text-center">Chicken Stock</h4>
+      </div>
+      <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+        <a class="nav-link active" id="account-tab" data-toggle="pill" href="#account" role="tab" aria-controls="account" aria-selected="true">
+          <i class="fa fa-cart-plus text-center mr-1"></i>
+          상품 등록
+        </a>
+      </div>
+    </div> -->
+    <div class="tab-content p-4 px-md-5" id="v-pills-tabContent">
+      <div class="tab-pane fade show active" id="account" role="tabpanel" aria-labelledby="account-tab">
+        <h3 class="mb-4">상품 등록</h3>
+        <form method="post" action="/item/admin/regist" enctype="multipart/form-data">
+          <div class="row">
+            <div class="col-12 mb-3">
+              <!-- <label class="mb-2">상품 이미지</label> -->
+              <div class="border d-flex flex-wrap justify-content-center align-content-center" style="width:100px; height: 100px; border-radius: 5px;">
+                <label class="input-file-button-regist" for="input-file-regist" style="margin-bottom: 0;">
+                  <i class="fa fa-file-image-o fa-3x" aria-hidden="true" style="cursor: pointer; color: #ffe8a4;"></i>
+                  <img id="View" class="rounded d-none" src="#" width="100px" height="100px" style="margin-top: 1px;">
+                </label>
+                <input class="form-control" type="file" id="input-file-regist" name="file" style="display:none;">
+              </div>
+            </div>
+            <div class="col-md-12">
+              <div class="form-group">
+                <label class="mb-2">상품명</label>
+                <input type="text" name="itemName" class="form-control" value="" required>
+              </div>
+            </div>
+<!--            <div class="col-md-6">-->
+<!--              <div class="form-group">-->
+<!--                <label class="mb-2">상품 번호</label>-->
+<!--                <input type="text" name="itemNo" class="form-control" value="">-->
+<!--              </div>-->
+<!--            </div>-->
+            <div class="col-md-6">
+              <label for="preCate" class="form-label">1차 카테고리</label>
+              <select class="form-select" id="preCate">
+                <div th:each="preCategory : ${ itemPreCategoryList }">
+                  <option th:text="${ preCategory.categoryName }" th:value="${ preCategory.categoryNo }">식재료</option>
+                </div>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group">
+                <label for="cate" class="form-label">2차 카테고리</label>
+                <select class="form-select" name="categoryNo" id="cate">
+                  <div th:each="category : ${ itemCategoryList }">
+                    <option th:text="${ category.categoryName }" th:value="${ category.categoryNo }">식재료</option>
+                  </div>
+                </select>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group">
+                <label class="mb-2">판매규격</label>
+                <input type="text" name="itemStandard" class="form-control" value="" required>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group">
+                <label class="mb-2">제조사</label>
+                <input type="text" name="itemMake" class="form-control" value="" required>
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <div class="form-group">
+                <label class="mb-2">재고량</label>
+                <input type="text" name="itemAmount" class="form-control" value="" required>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group">
+                <label class="mb-2">상품 상태</label>
+                <select class="form-select" name="itemSoldoutYn" id="soldoutYn">
+                  <option value="N">보유</option>
+                  <option value="Y">품절</option>
+                </select>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group">
+                <label class="mb-2">매입 단가</label>
+                <input type="text" name="itemPurchase" class="form-control" value="" required>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group">
+                <label class="mb-2">매출 단가</label>
+                <input type="text" name="itemSales" class="form-control" value="" required>
+              </div>
+            </div>
+          </div>
+          <div class="mt-3 mb-2 d-flex justify-content-center">
+            <button class="btn btn-warning me-1" type="submit" style="color: #fff;">등록</button>
+            <!-- <button class="btn btn-light ms-1">취소</button> -->
+          </div>
+        </form>
+
+        <div class="close-btn">
+          <a href="#" onclick="closeLayer('layerPopRegist')" class="close">
+            <!-- <img onclick="closeLayer('layerPopRegist')" class="close" src="../assets/images/x.png" alt="" width="18" height="18"> -->
+            <i class="fa fa-times close" onclick="closeLayer('layerPopRegist')" style="color: #000;"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

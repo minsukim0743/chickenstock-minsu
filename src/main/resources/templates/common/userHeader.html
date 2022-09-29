@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"/>
+
+    <title>chicken stock</title>
+
+</head>
+<body>
+    <!-- S: header -->
+    <div class="header">
+        <div class="logo">
+            <a th:href="@{/member/moveMain}" title=""><img src="/images/logo.png" alt="logo"/></a>
+        </div>
+        <div class="logout_area">
+            <button class="btn btn-outline-light" onclick="location.href='/member/logout'">로그아웃</button>
+        </div>
+        <div class="user_area">
+            <span th:text="${ #authentication.getPrincipal().getStoreName()}"></span>님, 환영합니다.
+        </div>
+    </div>
+    <!-- S: header -->
+</body>
+</html>

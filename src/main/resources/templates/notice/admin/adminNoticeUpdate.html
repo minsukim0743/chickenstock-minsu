@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="utf-8"/>
+  <title>chicken stock</title>
+  <link rel="shortcut icon" th:href="@{ /images/logo.png }" type="image/x-icon">
+
+  <link rel="stylesheet" type="text/css" th:href="@{/css/common/common.css}"/>
+  <link rel="stylesheet" type="text/css" th:href="@{/css/common/style.css}"/>
+  <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+  <link rel="stylesheet" type="text/css" th:href="@{/css/notice/notice.css}"/>
+  <link rel="stylesheet" type="text/css" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+
+  <script type="text/javascript" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script th:src="@{/js/common.js}"></script>
+</head>
+<body>
+  <div class="wrap">
+
+    <!-- S: header -->
+    <div th:include="common/adminHeader.html"></div>
+    <!-- E: header -->
+
+    <!-- S: container -->
+    <div class="container px-0">
+
+      <!-- S: aside -->
+      <div th:replace="common/adminSidebar.html"></div>
+      <!-- E: aside -->
+
+      <!-- S: main layout -->
+      <div class="main_layout">
+        <div class="main_layout_inner">
+
+          <!-- 작업 영역 -->
+          <!-- S: table -->
+          <div class="container-fluid" style="margin-top:30px">
+            <h3>공지사항 수정</h3>
+			      <br>
+
+            <form th:action="@{/notice/admin/update}" method="post" enctype="multipart/form-data">
+              <table class="table">
+                <colgroup>
+                  <col style="width:170px">
+                  <col>
+                </colgroup>
+                <tbody>
+                <input type="hidden" name="noticeNo" th:value="${ noticeDetail.noticeNo }">
+                <input type="hidden" name="originName" th:value="${ noticeDetail.noticeFile}">
+                  <tr>
+                    <th>제목</th>
+                    <td>
+                      <input type="text" name="noticeName" th:value="${ noticeDetail.noticeName }"/>
+                    </td>
+                  </tr>
+                  <tr>
+                    <th>내용</th>
+                    <td>
+                      <textarea name="noticeContent" th:text="${ noticeDetail.noticeContent }"></textarea>
+                    </td>
+                  </tr>
+                  <tr>
+                    <th>첨부파일</th>
+                    <td class="align-left">
+                      <input type="file" name="file"/>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+                <div class="input-group mb-3 col-7">
+                  <button class="btn btn-warning ml-1" type="submit" style="color:#fff">수정</button>
+                  <button class="btn btn-warning ml-1" type="button" style="color:#fff">이전</button>
+                </div>
+            </form>
+          </div>
+        </div>
+        <!-- E: table -->
+        <!-- E: main layout -->
+      </div>
+    </div>
+    <!-- E: container -->
+  </div>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+</body>
+</html>

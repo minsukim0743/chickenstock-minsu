@@ -1,0 +1,272 @@
+/* reset */
+@import url(http://fonts.googleapis.com/earlyaccess/notosanskr.css);
+* {
+    margin: 0;
+    padding: 0;
+}
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed, 
+figure, figcaption, footer, header, hgroup, 
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+margin: 0;
+padding: 0;
+border: 0;
+font-size: 100%;
+font: inherit;
+vertical-align: baseline;
+box-sizing: border-box;
+font-family: 'Noto Sans KR', sans-serif;
+font-weight: 300;
+}
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure, 
+footer, header, hgroup, menu, nav, section {
+display: block;
+}
+body {
+line-height: 1;
+}
+ol, ul {
+list-style: none;
+}
+blockquote, q {
+quotes: none;
+}
+blockquote:before, blockquote:after,
+q:before, q:after {
+content: '';
+content: none;
+}
+table {
+border-collapse: collapse;
+border-spacing: 0;
+}
+a, a:focus, a:link { color: #000; text-decoration: none; }
+div::-webkit-scrollbar {
+    width: 8px; /*스크롤바의 너비*/
+}
+
+div::-webkit-scrollbar-thumb {
+    background-color: #eee; /*스크롤바의 색상*/
+    background-clip: padding-box;
+    border: 2px solid transparent;
+    border-radius: 5px;
+}
+
+div::-webkit-scrollbar-track {
+    background-color: #fff; /*스크롤바 트랙 색상*/
+}
+
+
+
+/* S: header */
+.header {
+    width: 100%;
+    height: 80px;
+    box-shadow: 5px 5px 10px rgba(200,200,200,0.1);
+    box-sizing: border-box;
+    position: relative;
+}
+.header .logo {
+    width: auto;
+    height: 100%;
+    position: absolute;
+    left: 10px;
+    top: 0px;
+}
+.header .logo a {
+    display: block;
+    height: 100%;
+}
+.header .logo img {
+    height: 100%;
+}
+.header .logout_area {
+    float: right;
+    position: relative;
+    margin-right: 30px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+.header .logout_area > button {
+    padding: 4px 10px;
+    border: 1px solid #ccc;
+    background-color: #fafafa;
+    color: #777;
+    font-size: 12px;
+    cursor: pointer;
+}
+.header .logout_area > button:hover {
+    color: #fff;
+    background-color: #ccc;
+}
+.header .user_area {
+    margin-right: 20px;
+    float: right;
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 14px;
+    color: #666;
+}
+.header .user_area span {
+    font-weight: bold;
+}
+/* E: header */
+
+/* S: container */
+.container {
+    width: 100%;
+    height: calc(100vh - 80px); /* header의 높이값이 바뀔경우 맨 마지막 값을 header의 높이값과 동일하게 수정해야함 */
+    display: flex;
+    background: #f5f5f9;
+    max-width: 100%;
+}
+/* E: container */
+
+/* S: aside */
+.aside {
+    width: 250px;
+    height: 100%;
+    box-shadow: 5px 5px 10px rgba(200,200,200,0.1);
+    overflow-y: auto;
+    background: #fff;
+}
+.aside .accordion {
+    width: 100%;
+    padding: 10px;
+}
+.aside .accordion > div.accordion_dep a {
+    display: block;
+    border-radius: 8px;
+    color: #666;
+    padding: 10px 30px 12px 15px;
+    box-sizing: border-box;
+    margin-bottom: 2px;
+    position: relative;
+}
+.aside .accordion > div.accordion_dep.type2 a:after {
+    display: inline-block;
+    content: '';
+    width: 16px;
+    height: 16px;
+    background: url(../../images/ico-arrow-right.svg)no-repeat;
+    background-size: 100% auto;
+    color: #666;
+    font-weight: bold;
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+.aside .accordion > div.accordion_dep a:hover,
+.aside .accordion > div.accordion_dep a.hover {
+    background-color: #fafafa;
+}
+.aside .accordion > div.accordion_dep ul {
+    display: none;
+}
+.aside .accordion > div.accordion_dep ul li > a {
+    padding-left: 40px;
+}
+.aside .accordion > div.accordion_dep.type2 ul li > a:after {
+    display: none;
+}
+.aside .accordion > div.accordion_dep ul li > a::before {
+    display: inline-block;
+    content: '·';
+    font-size:40px;
+    color: #666;
+    font-weight: bold;
+    position: absolute;
+    left: 15px;
+    top: 18px;
+    line-height: 0px;
+    vertical-align: middle;
+}
+.aside .accordion > div.accordion_dep.active > a {
+    background-color: #faebcd;
+}
+.aside .accordion > div.accordion_dep.active ul li > a.active {
+    color: #f7c873;
+    font-weight: bold;
+}.aside .accordion > div.accordion_dep.active ul li > a.active::before {
+    color: #f7c873;
+}
+
+/*.aside .accordion_dep {*/
+/*    height: 50px;*/
+/*}*/
+
+/* E: aside */
+
+/* S: main layout */
+.main_layout {
+    width: calc(100vw - 250px);
+    height: 100%;
+    position: relative;
+    overflow: scroll;
+}
+/* E: main layout */
+
+/* S: table */
+.table {
+	border-spacing: 0 15px;
+	border-collapse: separate;
+	text-align: center;
+}
+.table thead tr th,
+.table thead tr td,
+.table tbody tr th,
+.table tbody tr td {
+	vertical-align: middle;
+	border: none;
+}
+.table thead tr th:nth-last-child(1),
+.table thead tr td:nth-last-child(1),
+.table tbody tr th:nth-last-child(1),
+.table tbody tr td:nth-last-child(1) {
+	text-align: center;
+}
+.table tbody tr {
+	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+	border-radius: 10px;
+}
+.table tbody tr td {
+	background: #fff;
+}
+.table tbody tr td:nth-child(1) {
+	border-radius: 10px 0 0 10px;
+}
+.table tbody tr td:nth-last-child(1) {
+	border-radius: 0 10px 10px 0;
+}
+/* E: table */
+
+.img-info {
+	align-items: center;
+}
+.img-info__img img {
+	height: 55px;
+	width: 55px;
+	border-radius: 15px;
+	border: 3px solid #fff;
+	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.active-circle {
+	height: 10px;
+	width: 10px;
+	border-radius: 10px;
+	margin-right: 5px;
+	display: inline-block;
+}

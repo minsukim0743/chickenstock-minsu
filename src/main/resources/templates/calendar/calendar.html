@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"/>
+
+    <title>chicken stock</title>
+
+    <link rel="shortcut icon" th:href="@{ /images/logo.png }" type="image/x-icon">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/common/common.css}"/>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script th:src="@{/js/common.js}"></script>
+
+    <!-- table css -->
+
+    <link rel="stylesheet" th:href="@{https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css}">
+
+    <!-- <script src="../lib/gcal.js"></script> -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+
+    <link href='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.2/main.min.css' rel='stylesheet' />
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.2/main.min.js'></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+
+
+    <link href='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css' rel='stylesheet' />
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js'></script>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/common/style.css}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/common/common.css}"/>
+
+    <script>
+
+    $(function(){
+
+        let list;
+
+        /* 일정 조회 */
+        $.ajax({
+            url:"/calendar/calList",
+            type: "GET",
+            success: function (data){
+
+                console.log(data);
+                let even = {};
+                let allEvent = [];
+                for(let index in data){
+
+                    even = {
+                        title : data[index].calName,
+                        start : data[index].startDay,
+                        end : data[index].endDay,
+                        con : data[index].content,
+                        groupId : data[index].calNo
+                    };
+
+                    allEvent.push(even);
+                }
+                let eventList = allEvent;
+
+                let calendarEl = $('#calendar')[0];
+                let calendar = new FullCalendar.Calendar(calendarEl, {
+
+                    /* 공휴일 */
+                    googleCalendarApiKey: 'AIzaSyCDi0sVIXFLB5pKLfgmEgPvvieZ3a375dQ',
+                    eventSources: [
+                        {
+                            googleCalendarId: 'ko.south_korea#holiday@group.v.calendar.google.com',
+                            color: '#EB503B',
+                            textColor: 'white',
+                        }
+                    ],
+
+
+                    locale: "ko",
+                    headerToolbar: {
+                        left: 'prev,next,today',
+                        center: 'title',
+                        right: 'addEventButton'
+
+                    },
+                    expandRows: false,
+                    editable: true,
+                    selectable: true,
+                    businessHours: true,
+                    dayMaxEvents: 3, // allow "more" link when too many events
+                    dayMaxEventRows: true,
+                    views:{
+                        timeGrid: {
+                            dayMaxEventRows : 3
+                        }
+                    },
+                    /* 일정 추가 모달 */
+                    customButtons: {
+                        addEventButton: {
+                            text: '일정 추가',
+                            click: function () {
+                                $("#calendarModal").modal("show");
+                                $(".close").on("click", function(){
+                                    $("#calendarModal").modal("hide");
+                                });
+
+                                $("#addCalendar").on("click", function () {
+                                    var calName = $("#calendar_title").val();
+                                    var content = $("#calendar_content").val();
+                                    var start_date = $("#calendar_start_date").val();
+                                    var end_date = $("#calendar_end_date").val();
+
+                                    if (new Date(end_date) - new Date(start_date) < 0) {
+                                        alert("종료일이 시작일보다 먼저입니다.");
+                                    }
+                                    $.ajax({
+                                        url: "/calendar/calInsert",
+                                        type: "POST",
+                                        data: {
+                                            calName: calName,
+                                            calCon: content,
+                                            calStart: start_date,
+                                            calEnd: end_date,
+                                        },
+                                        success:function (result){
+                                            console.log(result);
+                                            if(result > 0){
+                                                alert("일정 추가되었습니다.")
+                                            } else{
+                                                alert("일정 추가에 실패하셨습니다.")
+                                            }
+                                        },
+                                        error:function (){
+                                            alert('error : 일정 추가 실패')
+                                        }
+                                    })
+                                    $("#calendarModal").modal("hide");
+                                });
+                            }
+                        }
+                    },
+                    /* 일정 수정 삭제 모달 */
+                    eventClick: function(info){
+                        info.jsEvent.preventDefault();
+
+                        console.log(info.event)
+                        let calName = info.event._def.title;
+                        let content = info.event.extendedProps.con;
+                        let calStart = info.event._instance.range.start;
+                        let calEnd = info.event._instance.range.end;
+
+
+                        $("#confrimModal").modal("show");
+                        $(".close").on("click", function(){
+                            $("#confrimModal").modal("hide");
+
+                        });
+
+                        $("#updateBtn").on("click", function () {
+
+                            $('#updateName').attr('placeholder', calName);
+                            $('#updateCon').attr('placeholder', content);
+
+                            $("#updateCal").modal("show");
+
+                            $("#upBtn").on("click",function (){
+
+                                let updateName = $("#updateName").val();
+                                let updateCon = $("#updateCon").val();
+                                let updateStart = $("#updateStart").val();
+                                let updateEnd = $("#updateEnd").val();
+
+                                if(updateName == null){
+                                    updateName.attr('value', calName)
+                                }
+                                if(updateCon == null){
+                                    updateCon.attr('value', content)
+                                }
+                                if(updateStart == null){
+                                    updateStart.attr('value', calStart)
+                                }
+                                if(updateEnd == null){
+                                    updateEnd.attr('value', calEnd)
+                                }
+
+                                $.ajax({
+                                    url : '/calendar/calUpdate',
+                                    type : 'POST',
+                                    data:{
+                                        name : calName,
+                                        cont : content,
+                                        calName : updateName,
+                                        calCon : updateCon,
+                                        calStart : updateStart,
+                                        calEnd : updateEnd
+                                    },
+                                    success:function(result){
+                                        if(result > 0){
+                                            alert('일정이 수정되었습니다.')
+                                        } else {
+                                            alert('일정 수정에 실패하였습니다.')
+                                        }
+                                    }
+                                })
+
+                                $(".close").on("click", function(){
+                                    $("#updateCal").modal("hide");
+                                });
+                            });
+                        });
+
+                        $("#deleteBtn").on("click", function () {
+                            if(confirm("일정을 삭제하시겠습니까?")){
+
+                                $.ajax({
+                                    url: "/calendar/calDelete",
+                                    type: "POST",
+                                    data: {
+                                        calName : calName,
+                                        content : content
+                                    },
+
+                                    success:function (result){
+                                        if(result > 0) {
+
+                                            alert('일정이 삭제되었습니다.');
+                                            info.events.remove();
+                                        } else {
+                                            alert('일정 삭제에 실패하였습니다.')
+                                        }
+
+                                    },
+                                    error:function (){
+                                        alert('error : 일정 삭제 실패');
+                                    }
+                                })
+
+
+                                $("#confrimModal").modal("hide");
+                            } else {
+                                alert("삭제 취소");
+                                $("#confrimModal").modal("hide");
+                            }
+                        });
+                    },
+
+                    events: eventList
+                });
+
+                calendar.render();
+            }
+        });
+
+    });
+
+    FullCalendar.globalLocales.push(function () {
+        'use strict';
+
+        var ko = {
+            code: 'ko',
+            buttonText: {
+                today: '오늘',
+                month: '월',
+                week: '주',
+                day: '일',
+                list: '일정목록',
+            },
+            weekText: '주',
+            allDayText: '종일',
+            moreLinkText: '개',
+            noEventsText: '일정이 없습니다',
+        };
+
+        return ko;
+
+    }());
+
+    const result = "${message}"
+    if(result == "success"){
+        alert("일정을 수정하였습니다.")
+    } else if(result == "fail"){
+        alert("일정 수정에 실패하였습니다.")
+    }
+
+    </script>
+</head>
+<body>
+<div class="wrap">
+
+    <!-- S: header -->
+    <div th:include="/common/adminHeader.html"></div>
+    <!-- S: header -->
+
+    <!-- S: container -->
+    <div class="container px-0">
+
+        <!-- S: aside -->
+        <div th:include="/common/adminSidebar.html"></div>
+        <!-- E: aside -->
+
+        <!-- S: main layout -->
+        <div class="main_layout">
+            <div class="main_layout_inner">
+
+                <!-- 작업 영역 -->
+                <!-- S: table -->
+                <div id='calendar' style="background-color: white; padding: 20px; width: 1160px; margin: 20px auto"></div>
+                <!-- E: table -->
+            </div>
+        </div>
+        <!-- E: main layout -->
+
+    </div>
+    <!-- E: container -->
+</div>
+<!-- 일정 추가 -->
+<div class="modal fade" id="calendarModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">일정을 입력하세요.</h5>
+            </div>
+            <form action="/calendar/calInsert" method="post">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="col-form-label">일정명</label>
+                        <input type="text" class="form-control" id="calendar_title" name="calendar_title" required>
+                        <label class="col-form-label">일정 내용</label>
+                        <input type="text" class="form-control" id="calendar_content" name="calendar_content" required>
+                        <label class="col-form-label">시작 날짜</label>
+                        <input type="date" class="form-control" id="calendar_start_date" name="calendar_start_date" required>
+                        <label class="col-form-label">종료 날짜</label>
+                        <input type="date" class="form-control" id="calendar_end_date" name="calendar_end_date" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-warning" id="addCalendar" >추가</button>
+                    <button type="button" class="btn btn-secondary close">취소</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+<!-- 수정 삭제 여부 묻기 -->
+<div class="modal fade" id="confrimModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-body">
+                <h1 class="modal-title">일정을 수정 또는 삭제하시겠습니까?</h1>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-warning" id="updateBtn">수정</button>
+                <button type="button" class="btn btn-warning" id="deleteBtn">삭제</button>
+                <button type="button" class="btn btn-secondary close" data-dismiss="modal">취소</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 일정 수정 -->
+<div class="modal fade" id="updateCal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">일정을 입력하세요.</h5>
+            </div>
+            <form action="/calendar/calendar" method="POST">
+                <div class="modal-body">
+                    <div class="form-group"><label class="col-form-label">일정명</label>
+                        <input type="text" class="form-control" id="updateName" name="updateName">
+                        <label class="col-form-label">일정 내용</label>
+                        <input type="text" class="form-control" id="updateCon" name="updateCon">
+                        <label class="col-form-label">시작 날짜</label>
+                        <input type="date" class="form-control" id="updateStart" name="updateStart">
+                        <label class="col-form-label">종료 날짜</label>
+                        <input type="date" class="form-control" id="updateEnd" name="updateEnd">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-warning" id="upBtn">수정</button>
+                    <button type="button" class="btn btn-secondary close">취소</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+</body>
+</html>

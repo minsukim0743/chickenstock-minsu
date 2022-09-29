@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"/>
+
+  <title>chicken stock</title>
+  <link rel="shortcut icon" th:href="@{ /images/logo.png }" type="image/x-icon">
+
+  <link rel="stylesheet" type="text/css" th:href="@{/css/common/common.css}"/>
+  <link rel="stylesheet" th:href="@{/css/mypage/mypage.css}"/>
+
+  <!-- table css -->
+  <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"/>
+  <link rel="stylesheet" type="text/css" th:href="@{/css/common/style.css}"/>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"/>
+
+  <script src="https://code.jquery.com/jquery-3.6.0.js"/>
+  <script th:src="@{js/common.js}"/>
+  <script>
+    function ck_infor(){
+
+      let pw1 = document.getElementById("newPwd");
+
+      let pw2 = document.getElementById("newPwd2");
+
+      // 비밀번호 일치 검사
+
+      if(pw1.value != pw2.value){
+
+        alert("비밀번호가 일치하지 않습니다.");
+
+        return false;
+      }
+    }
+
+    var isMessage = true;
+
+    if(isMessage) {
+      alert("${ message }");
+      isMessage = false
+    }
+  </script>
+
+</head>
+<body>
+  <div class="wrap">
+
+    <!-- S: header -->
+    <div th:include="common/adminHeader.html"></div>
+    <!-- S: header -->
+
+    <!-- S: container -->
+    <div class="container px-0">
+
+      <!-- S: aside -->
+      <div th:include="common/adminSidebar.html"></div>
+      <!-- E: aside -->
+
+      <!-- S: main layout -->
+      <div class="main_layout">
+        <div class="main_layout_inner">
+
+          <!-- 작업 영역 -->
+          <!-- S: table -->
+          <div class="container-fluid col-11" >
+            <h3>비밀번호 수정</h3>
+            <hr>
+            <div id="con">
+              <form action="/mypage/member_mypage" method="post" onsubmit="ck_infor();">
+
+                <label for="empId">아이디</label>
+                <input type="text" name="empId" id="empId" th:value="${ #authentication.getPrincipal().getEmpId() }" readonly="readonly"><br>
+
+                <label for="nowPwd">현재 비밀번호</label>
+                <input type="password" name="nowPwd" id="nowPwd" placeholder="현재 비밀번호 입력" ><br>
+
+                <label for="empPwd">새 비밀번호</label>
+                <input type="password" name="empPwd" id="empPwd" placeholder="새 비밀번호 입력" ><br>
+              
+                <label for="newPwd2">새 비밀번호 재입력</label>
+                <input type="password" name="newPwd2" id="newPwd2" placeholder="새 비밀번호 재입력"><br>
+
+                <button id="btn" type="submit" class="btn btn-warning">수정</button>
+              </form>
+            </div>
+          </div>
+          <!-- E: table -->
+
+        </div>
+      </div> 
+      <!-- E: main layout -->
+      
+    </div>
+    <!-- E: container -->
+  </div>
+
+
+  <script th:inline="javascript">
+
+    alert(${message});
+    // let message = '[[${message}]]';
+    //
+    // if(message != null) {
+    //   alert(message);
+    // }
+  </script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+</body>
+</html>

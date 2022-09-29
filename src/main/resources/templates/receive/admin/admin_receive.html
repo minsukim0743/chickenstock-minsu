@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"/>
+
+    <title>chicken stock</title>
+    <link rel="shortcut icon" th:href="@{ /images/logo.png }" type="image/x-icon">
+
+    <link rel="stylesheet" type="text/css" th:href="@{/css/common/common.css}"/>
+    <!-- table css -->
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/item/item_receive.css}"/>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <!-- datepicker js & css -->
+    <script type="text/javascript" th:src="@{http://code.jquery.com/jquery-3.6.0.min.js}"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css"/>
+
+    <script th:src="@{/js/common.js}"></script>
+</head>
+<body>
+<div class="wrap">
+
+    <!-- S: header -->
+    <div th:include="common/adminHeader.html"></div>
+    <!-- S: header -->
+
+    <!-- S: container -->
+    <div class="container px-0">
+
+        <!-- S: aside -->
+        <div th:include="common/adminSidebar.html"></div>
+        <!-- E: aside -->
+
+        <!-- S: main layout -->
+        <div class="main_layout">
+            <div class="main_layout_inner" style="margin-bottom: 40px;">
+
+                <!-- 작업 영역 -->
+                <!-- S: table -->
+                <div class="container-fluid" style="margin-top:30px">
+                    <h3>입고 관리</h3>
+                    <br>
+                    <form action="/receive/admin/list">
+                        <div>
+                            <div class="input-group mb-3 col-12 float-start">
+                                <select id="searchCondition" name="searchCondition" class="form-control col-2" style="max-width: max-content;">
+                                    <option value="itemName">상품명</option>
+                                </select>
+                                <div id="reportrange" class="form-control" style="cursor: pointer; max-width: max-content;">
+                                    <i class="fa fa-calendar"></i>
+                                    <span class="date" style="margin-left: 7px;">
+                                        <!-- 날짜 입력한 값 들어감 -->
+                                    </span>
+                                    <input type="hidden" id="startDate" name="startDate">
+                                    <input type="hidden" id="endDate" name="endDate">
+                                </div>
+
+                                <!-- <button class="btn btn-light px-3" type="button" disabled></button> -->
+                                <!-- <select id="searchCondition" class="form-control col-1" style="max-width: max-content;">
+                                  <option value="date">상품명</option>
+                                </select> -->
+                                <input class="form-control me-2 col-3" type="text" name="searchValue" id="searchValue" placeholder="검색어를 입력해주세요.">
+                                <button class="btn btn-warning" type="submit" style="color:#fff">검색</button>
+                            </div>
+                            <div class="col-12 d-flex justify-content-end">
+                                <button class="btn btn-warning mx-2" type="button"
+                                        onclick="location.href='/receive/admin/list/regist';" style="color:#fff;">입고 등록
+                                </button>
+                            </div>
+
+                            <table class="table">
+                                <thead>
+                                <tr>
+                                    <th>번호</th>
+                                    <th>입고 코드</th>
+                                    <th>상품명</th>
+                                    <th>입고 수량</th>
+                                    <th>입고 금액</th>
+                                    <th>입고일</th>
+                                    <th>담당자</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <div th:each="receive, stat : ${ receiveOfficeList }">
+                                    <tr class="detail-main" th:value="${ receive.recCode }">
+                                        <td th:text="${ receive.rNum }">1</td>
+                                        <td th:text="${ receive.recCode }"></td>
+                                        <td th:if="${ receive.countRecCode != 0}"
+                                            th:text="|${ receiveOffice[stat.index].get(0).itemName } 외 ${ receive.countRecCode }개 품목|"></td>
+                                        <td th:if="${ receive.countRecCode == 0}"
+                                            th:text="${ receiveOffice[stat.index].get(0).itemName }"></td>
+                                        <td th:text="${ receive.sumRecTotalAmount }"></td>
+                                        <td th:text="${ receive.sumRecTotalMoney }"></td>
+                                        <td th:text="${ receive.stringRecDate }"></td>
+                                        <td th:text="${ receive.employee.empName }"></td>
+                                    </tr>
+                                    <tr class="detail-sub-tr">
+                                        <td class="detail-sub-td p-0" colspan="9">
+                                            <div class="detail-sub" style="display: none">
+                                                <table width="100%" th:each="receive2 : ${ receiveOffice }"
+                                                       th:if="${ receive.recCode eq receive2[0].recCode}">
+                                                    <thead>
+                                                    <tr>
+                                                        <th>번호</th>
+                                                        <th>입고 코드</th>
+                                                        <th>상품코드</th>
+                                                        <th>썸네일</th>
+                                                        <th>상품명</th>
+                                                        <th>카테고리</th>
+                                                        <th>규격</th>
+                                                        <th>제조사</th>
+                                                        <th>입고 수량</th>
+                                                        <th>입고 단가</th>
+                                                        <th>입고 금액</th>
+                                                        <th>입고일</th>
+                                                    </tr>
+                                                    </thead>
+                                                    <tr th:each="receive3, stat : ${ receive2 }">
+                                                        <td th:text="${ stat.count }">1</td>
+                                                        <td th:text="${ receive3.recCode }"></td>
+                                                        <td th:text="${ receive3.itemNo }"></td>
+                                                        <td>
+                                                            <div class="img-info">
+                                                                <div class="img-info__img">
+                                                                    <img th:src="'/itemImage/' + ${ receive3.fileName }" alt="">
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                        <td th:text="${ receive3.itemName }">닭다리</td>
+                                                        <td th:text="${ receive3.categoryName }">식재료</td>
+                                                        <td th:text="${ receive3.itemStandard }">1kg</td>
+                                                        <td th:text="${ receive3.itemMake }">하림</td>
+                                                        <td th:text="${ receive3.stringRecAmount }">30</td>
+                                                        <td th:text="${ receive3.itemPurchase }">4,500</td>
+                                                        <td th:text="${ receive3.recMoney }">135,000</td>
+                                                        <td th:text="${ receive3.stringRecDate }">2022-08-07</td>
+                                                    </tr>
+                                                </table>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </div>
+                                </tbody>
+                            </table>
+                        </div>
+                    </form>
+
+                </div>
+                <!-- E: table -->
+                <!-- S: paging -->
+                <!--        <div class="d-flex justify-content-center mb-4">-->
+                <!--          <button type="button" class="btn btn-light disabled" id="startPage"><<</button>-->
+                <!--          <button type="button" class="btn btn-light mx-1 disabled"><</button>-->
+                <!--          <button type="button" class="btn btn-warning mx-1" disabled style="color:white">1</button>-->
+                <!--          <button type="button" class="btn btn-light mx-1">2</button>-->
+                <!--          <button type="button" class="btn btn-light mx-1">></button>-->
+                <!--          <button type="button" class="btn btn-light mx-1" id="maxPage">>></button>-->
+                <!--        </div>-->
+
+                <!-- 페이지 처리 -->
+                <div class="pagingArea" align="center">
+                    <!-- 맨 앞으로 이동 버튼 -->
+                    <button class="btn btn-light mx-1" style="cursor:pointer; background: #ccc; color: #fff;"
+                            th:onclick="'location.href=\'/receive/admin/list?currentPage='+ @{${selectCriteria.startPage}} + '\''"
+                            th:disabled="${selectCriteria.pageNo == 1}"
+                    >
+                        <<
+                    </button>
+                    <!-- 이전 페이지 버튼 -->
+                    <button class="btn btn-light" style="cursor:pointer; background: #ccc; color: #fff;"
+                            th:onclick="'location.href=\'/receive/admin/list?currentPage='+ @{${selectCriteria.pageNo - 1}} + '\''"
+                            th:disabled="${selectCriteria.pageNo == 1}"
+                    >
+                        <
+                    </button>
+                    <!-- 숫자 버튼 -->
+                    <th:block th:each="page : ${#numbers.sequence(selectCriteria.startPage, selectCriteria.endPage)}">
+                        <button class="btn btn-warning mx-1" style="cursor:pointer; color: #fff;"
+                                th:text="${ page }"
+                                th:onclick="'location.href=\'/receive/admin/list?currentPage='+ @{${page}} + '\''"
+                                th:disabled="${ selectCriteria.pageNo eq page }">
+                        </button>
+                    </th:block>
+
+                    <!-- 다음 페이지 버튼 -->
+                    <button class="btn btn-light mx-1" style="cursor:pointer; background: #ccc; color: #fff;"
+                            th:onclick="'location.href=\'/receive/admin/list?currentPage='+ @{${selectCriteria.pageNo + 1}} + '\''"
+                            th:disabled="${selectCriteria.pageNo == selectCriteria.maxPage}"
+                    >
+                        >
+                    </button>
+                    <!-- 마지막 페이지로 이동 버튼 -->
+                    <button class="btn btn-light mx-1" style="cursor:pointer; background: #ccc; color: #fff;"
+                            th:onclick="'location.href=\'/receive/admin/list?currentPage='+ @{${selectCriteria.maxPage}} + '\''"
+                            th:disabled="${selectCriteria.pageNo == selectCriteria.maxPage}"
+                    >
+                        >>
+                    </button>
+                </div>
+
+
+                <!-- E: paging -->
+
+            </div>
+        </div>
+        <!-- E: main layout -->
+
+    </div>
+    <!-- E: container -->
+</div>
+
+<!-- table js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+
+<!-- datepicker js -->
+<!--<script src="/js/daterange.js"></script>-->
+
+<!-- 슬라이드 -->
+<!--<script>-->
+<!--  $(".detail-main").click(function() {-->
+<!--    $(this).next(".detail-sub-tr").find(".detail-sub").slideToggle(400);-->
+<!--  });-->
+<!--</script>-->
+
+<!-- 상품 상세 페이지 팝업 띄우기 -->
+<script type="text/javascript">
+    function showItemDetail() {
+
+        //창 크기 지정
+        var width = 1200;
+        var height = 800;
+
+        //pc화면기준 가운데 정렬
+        var left = (window.screen.width / 2) - (width / 2);
+        var top = (window.screen.height / 4);
+
+        //윈도우 속성 지정
+        var windowStatus = 'width=' + width + ', height=' + height + ', left=' + left + ', top=' + top + ', scrollbars=yes, status=yes, resizable=yes, titlebar=yes';
+
+        //연결하고싶은url
+        const url = "../admin_item_detail.html";
+
+        //등록된 url 및 window 속성 기준으로 팝업창을 연다.
+        window.open(url, "hello popup", windowStatus);
+    }
+</script>
+
+<!-- 상품 신규 등록 팝업 띄우기 -->
+<script type="text/javascript">
+    function showInsertItem() {
+
+        //창 크기 지정
+        var width = 1200;
+        var height = 800;
+
+        //pc화면기준 가운데 정렬
+        var left = (window.screen.width / 2) - (width / 2);
+        var top = (window.screen.height / 4);
+
+        //윈도우 속성 지정
+        var windowStatus = 'width=' + width + ', height=' + height + ', left=' + left + ', top=' + top + ', scrollbars=yes, status=yes, resizable=yes, titlebar=yes';
+
+        //연결하고싶은url
+        const url = "../admin_item_new.html";
+
+        //등록된 url 및 window 속성 기준으로 팝업창을 연다.
+        window.open(url, "hello popup", windowStatus);
+    }
+</script>
+
+<!-- 팝업으로 이동 -->
+<script>
+    var jb = jQuery.noConflict();
+    var form = document.getElementsByClassName('form-check');
+
+    jb(document).ready(function () {
+        // 1. 상품 상세 조회
+        // $("tbody tr").click(function(){
+        //       location.href = 'javascript:showItemDetail()';
+        // });
+        // $("tbody tr input").click(function(event){
+        //   event.stopPropagation();
+        // });
+        // 2. 상품 등록
+        jb("#btnInsertItem").click(function () {
+            location.href = 'javascript:showInsertItem()';
+        });
+
+        jb(".detail-main").click(function () {
+            jb(this).next(".detail-sub-tr").find(".detail-sub").slideToggle(300);
+            jb(this).toggleClass('on').siblings().removeClass('on');
+            jb(this).next(".detail-sub-tr").find(".detail-sub").siblings(".detail-sub").slideUp(300);
+            //
+            // var str = "";
+            // var tdArr = new Array();
+            //
+            // var tr = $(this);
+            // var td = tr.children();
+            //
+            // alert(tr.text());
+
+        });
+
+        $(function () {
+
+            let start = moment();
+            let end = moment();
+
+            function cb(start, end) {
+                jb('#reportrange span').html(start.format('YYYY-MM-DD') + ' ~ ' + end.format('YYYY-MM-DD'));
+                jb('#reportrange #startDate').val(start.format('YYYY-MM-DD'));
+                jb('#reportrange #endDate').val(end.format('YYYY-MM-DD'));
+            }
+
+            $('#reportrange').daterangepicker({
+                showDropdowns: true,
+                minYear: 2020,
+                maxYear: 2030,
+                "autoApply": true,
+                autoUpdateInput: false,
+                "linkedCalendars": false,
+                "locale": {
+                    "format": "YYYY/MM/DD",
+                    "separator": " ~ ",
+                    "applyLabel": "확인",
+                    "cancelLabel": "취소",
+                    "fromLabel": "From",
+                    "toLabel": "To",
+                    "customRangeLabel": "Custom",
+                    "weekLabel": "W",
+                    "daysOfWeek": [
+                        "일",
+                        "월",
+                        "화",
+                        "수",
+                        "목",
+                        "금",
+                        "토"
+                    ],
+                    "monthNames": [
+                        "1월",
+                        "2월",
+                        "3월",
+                        "4월",
+                        "5월",
+                        "6월",
+                        "7월",
+                        "8월",
+                        "9월",
+                        "10월",
+                        "11월",
+                        "12월"
+                    ],
+                    "firstDay": 7
+                },
+                startDate: start,
+                endDate: end,
+            }, cb)
+
+            cb(start, end);
+        });
+    });
+
+</script>
+
+<!-- 날짜 -->
+<!--<script>-->
+<!--    $('#reportrange').on('apply.daterangepicker', function(ev, picker) {-->
+
+<!--        let startDate = picker.startDate.format('YYYY-MM-DD');-->
+<!--        let endDate = picker.endDate.format('YYYY-MM-DD');-->
+<!--        let result = startDate + "~" + endDate;-->
+<!--        console.log(result);-->
+<!--        document.getElementsByClassName('date').value = result;-->
+<!--    });-->
+<!--</script>-->
+
+<!-- 체크 박스 전체 선택 -->
+<script type="text/javascript">
+    function selectAll(selectAll) {
+        const checkboxes = document.getElementsByName('option');
+
+        checkboxes.forEach((checkbox) => {
+            checkbox.checked = selectAll.checked;
+        })
+    }
+</script>
+
+
+<!-- 선택 삭제 버튼 메시지 띄우기 -->
+<script>
+    function deleteItem() {
+        var answer = confirm('선택한 항목을 삭제하시겠습니까?');
+
+
+        if (answer) {
+            var answer2 = confirm('선택한 항목을 삭제합니다.');
+            if (answer2) {
+                alert('선택한 항목이 삭제되었습니다.'); // 나중에 삭제된 후 alert되도록 수정하기
+            }
+        }
+
+    }
+</script>
+
+</body>
+</html>

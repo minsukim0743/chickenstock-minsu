@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chicken.project.member.model.dao.StoreMemberMapper">
+    <resultMap id="storeResultMap" type="StoreMemberDTO">
+        <id property="storeName" column="STORE_NAME"/>
+        <result property="storeAccount" column="STORE_ACCOUNT"/>
+        <result property="storeRep" column="STORE_REP"/>
+        <result property="storeAddress" column="STORE_ADDRESS"/>
+        <result property="storePhone" column="STORE_PHONE"/>
+        <result property="storeEmail" column="STORE_EMAIL"/>
+        <result property="storeId" column="STORE_ID"/>
+        <result property="storePwd" column="STORE_PWD"/>
+        <result property="storeNo" column="STORE_NO"/>
+        <result property="storeYn" column="STORE_YN"/>
+
+        <collection property="storeRoleList" resultMap="storeRoleResultMap"/>
+    </resultMap>
+
+    <resultMap id="authResultMap" type="AuthDTO">
+        <id property="authCode" column="AUTH_CODE"/>
+        <result property="authName" column="AUTH_NAME"/>
+    </resultMap>
+
+    <resultMap id="storeRoleResultMap" type="StoreRoleDTO">
+        <result property="authCode" column="AUTH_CODE"/>
+        <result property="storeName" column="STORE_NAME"/>
+
+        <collection property="authority" resultMap="authResultMap"/>
+    </resultMap>
+
+    <select id="selectStoreInfo" resultMap="storeResultMap">
+        SELECT
+               A.*
+             , B.*
+             , C.*
+          FROM STORE A
+          LEFT JOIN STORE_ROLE B ON (A.STORE_NAME = B.STORE_NAME)
+          LEFT JOIN AUTH_CODE C ON (B.AUTH_CODE = C.AUTH_CODE)
+         WHERE A.STORE_ID = #{ username }
+           AND A.STORE_YN = 'Y'
+    </select>
+
+    <update id="updateStorePwd" parameterType="StoreMemberDTO">
+        UPDATE
+            STORE
+        SET
+            STORE_PWD = #{ storePwd }
+        WHERE STORE_ID = #{ storeId }
+    </update>
+</mapper>

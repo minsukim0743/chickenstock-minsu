@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chicken.project.account.model.dao.AccountMapper">
+    <resultMap id="accountApplyResultMap" type="AccountApplyDTO">
+        <result property="storeName" column="STORE_NAME"/>
+        <result property="depositNum" column="DEPOSIT_NUM"/>
+        <result property="depositRegistDate" column="DEPOSIT_REGIST_DATE"/>
+        <result property="depositYn" column="DEPOSIT_YN"/>
+
+        <collection property="accountDTO" ofType="AccountDTO">
+            <result property="storeName" column="STORE_NAME"/>
+            <result property="depositNum" column="DEPOSIT_NUM"/>
+            <result property="accountDate" column="ACCOUNT_DATE"/>
+            <result property="accountDeposit" column="ACCOUNT_DEPOSIT"/>
+            <result property="accountYn" column="ACCOUNT_YN"/>
+        </collection>
+    </resultMap>
+
+    <resultMap id="accountResultMap" type="AccountDTO">
+        <result property="storeName" column="STORE_NAME"/>
+        <result property="depositNum" column="DEPOSIT_NUM"/>
+        <result property="accountDate" column="ACCOUNT_DATE"/>
+        <result property="accountDeposit" column="ACCOUNT_DEPOSIT"/>
+        <result property="accountYn" column="ACCOUNT_YN"/>
+    </resultMap>
+
+    <resultMap id="balanceResultMap" type="BalanceDTO">
+        <id property="storeName" column="STORE_NAME"></id>
+        <result property="balance" column="BALANCE"></result>
+
+        <collection property="accountDTO" ofType="AccountDTO">
+            <result property="storeName" column="STORE_NAME"/>
+            <result property="depositNum" column="DEPOSIT_NUM"/>
+            <result property="accountDate" column="ACCOUNT_DATE"/>
+            <result property="accountDeposit" column="ACCOUNT_DEPOSIT"/>
+            <result property="accountYn" column="ACCOUNT_YN"/>
+        </collection>
+    </resultMap>
+    
+    <resultMap id="storeBreakdownResultMap" type="StoreBreakdownDTO">
+        <result property="storeName" column="STORE_NAME"/>
+        <result property="breakdownDate" column="BREAKDOWN_DATE"/>
+        <result property="withdrawal" column="WITHDRAWAL"/>
+        <result property="content" column="CONTENT"/>
+    </resultMap>
+
+    <resultMap id="storeDepositResultMap" type="StoreDepositDTO">
+        <result property="storeName" column="STORE_NAME"/>
+        <result property="depositMoney" column="DEPOSIT_MONEY"/>
+        <result property="depositDate" column="DEPOSIT_DATE"/>
+        <result property="content" column="CONTENT"/>
+    </resultMap>
+
+<!--    <select id="selectAccountApplyList" resultMap="accountApplyResultMap">-->
+<!--        SELECT-->
+<!--               A.RNUM-->
+<!--             , A.*-->
+<!--             , B.ACCOUNT_DEPOSIT-->
+<!--          FROM ACCOUNT_APPLY A-->
+<!--          LEFT JOIN ACCOUNT B ON (A.DEPOSIT_NUM = B.DEPOSIT_NUM)-->
+<!--         ORDER BY B.DEPOSIT_NUM DESC-->
+<!--    </select>-->
+
+    <select id="selectAccountApplyList" resultMap="accountApplyResultMap">
+        SELECT
+               A.RNUM
+             , A.*
+             , D.ACCOUNT_DEPOSIT
+          FROM(SELECT ROWNUM RNUM
+                    , B.*
+                 FROM (SELECT C.*
+                         FROM ACCOUNT_APPLY C
+                 LEFT JOIN ACCOUNT D ON (C.DEPOSIT_NUM = D.DEPOSIT_NUM)
+         ORDER BY C.DEPOSIT_NUM DESC
+         )B
+        <![CDATA[
+                  WHERE ROWNUM <= #{ endRow }
+                  ]]>
+         )A
+         LEFT JOIN ACCOUNT D ON (A.DEPOSIT_NUM = D.DEPOSIT_NUM)
+         WHERE A.RNUM >= #{ startRow }
+         ORDER BY 1 ASC
+    </select>
+
+    <select id="selectTotalCount" resultType="_int" parameterType="hashmap">
+    SELECT
+           COUNT(*)
+      FROM ACCOUNT
+     ORDER BY DEPOSIT_NUM DESC
+    </select>
+
+    <select id="selectAccountList" resultMap="accountResultMap">
+        SELECT
+               *
+          FROM ACCOUNT
+    </select>
+
+    <select id="selectBalance" resultMap="balanceResultMap">
+        SELECT
+               *
+          FROM BALANCE
+         WHERE STORE_NAME = #{ storeName }
+    </select>
+
+    <insert id="accountInsert">
+        INSERT
+          INTO ACCOUNT
+        (
+          STORE_NAME, DEPOSIT_NUM, ACCOUNT_DATE
+        , ACCOUNT_DEPOSIT, ACCOUNT_YN
+        )
+        VALUES
+        (
+          #{ storeName }, SEQ_DEPOSIT_NUM.NEXTVAL, SYSDATE
+        , #{ accountDeposit }, '대기'
+        )
+    </insert>
+
+    <insert id="accountApplyInsert">
+        INSERT
+          INTO ACCOUNT_APPLY
+        (
+          STORE_NAME
+        , DEPOSIT_NUM
+        , DEPOSIT_REGIST_DATE
+        , DEPOSIT_YN
+        )
+        VALUES
+        (
+          #{ storeName }
+        , SEQ_DEPOSIT_NUM.CURRVAL
+        , SYSDATE
+        , '대기'
+        )
+    </insert>
+
+    <select id="selectAccountListByStoreName" resultMap="accountResultMap">
+        SELECT
+               *
+          FROM ACCOUNT
+         WHERE STORE_NAME = #{ storeName }
+    </select>
+
+    <update id="accountApplyUpdate">
+        UPDATE
+               ACCOUNT_APPLY
+           SET DEPOSIT_YN = '승인'
+         WHERE DEPOSIT_NUM = #{ depositNum }
+    </update>
+
+    <update id="accountUpdate">
+        UPDATE
+               ACCOUNT
+           SET ACCOUNT_YN = '승인'
+         WHERE DEPOSIT_NUM = #{ depositNum }
+    </update>
+
+    <update id="balanceUpdate">
+        UPDATE
+               BALANCE A
+           SET A.BALANCE = (SELECT B.BALANCE
+                              FROM BALANCE B
+                             WHERE B.STORE_NAME = #{ storeName }
+                             ) + #{ accountDeposit }
+         WHERE A.STORE_NAME = #{ storeName }
+    </update>
+
+    <update id="accountApplyUpdate2">
+        UPDATE
+               ACCOUNT_APPLY
+           SET DEPOSIT_YN = '반려'
+         WHERE DEPOSIT_NUM = #{ depositNum }
+    </update>
+
+    <update id="accountUpdate2">
+        UPDATE
+               ACCOUNT
+           SET ACCOUNT_YN = '반려'
+         WHERE DEPOSIT_NUM = #{ depositNum }
+    </update>
+
+    <select id="balanceSelect" resultMap="balanceResultMap">
+        SELECT
+               *
+          FROM BALANCE
+    </select>
+
+    <select id="selectStoreDeposit" resultMap="storeDepositResultMap">
+        SELECT
+               *
+          FROM STORE_DEPOSIT
+         WHERE STORE_NAME = #{ storeName }
+    </select>
+
+    <select id="selectStoreBreakdown" resultMap="storeBreakdownResultMap">
+        SELECT
+               *
+          FROM STORE_BREAKDOWN
+         WHERE STORE_NAME = #{ storeName }
+         ORDER BY BREAKDOWN_DATE
+    </select>
+
+    <insert id="depositInsert">
+        INSERT
+          INTO STORE_DEPOSIT
+        (
+          STORE_NAME
+        , DEPOSIT_MONEY
+        , DEPOSIT_DATE
+        , CONTENT
+        )
+        VALUES
+        (
+          #{ storeName }
+        , #{ accountDeposit }
+        , TO_CHAR(SYSDATE,'yyyy-MM-dd HH24:MI:SS')
+        , '입금'
+        )
+    </insert>
+</mapper>

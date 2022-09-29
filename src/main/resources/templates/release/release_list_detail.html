@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>chicken stock</title>
+    <link rel="shortcut icon" th:href="@{ /images/logo.png }" type="image/x-icon">
+
+</head>
+<body>
+<!--<div id="layerPop" style="display:none;" th:each="detail : ${ releaseSelectItem }" th:if="${ release.relCode eq detail[0].releaseItemDTO.relCode }">-->
+<!--  <div class="bg-white shadow rounded-lg d-block d-sm-flex" style="height: max-content;" th:each="subDetail : ${ detail }">-->
+<!--    <div class="profile-tab-nav border-right">-->
+<!--      <div class="p-4">-->
+<!--        <div class="img-rounded text-center mb-3">-->
+<!--          <img th:src="'/images/' + ${ subDetail.releaseItemFileDTO.fileName }" alt="Image" class="thum-detail" width="200" height="200">-->
+<!--        </div>-->
+<!--        <h4 class="text-center">chicken stock</h4>-->
+<!--      </div>-->
+<!--      <div class="nav flex-column nav-pills " id="v-pills-tab" role="tablist" aria-orientation="vertical">-->
+<!--        <a class="nav-link active" id="item-tab" data-toggle="pill" href="#item" role="tab" aria-controls="item" aria-selected="true">-->
+<!--          <i class="fa fa-shopping-cart text-warning mr-1"></i>-->
+<!--          상품 상세 조회-->
+<!--        </a>-->
+<!--      </div>-->
+<!--    </div>-->
+<!--    <div class="row">-->
+<!--      <div class="row-md-4">-->
+<!--        <label class="mb-2">상품명</label>-->
+<!--        <input type="text" class="form-control" th:value="${ subDetail.releaseItemInfoDTO.itemName }"readonly>-->
+<!--      </div>-->
+<!--      <div class="row-md-4">-->
+<!--        <label class="mb-2">카테고리</label>-->
+<!--        <input type="text" class="form-control" th:value="${ subDetail.releaseItemCategoryDTO.categoryName }" readonly>-->
+<!--      </div>-->
+<!--      <div class="row-md-4">-->
+<!--        <label class="mb-2">매입 단가</label>-->
+<!--        <input type="text" class="form-control" th:value="${ subDetail.releaseItemInfoDTO.itemPurchase }" readonly>-->
+<!--      </div>-->
+<!--    </div>-->
+<!--    <div class="row">-->
+<!--      <div class="row-md-4">-->
+<!--        <label class="mb-2">상품 코드</label>-->
+<!--        <input type="text" class="form-control" th:value="${ subDetail.releaseItemInfoDTO.itemNo }" readonly>-->
+<!--      </div>-->
+<!--      <div class="row-md-4">-->
+<!--        <label>품절여부</label>-->
+<!--        <input type="text" class="form-control" th:value="${ subDetail.releaseItemInfoDTO.itemSoldoutYn }" readonly>-->
+<!--      </div>-->
+<!--      <div class="row-md-4">-->
+<!--        <label class="mb-2">매출 단가</label>-->
+<!--        <input type="text" class="form-control" th:value="${ subDetail.releaseItemInfoDTO.itemSales }" readonly>-->
+<!--      </div>-->
+<!--    </div>-->
+<!--    <div class="row">-->
+<!--      <div class="row-md-4">-->
+<!--        <label class="mb-2">제조사</label>-->
+<!--        <input type="text" class="form-control" th:value="${ subDetail.releaseItemInfoDTO.itemMake }" readonly>-->
+<!--      </div>-->
+<!--      <div class="row-md-4">-->
+<!--        <label class="mb-2">판매규격</label>-->
+<!--        <input type="text" class="form-control" th:value="${ subDetail.releaseItemInfoDTO.itemStandard }" readonly>-->
+<!--      </div>-->
+<!--      <div class="row-md-4">-->
+<!--        <label class="mb-2">재고량</label>-->
+<!--        <input type="text" class="form-control" th:value="${ subDetail.releaseItemInfoDTO.itemAmount }">-->
+<!--      </div>-->
+<!--    </div>-->
+<!--  </div>-->
+<!--  <div class="close-btn">-->
+<!--    <a href="#" onclick="closeLayer('layerPop')" class="close">-->
+<!--      <img onclick="closeLayer('layerPop')" class="close"-->
+<!--           src="/images/x.png" alt="" width="18" height="18">-->
+<!--    </a>-->
+<!--  </div>-->
+<!--  <div class="detail-btn">-->
+<!--    <button class="btn btn-warning" type="submit" style="color:#fff">-->
+<!--      수정-->
+<!--    </button>-->
+<!--    <button class="btn btn-warning" type="submit" style="color:#fff">-->
+<!--      입고-->
+<!--    </button>-->
+<!--  </div>-->
+<!--</div>-->
+</body>
+</html>

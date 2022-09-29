@@ -1,0 +1,59 @@
+#port 설정
+server:
+  port: 8085
+
+#datasource
+spring:
+  datasource:
+    driver-class-name: net.sf.log4jdbc.sql.jdbcapi.DriverSpy
+    url: jdbc:log4jdbc:oracle:thin:@localhost:1521:xe
+    username: C##CHICKEN
+    password: CHICKEN
+  devtools:
+    restart:
+      enabled: false
+    livereload:
+      enabled: true
+  freemarker:
+    cache: false
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 50MB
+      enabled: true
+  thymeleaf:
+    prefix: classpath:/templates/
+    suffix: .html
+  mail:
+    host: smtp.naver.com
+    port: 465
+    properties:
+      mail.smtp.auth: true
+      mail.smtp.ssl.enable: true
+      mail.smtp.ssl.trust: smtp.naver.com
+    username: ybusiness39
+    password: K91KVSCJ7MBC
+
+# mybatis config
+mybatis:
+  mapper-locations: mappers/**/*.xml # mappers 안에 모든 파일.xml
+  type-aliases-package: com.chicken.project.notice.model.dto, 
+                        com.chicken.project.store.model.dto, 
+                        com.chicken.project.order.model.dto, 
+                        com.chicken.project.receive.model.dto,
+                        com.chicken.project.empList.model.dto, 
+                        com.chicken.project.calendar.model.dto,
+                        com.chicken.project.release.model.dto,
+                        com.chicken.project.member.model.dto,
+                        com.chicken.project.account.model.dto,
+                        com.chicken.project.counsel.model.dto,
+                        com.chicken.project.billTax.model.dto,
+                        com.chicken.project.reItem.model.dto,
+                        com.chicken.project.storeItem.model.dto,
+                        com.chicken.project.storeReceive.model.dto
+
+logging:
+  level:
+    root: info
+
+

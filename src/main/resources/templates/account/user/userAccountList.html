@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"/>
+
+  <title>chicken stock</title>
+  <link rel="shortcut icon" th:href="@{ /images/logo.png }" type="image/x-icon">
+
+  <link rel="stylesheet" type="text/css" th:href="@{/css/common/common.css}"/>
+  <link rel="stylesheet" type="text/css" th:href="@{/css/common/style.css}"/>
+  <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+  <link rel="stylesheet" type="text/css" th:href="@{/css/notice/notice.css}"/>
+  <link rel="stylesheet" type="text/css" th:href="@{/css/account/account_list.css}"/>
+  <link rel="stylesheet" type="text/css" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+
+  <script type="text/javascript" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script th:src="@{/js/common.js}"></script>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- S: header -->
+  <div th:include="common/userHeader.html"></div>
+  <!-- E: header -->
+
+  <!-- S: container -->
+  <div class="container px-0">
+
+    <!-- S: aside -->
+    <div th:replace="common/userSidebar.html"></div>
+    <!-- E: aside -->
+
+    <!-- S: main layout -->
+    <div class="main_layout">
+      <div class="main_layout_inner">
+
+        <!-- 작업 영역 -->
+        <!-- S: table -->
+        <div class="container-fluid" style="margin-top:30px">
+          <h3>입금신청</h3>
+          <br>
+
+          <!-- S: text area -->
+          <div class="text-area">
+            <span th:text="${ #authentication.getPrincipal().getStoreName() }"></span> <span>현재 잔액</span> <span th:text="${ #numbers.formatInteger(balance.getBalance(), 0, 'COMMA') }"></span>원
+
+          </div>
+          <!-- E: text area -->
+
+          <!-- S: btn area -->
+          <div class="btn-area">
+            <button class="btn btn-warning account_popup_open" style="color: #fff;">입금 신청</button>
+          </div>
+          <!-- E: btn area -->
+
+          <table class="table">
+            <colgroup>
+              <col style="width: 10%;">
+              <col style="width: 20%;">
+              <col style="width: 30%;">
+              <col style="width: 30%;">
+            </colgroup>
+            <thead>
+            <tr>
+              <th>건수</th>
+              <th>일시</th>
+              <th>입금액</th>
+              <th>상태</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="account : ${ accountList }">
+              <td th:text="${ account.depositNum }"></td>
+              <td th:text="${ account.accountDate }"></td>
+              <td th:text="${ #numbers.formatInteger(account.getAccountDeposit, 0, 'COMMA') }"></td>
+              <td th:text="${ account.accountYn }"></td>
+              <input type="hidden" name="storeName" th:value="${ #authentication.getPrincipal().getStoreName()}">
+            </tr>
+            </tbody>
+          </table>
+        </div>
+        <!-- E: table -->
+
+      </div>
+    </div>
+    <!-- E: main layout -->
+
+  </div>
+  <!-- E: container -->
+
+  <!-- S: popup -->
+  <form th:action="@{/account/user/insert }">
+    <div class="dimm"></div>
+    <div class="account_popup">
+      <h4>
+        입금 신청
+        <button class="btn-close"></button>
+      </h4>
+      <div class="popup_inner">
+        <table cellpadding="0" cellspacing="0">
+          <tbody>
+          <tr>
+            <th>가맹점 명</th>
+            <td th:text="${ #authentication.getPrincipal().getStoreName() }"></td>
+          </tr>
+          <tr>
+            <th>입금액</th>
+            <td><input type="text" name="accountDeposit"></td>
+          </tr>
+          <tr>
+            <th>현재 잔액</th>
+            <td th:text="${ balance.getBalance() }">원</td>
+          </tr>
+          </tbody>
+        </table>
+        <div class="btn-area">
+          <button class="btn btn-warning" style="color: #fff;" type="submit">확인</button>
+          <button class="btn btn-cancel" type="reset">취소</button>
+        </div>
+      </div>
+    </div>
+  </form>
+  <!-- E: popup -->
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+<script type="text/javascript">
+  $(function(){
+
+    const accountPop = $('.dimm, .account_popup')
+    $('.account_popup_open').on('click', function(){
+      $(accountPop).fadeIn(300);
+    });
+    $('.btn-close, .btn-cancel').on('click', function(){
+      $(accountPop).fadeOut(300);
+    });
+  });
+</script>
+<script th:inline="javascript">
+  let message = [[${message}]];
+
+  if(message != null && message !== '') {
+    alert(message);
+  }
+</script>
+</body>
+</html>

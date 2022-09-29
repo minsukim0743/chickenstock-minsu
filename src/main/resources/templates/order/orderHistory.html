@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"/>
+
+  <title>chicken stock</title>
+  <link rel="shortcut icon" th:href="@{/images/logo.png }" type="image/x-icon">
+
+  <link rel="stylesheet" th:href="@{/css/common/common.css}"/>
+
+  <!-- orderHistory css -->
+  <link rel="stylesheet" type="text/css" th:href="@{/css/order/orderHistory.css}">
+
+  <!-- table css -->
+  <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+	<link rel="stylesheet" type="text/css" th:href="@{/css/common/style.css}">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+
+
+
+
+  <!-- font awesome -->
+  <script src="https://kit.fontawesome.com/da4b1b94bb.js" crossorigin="anonymous"></script>
+  <script th:src="@{https://code.jquery.com/jquery-3.6.0.min.js}"></script>
+  <script th:src="@{/js/common.js}"></script>
+
+</head>
+<body>
+  <div class="wrap">
+
+    <!-- header -->
+    <div th:include="common/userHeader.html"></div>
+
+    <!-- S: container -->
+    <div class="container px-0">
+
+      <!-- S: aside -->
+      <div th:replace="common/userSidebar.html"></div>
+      <!-- E: aside -->
+
+      <!-- S: main layout -->
+      <div class="main_layout">
+        <div class="main_layout_inner">
+
+          <!-- 작업 영역 -->
+          <!-- S: table -->
+        <div class="container-fluid" style="margin-top:30px">
+            <h3><i class="fa-solid fa-list-check"></i> 발주 내역</h3>
+			<br>
+            <div class="input-box mb-3 col-12">
+                <div class="dateList1"> 입고 예정일 : 
+                    <span id="dueDate">입고예정</span>
+                </div>
+                <div class="dateList2"> 발주 마감일 : 
+                    <span id="deadline">마감일</span>
+                </div>
+                <div class="dateList3" style="font-weight: bold;">
+                    <span id="finalDate" th:text="|최종 발주일 : ${ history.orderDate }|">테스트 중입니다.</span>
+                </div>
+              <form th:action="@{/order/history/do}">
+                <div class="datePicker">
+                  <input type="text" class="pickDate" id="orderDate" placeholder="날짜 선택"/>
+                <input type="hidden" id="pickDate" name="pickDate">
+                </div>
+              </form>
+              <div id="cancelBox">
+                <input type="hidden" name="" id="">
+                <button class="btn btn-warning" type="submit" style="color:#fff" id="cancelBtn" th:onclick="'location.href=\'/order/cancel\''">발주 취소</button>
+              </div>
+            </div>
+
+            <table class="table" id="table">
+                <thead>
+                  <tr>
+                    <th>상품코드</th>
+                    <th>썸네일</th>
+                    <th>상품명</th>
+                    <th>카테고리</th>
+                    <th>규격</th>
+                    <th>제조사(원산지)</th>
+                    <th>판매가격</th>
+                    <th>주문수량</th>
+                    <th>합계</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr th:each="history : ${ historyList }">
+                    <td><p th:text="${ history.itemNo }"/></td>
+                    <td>
+                      <div class="img-info">
+                        <div class="img-info__img">
+                          <img th:src="'/itemImage/' + ${ history.itemFile.fileName }" alt="">
+                        </div>
+                      </div>
+                    </td>
+                    <td th:text="${ history.itemName }">상품명</td>
+                    <td th:if="${ history.categoryNo eq 1 }">
+                      <span th:text="${ '식자재' }"/></td>
+                    <td th:if="${ history.categoryNo eq 2 }">
+                      <span th:text="${ '기타' }"/></td>
+                    <td th:if="${ history.categoryNo eq 3 }">
+                      <span th:text="${ '닭고기' }"/></td>
+                    <td th:if="${ history.categoryNo eq 4 }">
+                      <span th:text="${ '소스/파우더/식용유' }"/></td>
+                    <td th:if="${ history.categoryNo eq 5 }">
+                      <span th:text="${ '음료' }"/></td>
+                    <td th:if="${ history.categoryNo eq 6 }">
+                      <span th:text="${ '포장용품' }"/></td>
+                    <td><p th:text="${ history.itemStandard }"></td>
+                    <td><p th:text="${ history.itemMake }"></td>
+                    <td><p th:text="${ history.itemSales }"></td>
+                    <td><p th:text="${ history.cartAmount }" class="cartAmount" id="cartAmount" th:name="cartAmount"></td>
+                    <td class="cartItemPrice" id="cartItemPrice">합계</td>
+                  </tr>
+                </tbody>
+                <tfoot>
+                <tr>
+                  <th colspan="5"></th>
+                  <th>전체 수량</th>
+                  <th id="cartTotalAmount" class="cartTotalAmount" style="font-weight: bold"></th>
+                  <th>총액</th>
+                  <th id="cartTotalMoney" class="cartTotalMoney" style="font-weight: bold"></th>
+                </tr>
+                </tfoot>
+              </table>
+              </div>
+            </div>
+          <!-- E: table -->
+          <!-- S: paging -->
+        <div class="d-flex justify-content-center" id="pageBox">
+          <button class="btn btn-light"
+                  th:onclick="'location.href=\'/order/history?currentPage='+ @{${selectCriteria.startPage}} + '\''"
+                  th:disabled="${selectCriteria.pageNo == 1}"><<</button>
+
+          <button class="btn btn-light mx-1"
+                  th:onclick="'location.href=\'/order/history?currentPage='+ @{${selectCriteria.pageNo - 1}} + '\''"
+                  th:disabled="${selectCriteria.pageNo == 1}"><</button>
+
+          <th:block th:each="page : ${#numbers.sequence(selectCriteria.startPage, selectCriteria.endPage)}">
+            <button class="btn btn-warning mx-1" disabled style="color:white"
+                    th:text="${ page }"
+                    th:onclick="'location.href=\'/order/history?currentPage='+ @{${page}} + '\''"
+                    th:disabled="${ selectCriteria.pageNo eq page }"></button>
+          </th:block>
+
+          <button class="btn btn-light mx-1"
+                  th:onclick="'location.href=\'/order/history?currentPage='+ @{${selectCriteria.pageNo + 1}} + '\''"
+                  th:disabled="${selectCriteria.pageNo == selectCriteria.maxPage}">></button>
+
+          <button class="btn btn-light"
+                  th:onclick="'location.href=\'/order/history?currentPage='+ @{${selectCriteria.maxPage}} + '\''"
+                  th:disabled="${selectCriteria.pageNo == selectCriteria.maxPage}">>></button>
+        </div>
+          <!-- E: paging -->
+        </div>
+      </div>
+      <!-- E: main layout -->
+    </div>
+    <!-- E: container -->
+  </div>
+  <!-- table js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+  <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+  
+  <!-- 입고 예정일 -->
+  <script type="text/javascript">
+    var dueDateTest = document.getElementById("dueDate");
+    function dueDate() {
+      var date = new Date();
+      var year = date.getFullYear();
+      var month = date.getMonth();
+      var clockDate = date.getDate();
+      var day = date.getDay();
+      var week = ['일', '월', '화', '수', '목', '금', '토'];
+
+      dueDateTest.innerText = `${year}년 ${month+1}월 ${clockDate+1}일 ${week[day+1]}요일`;
+    }
+
+    dueDate();
+  </script>
+
+  <!-- 발주 마감일 -->
+  <script type="text/javascript">
+    var deadlineTest = document.getElementById("deadline");
+    function deadline() {
+      var date = new Date();
+      var year = date.getFullYear();
+      var month = date.getMonth();
+      var clockDate = date.getDate();
+      var day = date.getDay();
+      var week = ['일', '월', '화', '수', '목', '금', '토'];
+
+      deadlineTest.innerText = `${year}년 ${month+1}월 ${clockDate}일 ${week[day]}요일 23시 59분 59초`;
+    }
+
+    deadline();
+  </script>
+
+
+  <!-- 체크 박스 전체 선택 -->
+  <script type="text/javascript">
+    function selectAll(selectAll)  {
+        const checkboxes = document.getElementsByName('option');
+    
+        checkboxes.forEach((checkbox) => {
+        checkbox.checked = selectAll.checked;
+        })
+    }
+  </script>
+
+
+  <!-- 선택 발주 취소 -->
+  <script type="text/javascript">
+    function deleteConfirm() {
+        var result = confirm("선택 제품의 발주를 취소하시겠습니까?");
+        if(result == true) {
+            alert("선택 제품의 발주가 취소되었습니다.");
+        }
+    }
+  </script>
+
+  <!-- 날짜 선택 -->
+  <script>
+
+
+          $(function () {
+
+              $('.pickDate').daterangepicker({
+                  "singleDatePicker": true,
+                  "showDropdowns": true,
+                  "minYear": 2020,
+                  "maxYear": 2030,
+                  "showWeekNumbers": true,
+                  "locale": {
+                      "format": "YYYY/MM/DD",
+                      "separator": " - ",
+                      "applyLabel": "선택",
+                      "cancelLabel": "취소",
+                      "fromLabel": "From",
+                      "toLabel": "To",
+                      "customRangeLabel": "Custom",
+                      "weekLabel": "W",
+                      "daysOfWeek": [
+                          "일",
+                          "월",
+                          "화",
+                          "수",
+                          "목",
+                          "금",
+                          "토"
+                      ],
+                      "monthNames": [
+                          "1월",
+                          "2월",
+                          "3월",
+                          "4월",
+                          "5월",
+                          "6월",
+                          "7월",
+                          "8월",
+                          "9월",
+                          "10월",
+                          "11월",
+                          "12월"
+                      ],
+                      "firstDay": 1
+                  },
+                  "startDate": "2022/09/19",
+                  "endDate": "2022/09/19",
+                  "minDate": "2020/01/01",
+                  "maxDate": "2030/12/31",
+                  "opens": "center",
+                  "applyButtonClasses": "btn-warning"
+              })
+          });
+  </script>
+
+  <script>
+          const name = document.getElementById('orderDate').value;
+          document.getElementById("dateBtn").value = name;
+  </script>
+
+  <!-- 총 입고수량 & 총 입고금액 초기값 -->
+  <script>
+    let lengthTest = document.getElementsByClassName('cartAmount');
+
+    for(let i = 0; i < lengthTest.length; i++) {
+
+      let cartItemMoney = ($('.cartAmount')[i].innerText) * ($('.cartAmount')[i].parentElement.parentElement.children[6].innerText);
+      $('.cartAmount')[i].parentElement.parentElement.children[8].innerText = cartItemMoney.toLocaleString('ko-KR');
+
+    }
+
+    let inputValueTot = document.getElementsByClassName('cartAmount');
+    let itemMoneyTot = document.getElementsByClassName('cartItemPrice');
+    let cartTotalAmount = 0;
+    let cartTotalMoney = 0;
+    for(let i = 0; i < inputValueTot.length; i++){
+      cartTotalAmount += Number(inputValueTot[i].innerText);
+      cartTotalMoney += parseInt(itemMoneyTot[i].innerText.replace(/[^0-9]/gi, ''));
+    }
+
+    document.getElementById('cartTotalAmount').innerText = cartTotalAmount.toLocaleString('ko-KR');
+    document.getElementById('cartTotalMoney').innerText = cartTotalMoney.toLocaleString('ko-KR');
+
+    let total = document.getElementById('cartTotalMoney').innerText;
+    let number = total.replace(/,/g, "");
+
+  </script>
+
+</body>
+</html>

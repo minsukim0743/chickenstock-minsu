@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chicken.project.store.model.dao.StoreMapper">
+    <resultMap id="storeResultMap" type="StoreDTO">
+        <id property="storeName" column="STORE_NAME"></id>
+        <result property="storeAccount" column="STORE_ACCOUNT"></result>
+        <result property="storeRep" column="STORE_REP"></result>
+        <result property="storeAddress" column="STORE_ADDRESS"></result>
+        <result property="storePhone" column="STORE_PHONE"></result>
+        <result property="storeEmail" column="STORE_EMAIL"></result>
+        <result property="storeId" column="STORE_ID"></result>
+        <result property="storePwd" column="STORE_PWD"></result>
+        <result property="storeNo" column="STORE_NO"></result>
+        <result property="storeYn" column="STORE_YN"></result>
+        <result property="memberType" column="MEMBER_TYPE"></result>
+    </resultMap>
+
+    <resultMap id="balanceResultMap" type="BalanceDTO">
+        <id property="storeName" column="STORE_NAME"></id>
+        <result property="balance" column="BALANCE"></result>
+    </resultMap>
+
+    <resultMap id="storeRoleResultMap" type="StoreRoleDTO">
+        <id property="storeName" column="STORE_NAME"></id>
+        <result property="authCode" column="AUTH_CODE"></result>
+        <result property="storeId" column="STORE_ID"></result>
+    </resultMap>
+
+    <select id="storeList" resultMap="storeResultMap">
+        SELECT
+               STORE_NAME
+             , STORE_NO
+             , STORE_REP
+             , STORE_ADDRESS
+             , STORE_PHONE
+             , STORE_EMAIL
+             , STORE_YN
+          FROM STORE
+         WHERE STORE_YN = 'Y'
+    </select>
+
+    <update id="deleteStore" parameterType="StoreDTO">
+        UPDATE
+               STORE
+           SET STORE_YN = 'N'
+         WHERE STORE_NAME = #{ storeName }
+    </update>
+
+    <insert id="insertStore">
+        INSERT
+          INTO STORE
+        (
+          STORE_NAME, STORE_ACCOUNT, STORE_REP
+        , STORE_ADDRESS, STORE_PHONE, STORE_EMAIL
+        , STORE_ID, STORE_PWD, STORE_NO, STORE_YN
+        )
+        VALUES
+        (
+          #{ storeName }, #{ storeAccount }, #{ storeRep }
+        , #{ storeAddress }, #{ storePhone }, #{ storeEmail }
+        , #{ storeId }, #{ storePwd }, #{ storeNo }, DEFAULT
+        )
+    </insert>
+
+    <insert id="insertBalance">
+        INSERT
+          INTO BALANCE
+        (
+          STORE_NAME
+        , BALANCE
+        )
+        VALUES
+        (
+          #{ storeName }
+        , DEFAULT
+        )
+    </insert>
+
+    <insert id="insertStoreRole">
+        INSERT
+          INTO STORE_ROLE
+        (
+          AUTH_CODE
+        , STORE_NAME
+        , STORE_ID
+        )
+        VALUES
+        (
+          '3'
+        , #{ storeName }
+        , #{ storeId }
+        )
+    </insert>
+
+    <select id="selectStoreByName" resultMap="storeResultMap">
+        SELECT
+               *
+          FROM STORE
+         WHERE STORE_NAME = #{ storeName }
+    </select>
+
+    <update id="updateStore">
+        UPDATE
+               STORE
+        <trim prefix="SET" prefixOverrides=",">
+            <if test="storeAccount != null and storeAccount !=''">
+                , STORE_ACCOUNT = #{ storeAccount }
+            </if>
+            <if test="storeRep != null and storeRep !=''">
+                , STORE_REP = #{ storeRep }
+            </if>
+            <if test="storeAddress != null and storeAddress !=''">
+                , STORE_ADDRESS = #{ storeAddress }
+            </if>
+            <if test="storePhone != null and storePhone !=''">
+                , STORE_PHONE = #{ storePhone }
+            </if>
+            <if test="storeEmail != null and storeEmail !=''">
+                , STORE_EMAIL = #{ storeEmail }
+            </if>
+            <if test="storeNo != null and storeNo !=''">
+                , STORE_NO = #{ storeNo }
+            </if>
+        </trim>
+        WHERE STORE_ID = #{ storeId }
+    </update>
+
+</mapper>

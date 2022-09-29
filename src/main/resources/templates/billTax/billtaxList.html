@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"/>
+
+  <title>chicken stock</title>
+    <link rel="shortcut icon" th:href="@{ /images/logo.png }" type="image/x-icon">
+
+    <link rel="stylesheet" type="text/css" th:href="@{/css/common/common.css}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/billtax/billtaxList.css}"/>
+    <!-- datepicker js & css -->
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+
+    <!-- table css -->
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/common/style.css}"/>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script th:src="@{/js/common.js}"></script>
+
+</head>
+<body>
+  <div class="wrap">
+
+  <!-- header -->
+  <div th:include="common/adminHeader.html"></div>
+
+    <!-- S: container -->
+    <div class="container px-0">
+
+     <!-- sidebar -->
+     <div th:replace="common/adminSidebar.html"></div>
+
+        <!-- S: main layout -->
+      <div class="main_layout">
+        <div class="main_layout_inner">
+
+          <!-- 작업 영역 -->
+          <!-- S: table -->
+          <div class="container-fluid" style="margin-top:30px; position: relative; z-index: 999;">
+            <h3>세금계산서</h3>
+			      <br>
+
+              <form id="searchForm" th:action="@{ /billTax/billtaxList }" method="get" style="display: inline-block">
+                  <div class="input-group mb-3 col-12 float-start">
+                  <select id="searchCondition" name="searchCondition" class="form-control col-2" style="max-width: max-content; display: inline-block;">
+                      <option> - 선택 - </option>
+                      <option th:selected="${ selectCriteria.getSearchCondition() == 'storeName' }" name="STORE_NAME store" value="storeName">가맹점명</option>
+                  </select>
+                  <input class="form-control me-2 col-4" type="search" id="searchValue" name="searchValue" th:value="${ selectCriteria.getSearchValue() }" placeholder="내용을 입력해주세요." style="max-width: max-content;">
+                  <button class="btn btn-warning" type="submit" style="color:#fff">검색</button>
+                  </div>
+              </form>
+             <table class="table">
+              <thead>
+                <tr>
+                  <th>번호</th>
+                  <th>가맹점 명</th>
+                  <th>날짜</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr th:each="tax : ${ billTaxList }">
+                  <td th:text="${ tax.taxNo }"></td>
+                  <td th:text="${ tax.storeName }" ></td>
+                  <td th:text="${ tax.taxDate }"></td>
+                  <td><button th:taxNo ="${ tax.taxNo }"  th:onclick="select(this)" class="btn btn-warning me-1" style="color: #fff;">세금계산서 확인하기</button>
+                    <div class="box" id="layerPop" style="width: auto; height: auto; margin: 0 auto; margin-top: 100px; padding-top: 50px; background-color: #fff; display:none; z-index: 1;">
+                    <table id="taxTable" width='700' cellpadding='0' cellspacing='0' align='center' class='border_all_red'>
+                    <tr>
+                    <td width='100%'>
+                        <table cellpadding='0' cellspacing='0' height='s5' width='100%'><tr>
+                        <td rowspan='2' align='center' width='360' class='border_tit_red'><font size='6'><b>세 금 계 산 서</b></font></td>
+                        <td rowspan='2' width='5' align='center' class='border_tit_red'><font size='4'><b>[</b></font></td>
+                        <td rowspan='2' width='70' align='center' class='border_tit_red'>공 &nbsp;급 &nbsp;자&nbsp;<br>보 &nbsp;관 &nbsp;용&nbsp;</td>
+                        <td rowspan='2' width='5' align='center' class='border_tit_red'><font size='4'><b>]</b></font></td>
+                        <td align='right' width='85' class='border_tit_red'>책 번 호&nbsp;&nbsp;</td>
+                        <td colspan='3' align='right' class='border_both_red'>권 &nbsp;</td>
+                        <td colspan='4' align='right' class='border_tit_red'>호 &nbsp;</td>
+                        </tr>
+                        <tr>
+                        <td width='85' align='right' class='border_tit_red'>일련번호&nbsp;</td>
+                        <td colspan='1' class='border_back_red ' width='25'>&nbsp;</td>
+                        <td colspan='1' class='border_up_red' width='25'>&nbsp;</td>
+                        <td colspan='1' class='border_up_red' width='25'>&nbsp;</td>
+                        <td colspan='4' class='border_top_red' width='100' th:text="${ tax.taxNo }"></td>  <!-- 책,권 -->
+                        </tr>
+                        </table>
+                    </td>
+                    </tr>
+                    <tr>
+                    <td>
+                        <table cellpadding='0' cellspacing='0' width='700'>
+                        <tr>
+                        <td class='border_up_red' align='center' width='17' rowspan='4'>공<br><br><br>급<br><br><br>자</td>
+                        <td class='border_up_red' align='center' width='55' height='33'>등록번호</td>
+                        <td class='border_up_red' align='center' width='278' colspan='5'>125-14-05311</td>
+                        <td class='border_up_red' align='center' width='17' rowspan='4'>공<br>급<br>받<br>는<br>자</td>
+                        <td class='border_up_red' align='center' width='55'>등록번호</td>
+                        <td class='border_top_red' align='center' width='278' colspan='5' th:text="${ tax.storeNo }"></td>
+                        </tr>
+                        <tr>
+                        <td class='border_up_red' align='center' width='55' height='33'>상 호<br>(법입명)</td>
+                        <td class='border_up_red' align='center' width='160' colspan='3'>치킨스톡</td>
+                        <td class='border_up_red' align='center' width='12' colspan='1'>성<br>명</td>
+                        <td class='border_up_red' align='right' width='94' colspan='1'>김지환 인</td>
+                        <td class='border_up_red' align='center' width='55'>상 호<br>(법입명)</td>
+                        <td class='border_up_red' align='center' width='160' colspan='3' th:text="${ tax.storeName }"></td>
+                        <td class='border_up_red' align='center' width='12' colspan='1'>성<br>명</td>
+                        <td class='border_top_red' align='right' width='94' colspan='1' th:text="|${ tax.storeRep } 인|"></td>
+                        </tr>
+                        <tr>
+                        <td class='border_up_red' align='center' width='55' height='33'>사업장<br>주  소</td>
+                        <td class='border_up_red' align='center' width='278' colspan='5'>서울시 강남구</td>
+                        <td class='border_up_red' align='center' width='55'>사업장<br>주  소</td>
+                        <td class='border_top_red' align='center' width='278' colspan='5' th:text="${ tax.storeAddress }"></td>
+                        </tr>
+                        <tr>
+                        <td class='border_up_red' align='center' width='55' height='33'>업  태</td>
+                        <td class='border_up_red' align='center' width='148' colspan='1'>도매 및 소매업</td>
+                        <td class='border_up_red' align='center' width='12' colspan='1'>종<br>목</td>
+                        <td class='border_up_red' align='center' width='106' colspan='3'>식품</td>
+                        <td class='border_up_red' align='center' width='55'>업 &nbsp; 태</td>
+                        <td class='border_up_red' align='center' width='148' colspan='1'>숙박 및 음식점업</td>
+                        <td class='border_up_red' align='center' width='12' colspan='1'>종<br>목</td>
+                        <td class='border_top_red' align='center' width='106' colspan='3'>치킨 전문점</td>
+                        </tr>
+                        </table>
+                    </td>
+                    </tr>
+                    <tr>
+                    <td width='100%'>
+                        <table cellpadding='0' cellspacing='0' width='700'>
+                        <tr>
+                        <td class='border_up_red' align='center' width='85' height='21'>작 &nbsp; 성</td>
+                        <td class='border_up_red' colspan='12' width='250' align='center'>공 &nbsp; 급 &nbsp; 가 &nbsp; 액</td>
+                        <td class='border_up_red' rowspan='3' align='center' width='4' height='15'>&nbsp;</td>
+                        <td class='border_up_red' colspan='10' align='center' width='190' height='15'>세 &nbsp; 액</td>
+                        <td class='border_top_red' align='center' width='156'>비 &nbsp; 고</td>
+                    </tr>
+                    <tr>
+                      <td class='border_up_red' align='center' width='85' height='21'>년 &nbsp; 월 &nbsp; 일</td>
+                      <td class='border_up_red' align='center' width='35'><font size='1'>공란수</font></td>
+                      <td class='border_up_red' align='center' width='20'>백</td>
+                      <td class='border_up_red' align='center' width='20'>십</td>
+                      <td class='border_up_red' align='center' width='20'>억</td>
+                      <td class='border_up_red' align='center' width='20'>전</td>
+                      <td class='border_up_red' align='center' width='20'>백</td>
+                      <td class='border_up_red' align='center' width='20'>십</td>
+                      <td class='border_up_red' align='center' width='20'>만</td>
+                      <td class='border_up_red' align='center' width='20'>천</td>
+                      <td class='border_up_red' align='center' width='20'>백</td>
+                      <td class='border_up_red' align='center' width='20'>십</td>
+                      <td class='border_up_red' align='center' width='20'>일</td>
+
+                      <td class='border_up_red' align='center' width='20'>십</td>
+                      <td class='border_up_red' align='center' width='20'>억</td>
+                      <td class='border_up_red' align='center' width='20'>전</td>
+                      <td class='border_up_red' align='center' width='20'>백</td>
+                      <td class='border_up_red' align='center' width='20'>십</td>
+                      <td class='border_up_red' align='center' width='20'>만</td>
+                      <td class='border_up_red' align='center' width='20'>천</td>
+                      <td class='border_up_red' align='center' width='20'>백</td>
+                      <td class='border_up_red' align='center' width='20'>십</td>
+                      <td class='border_up_red' align='center' width='20'>일</td>
+                      <td class='border_top_red' align='center' width='156' rowspan='2'>&nbsp;</td>
+                    </tr>
+                    <tr>
+                        <td class='border_up_red' align='center' width='85' height='25' th:text="${ tax.taxDate }"></td>
+                        <td class='border_up_red' align='center' width='35'>&nbsp;</td>
+                        <td class='border_up_red test1' align='center' width='20'></td>
+                        <td class='border_up_red test2' align='center' width='20'></td>
+                        <td class='border_up_red test3' align='center' width='20'></td>
+                        <td class='border_up_red test4' align='center' width='20'></td>
+                        <td class='border_up_red test5' align='center' width='20'></td>
+                        <td class='border_up_red test6' align='center' width='20'></td>
+                        <td class='border_up_red test7' align='center' width='20'></td>
+                        <td class='border_up_red test8' align='center' width='20'></td>
+                        <td class='border_up_red test9' align='center' width='20'></td>
+                        <td class='border_up_red test10' align='center' width='20'></td>
+                        <td class='border_up_red test11' align='center' width='20'></td>
+
+                        <td class='border_up_red' align='center' width='20'>&nbsp;</td>
+                        <td class='border_up_red tax1' align='center' width='20'></td>
+                        <td class='border_up_red tax2' align='center' width='20'></td>
+                        <td class='border_up_red tax3' align='center' width='20'></td>
+                        <td class='border_up_red tax4' align='center' width='20'></td>
+                        <td class='border_up_red tax5' align='center' width='20'></td>
+                        <td class='border_up_red tax6' align='center' width='20'></td>
+                        <td class='border_up_red tax7' align='center' width='20'></td>
+                        <td class='border_up_red tax8' align='center' width='20'></td>
+                        <td class='border_up_red tax9' align='center' width='20'></td>
+                    </tr>
+                        </table>
+                    </td>
+                    </tr>
+                    <tr>
+                    <td width='100%'>
+                      <table cellpadding='0' cellspacing='0' width='700'>
+                        <tr>
+                        <td class='border_up_red' align='center' width='50' height='21'>월 일</td>
+                        <td class='border_up_red' align='center' width='195'>품 &nbsp; &nbsp; &nbsp; 목</td>
+                        <td class='border_up_red' align='center' width='42'>규 격</td>
+                        <td class='border_up_red' align='center' width='65'>수 량</td>
+                        <td class='border_up_red' align='center' width='55'>단 가</td>
+                        <td class='border_up_red' align='center' width='150'>공급가액</td>
+                        <td class='border_up_red' align='center' width='83'>세 액</td>
+                        <td class='border_top_red' align='center' width='60'>비고</td>
+                        </tr>
+                        <tr th:each="tax : ${ taxListMenu[tax.getRecCode()] }">
+                        <td class='border_up_red' align='center' width='50' height='25' th:text="${ tax.recDate }"></td>
+                        <td class='border_up_red' align='center' width='195' th:text="${ tax.itemName }"></td>
+                        <td class='border_up_red' align='center' width='42' th:text="${ tax.itemStandard }"></td>
+                        <td class='border_up_red' align='center' width='65' th:text="${ tax.recAmount }"></td>
+                        <td class='border_up_red' align='center' width='55' th:text="${#numbers.formatInteger(tax.itemSales, 3, 'COMMA') }"></td>
+                        <td class='border_up_red' align='center' width='150' th:text="${#numbers.formatInteger(tax.recSupply, 3, 'COMMA') }"></td>
+                        <td class='border_up_red' align='center' width='83' th:text="${#numbers.formatInteger(tax.recTax, 3, 'COMMA') }"></td>
+                        <td class='border_top_red' align='center' width='60'>&nbsp;</td>
+                        </tr>
+                      </table>
+                    </td>
+                    </tr>
+                    <tr>
+                    <td width='100%'>
+                        <table cellpadding='0' cellspacing='0' width='700'>
+                        <tr align='justify'>
+                        <td class='border_up_red' align='center' width='122' height='2'>합계금액</td>
+                        <td class='border_up_red' align='center' width='108'>현 &nbsp; &nbsp; 금</td>
+                        <td class='border_up_red' align='center' width='108'>수 &nbsp; &nbsp; 표</td>
+                        <td class='border_up_red' align='center' width='108'>어 &nbsp; &nbsp; 음</td>
+                        <td class='border_up_red' align='center' width='108'>외상미수금</td>
+                        <td class='border_top_red' rowspan='2' align='center' width='143'>이 금액을 징수 함</td>
+                        </tr>
+                        <tr>
+                        <td class='border_up_red test' id="test" align='center' width='122' height='25' th:text="${#numbers.formatInteger(tax.recTotalMoney, 3, 'COMMA') }"></td>
+                        <td class='border_up_red' align='center' width='108'> V </td>
+                        <td class='border_up_red' align='center' width='108'>&nbsp;</td>
+                        <td class='border_up_red' align='center' width='108'>&nbsp;</td>
+                        <td class='border_up_red' align='center' width='108'>&nbsp;</td>
+                        </tr>
+                        </table>
+                    </td>
+                    </tr>
+                    </table>
+                        <div class="close-btn" style="position: absolute; top: 45px; right: 5px;">
+                            <a href="#" class="close">
+                                <img th:taxNo ="${ tax.taxNo }" th:onclick="closeLayer(this)" class="close" src="/images/x.png" alt="" width="18" height="18">
+                            </a>
+                        </div>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <!-- E: table -->
+              <!-- S: paging -->
+              <div class="d-flex justify-content-center"  style="z-index: 0">
+                  <!-- 맨 앞으로 이동 버튼 -->
+                  <button type="button" class="btn btn-light" id="startPage"
+                          th:onclick="'location.href=\'/billTax/billtaxList?currentPage='+ @{${selectCriteria.startPage}} + '&searchCondition=' + @{${ selectCriteria.searchCondition }} + '&searchValue=' + @{${ selectCriteria.searchValue }} +  '\''"
+                          th:disabled="${selectCriteria.pageNo == 1}"
+                  >
+                      <<
+                  </button>
+                  <!-- 이전 페이지 버튼 -->
+                  <button type="button" class="btn btn-light mx-1 disabled"
+                          th:onclick="'location.href=\'/billTax/billtaxList?currentPage='+ @{${selectCriteria.pageNo - 1}} + '&searchCondition=' + @{${ selectCriteria.searchCondition }} + '&searchValue=' + @{${ selectCriteria.searchValue }} +  '\''"
+                          th:disabled="${selectCriteria.pageNo == 1}"
+                  >
+                      <
+                  </button>
+                  <!-- 숫자 버튼 -->
+                  <th:block th:each="page : ${#numbers.sequence(selectCriteria.startPage, selectCriteria.endPage)}">
+                      <button type="button" class="btn btn-warning mx-1" disabled style="color:white"
+                              th:text="${ page }"
+                              th:onclick="'location.href=\'/billTax/billtaxList?currentPage='+ @{${page}} + '&searchCondition=' + @{${ selectCriteria.searchCondition }} + '&searchValue=' + @{${ selectCriteria.searchValue }} +  '\''"
+                              th:disabled="${ selectCriteria.pageNo eq page }">
+                      </button>
+                  </th:block>
+
+                  <!-- 다음 페이지 버튼 -->
+                  <button type="button" class="btn btn-light mx-1"
+                          th:onclick="'location.href=\'/billTax/billtaxList?currentPage='+ @{${selectCriteria.pageNo + 1}} + '&searchCondition=' + @{${ selectCriteria.searchCondition }} + '&searchValue=' + @{${ selectCriteria.searchValue }} +  '\''"
+                          th:disabled="${selectCriteria.pageNo == selectCriteria.maxPage}"
+                  >
+                      >
+                  </button>
+                  <!-- 마지막 페이지로 이동 버튼 -->
+                  <button type="button" class="btn btn-light" id="maxPage"
+                          th:onclick="'location.href=\'/billTax/billtaxList?currentPage='+ @{${selectCriteria.maxPage}} + '&searchCondition=' + @{${ selectCriteria.searchCondition }} + '&searchValue=' + @{${ selectCriteria.searchValue }} +  '\''"
+                          th:disabled="${selectCriteria.pageNo == selectCriteria.maxPage}"
+                  >
+                      >>
+                  </button>
+              </div>
+              <!-- E: paging -->
+
+        </div>
+      </div>
+      <!-- E: main layout -->
+
+    </div>
+    <!-- E: container -->
+  </div>
+      <script th:inline="javascript">
+          $(".detail-main").click(function() {
+              $(this).next(".detail-sub-tr").find(".detail-sub").slideToggle(300);
+              $(this).toggleClass('on').siblings().removeClass('on');
+              $(this).next(".detail-sub-tr").find(".detail-sub").siblings(".detail-sub").slideUp(300);
+          });
+
+          function select(e){
+
+              $(e).siblings()[0].style.display = "block";
+              $(e).siblings()[0].style.top = "120px";
+              $(e).siblings()[0].style.left= "430px";
+
+              let str = Number($(e).siblings().children().find(".test").text().replaceAll(',','')) / 1.1;
+              let str2 = Math.trunc(str);
+              let str3 = str2.toString();
+
+              window.console.log('${str3.length}');
+
+              let last = str3.charAt(str3.length-1);
+              let last1 = str3.charAt(str3.length-2);
+              let last2 = str3.charAt(str3.length-3);
+              let last3 = str3.charAt(str3.length-4);
+              let last4 = str3.charAt(str3.length-5);
+              let last5 = str3.charAt(str3.length-6);
+              let last6 = str3.charAt(str3.length-7);
+              let last7 = str3.charAt(str3.length-8);
+              let last8 = str3.charAt(str3.length-9);
+              let last9 = str3.charAt(str3.length-10);
+              let last10 = str3.charAt(str3.length-11);
+
+
+              for(let i = 0; i < document.getElementsByClassName("test1").length; i++){
+
+                  document.getElementsByClassName("test1")[i].innerText = last10;
+                  document.getElementsByClassName("test2")[i].innerText = last9;
+                  document.getElementsByClassName("test3")[i].innerText = last8;
+                  document.getElementsByClassName("test4")[i].innerText = last7;
+                  document.getElementsByClassName("test5")[i].innerText = last6;
+                  document.getElementsByClassName("test6")[i].innerText = last5;
+                  document.getElementsByClassName("test7")[i].innerText = last4;
+                  document.getElementsByClassName("test8")[i].innerText = last3;
+                  document.getElementsByClassName("test9")[i].innerText = last2;
+                  document.getElementsByClassName("test10")[i].innerText = last1;
+                  document.getElementsByClassName("test11")[i].innerText = last;
+
+
+              }
+
+              let str4 = Number($(e).siblings().children().find(".test").text().replaceAll(',','')) / 11;
+              let str5 = Math.trunc(str4);
+              let str6 = str5.toString();
+
+              window.console.log('${str3.length}');
+
+              let tax1 = str6.charAt(str6.length-1);
+              let tax2 = str6.charAt(str6.length-2);
+              let tax3 = str6.charAt(str6.length-3);
+              let tax4 = str6.charAt(str6.length-4);
+              let tax5 = str6.charAt(str6.length-5);
+              let tax6 = str6.charAt(str6.length-6);
+              let tax7 = str6.charAt(str6.length-7);
+              let tax8 = str6.charAt(str6.length-8);
+              let tax9 = str6.charAt(str6.length-9);
+
+
+              for(let i = 0; i < document.getElementsByClassName("tax1").length; i++){
+
+                  document.getElementsByClassName("tax1")[i].innerText = tax9;
+                  document.getElementsByClassName("tax2")[i].innerText = tax8;
+                  document.getElementsByClassName("tax3")[i].innerText = tax7;
+                  document.getElementsByClassName("tax4")[i].innerText = tax6;
+                  document.getElementsByClassName("tax5")[i].innerText = tax5;
+                  document.getElementsByClassName("tax6")[i].innerText = tax4;
+                  document.getElementsByClassName("tax7")[i].innerText = tax3;
+                  document.getElementsByClassName("tax8")[i].innerText = tax2;
+                  document.getElementsByClassName("tax9")[i].innerText = tax1;
+
+              }
+
+          }
+
+          function closeLayer(e){
+
+              $(e).parents("div")[1].style.display = "none";
+          }
+      </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+</body>
+</html>

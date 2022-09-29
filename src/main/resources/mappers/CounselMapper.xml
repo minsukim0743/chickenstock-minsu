@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chicken.project.counsel.model.dao.CounselMapper">
+
+    <resultMap id="counselResultMap" type="CounselDTO">
+        <id property="counselNo" column="COUNSEL_NO"/>
+        <result property="counselName" column="COUNSEL_NAME"/>
+        <result property="counselContent" column="COUNSEL_CONTENT"/>
+        <result property="counselRegistDate" column="COUNSEL_REGIST_DATE"/>
+        <result property="storeName" column="STORE_NAME"/>
+        <result property="counselYn" column="COUNSEL_YN"/>
+    </resultMap>
+
+    <resultMap id="counselApplyResultMap" type="CounselApplyDTO">
+        <id property="counselNo" column="COUNSEL_NO"/>
+        <result property="answerContent" column="ANSWER_CONTENT"/>
+        <result property="answerRegistDate" column="ANSWER_REGIST_DATE"/>
+        <result property="empName" column="EMP_NAME"/>
+    </resultMap>
+
+    <insert id="insertCounsel">
+        INSERT
+          INTO COUNSEL
+        (
+          COUNSEL_NO, COUNSEL_NAME, COUNSEL_CONTENT
+        , COUNSEL_REGIST_DATE, STORE_NAME, COUNSEL_YN
+        )
+        VALUES
+        (
+          SEQ_COUNSEL_NO.NEXTVAL, #{ counselName }, #{ counselContent }
+        , SYSDATE, #{ storeName }, DEFAULT
+        )
+    </insert>
+
+    <select id="selectCounsel" resultMap="counselResultMap">
+        SELECT
+               *
+          FROM COUNSEL
+         ORDER BY COUNSEL_NO DESC
+    </select>
+
+    <select id="selectCounselByNo" resultMap="counselResultMap">
+        SELECT
+               *
+          FROM COUNSEL
+         WHERE COUNSEL_NO = #{ counselNo }
+    </select>
+
+    <insert id="insertCounselApply">
+        INSERT
+          INTO COUNSEL_APPLY
+        (
+          COUNSEL_NO
+        , ANSWER_CONTENT
+        , ANSWER_REGIST_DATE
+        , EMP_NAME
+        )
+        VALUES
+        (
+          #{ counselNo }
+        , #{ answerContent }
+        , SYSDATE
+        , #{ empName }
+        )
+    </insert>
+
+    <update id="updateCounsel">
+        UPDATE
+               COUNSEL
+           SET COUNSEL_YN = '답변 완료'
+         WHERE COUNSEL_NO = #{ counselNo }
+    </update>
+
+    <select id="selectCounselApplyByNo" resultMap="counselApplyResultMap">
+        SELECT
+               *
+          FROM COUNSEL_APPLY
+         WHERE COUNSEL_NO = #{ counselNo }
+    </select>
+
+    <select id="selectCounselByStoreName" resultMap="counselResultMap">
+        SELECT
+               *
+          FROM COUNSEL
+         WHERE STORE_NAME = #{ storeName }
+    </select>
+</mapper>

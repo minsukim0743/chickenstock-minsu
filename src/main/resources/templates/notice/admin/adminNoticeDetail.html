@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"/>
+
+  <title>chicken stock</title>
+  <link rel="shortcut icon" th:href="@{ /images/logo.png }" type="image/x-icon">
+
+  <link rel="stylesheet" type="text/css" th:href="@{/css/common/common.css}"/>
+  <link rel="stylesheet" type="text/css" th:href="@{/css/common/style.css}"/>
+  <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+  <link rel="stylesheet" type="text/css" th:href="@{/css/notice/notice.css}"/>
+  <link rel="stylesheet" type="text/css" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+
+  <script type="text/javascript" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script th:src="@{/js/common.js}"></script>
+</head>
+<body>
+  <div class="wrap">
+
+    <!-- S: header -->
+    <div th:include="common/adminHeader.html"></div>
+    <!-- E: header -->
+
+    <!-- S: container -->
+    <div class="container px-0">
+
+      <!-- S: aside -->
+      <div th:replace="common/adminSidebar.html"></div>
+      <!-- E: aside -->
+
+      <!-- S: main layout -->
+      <div class="main_layout">
+        <div class="main_layout_inner">
+
+          <!-- 작업 영역 -->
+          <!-- S: table -->
+          <div class="container-fluid" style="margin-top:30px">
+            <h3>공지사항</h3>
+			      <br>
+
+            <table class="table">
+              <colgroup>
+                <col style="width:170px">
+                <col>
+              </colgroup>
+              <tbody>
+                <tr>
+                  <th>제목</th>
+                  <td class="align-left" th:text="${ noticeDetail.noticeName }"></td>
+                </tr>
+                <tr>
+                  <th>내용</th>
+                  <td class="align-left" th:text="${ noticeDetail.noticeContent }"></td>
+                </tr>
+                <tr th:if="${ noticeDetail.noticeFile.originName != null }">
+                  <th>첨부파일</th>
+                  <td class="align-left"><a th:href="|/uploadFiles/${ noticeDetail.noticeFile.getFileName() }|" th:text="${ noticeDetail.noticeFile.getOriginName() }" download></a></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <!-- E: table -->
+
+          <!-- S: search -->          
+          <div class="input-group mb-3 col-7 flex-right">
+            <button class="btn btn-warning ml-1" type="submit" style="color:#fff"
+                    th:onclick="'location.href=\'/notice/admin/update?noticeNo='+ @{${ noticeDetail.noticeNo }} + '\''">수정</button>
+            <button class="btn btn-warning ml-1" type="submit" style="color:#fff"
+                    th:onclick="'location.href=\'/notice/admin/delete?noticeNo='+ @{${ noticeDetail.noticeNo }} + '\''">삭제</button>
+            <button class="btn btn-warning ml-1" type="submit" style="color:#fff"
+                    th:onclick="'location.href=\'/notice/admin/list\''">이전</button>
+          </div>	
+          <!-- E: search -->      
+        </div>
+      </div> 
+      <!-- E: main layout -->
+      
+    </div>
+    <!-- E: container -->
+  </div>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+
+</body>
+</html>

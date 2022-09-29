@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"/>
+
+  <title>chicken stock</title>
+  <link rel="shortcut icon" th:href="@{ /images/logo.png }" type="image/x-icon">
+
+  <link rel="stylesheet" th:href="@{/css/common/common.css}"/>
+
+  <!-- orderSuccess css -->
+  <link rel="stylesheet" type="text/css" th:href="@{/css/order/orderResult.css}">
+
+  <!-- table css -->
+  <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+  <link rel="stylesheet" type="text/css" th:href="@{/css/common/style.css}">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+
+  <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+  <script th:src="@{/js/common.js}"></script>
+
+  <!-- font awesome -->
+  <script src="https://kit.fontawesome.com/da4b1b94bb.js" crossorigin="anonymous"></script>
+
+</head>
+<body>
+  <div class="wrap">
+
+    <!-- header -->
+    <div th:include="common/userHeader.html"></div>
+
+    <!-- S: container -->
+    <div class="container px-0">
+
+      <!-- S: aside -->
+      <div th:replace="common/userSidebar.html"></div>
+      <!-- E: aside -->
+
+      <!-- S: main layout -->
+      <div class="main_layout">
+        <div class="main_layout_inner">
+
+          <!-- 작업 영역 -->
+          <!-- S: table -->
+          <div class="container-fluid" style="margin-top:30px">
+            <h3><i class="fa-regular fa-circle-check"></i> 발주 완료</h3>
+			      <br>
+            <div class="mainBox">
+                <div class="infoBox" style="font-size: 18px;">
+                    <span>선택하신 제품의 발주가 완료되었습니다.</span>
+                    <p id="dueDate"></p>
+                </div>
+                <div class="buttonBox">
+                    <button class="btn btn-warning" style="color:#fff; cursor: pointer;" th:onclick="'location.href=\'/order/history\''">발주 내역 확인</button>
+                    <button class="btn btn-warning" style="color:#fff; cursor: pointer;" th:onclick="'location.href=\'/order/list\''">추가 주문 하기</button>
+                </div>
+            </div>
+          </div>
+          <!-- E: table -->
+        </div>
+      </div>
+      <!-- E: main layout -->
+    </div>
+    <!-- E: container -->
+  </div>
+  <!-- table js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+
+    <!-- 입고 예정일 -->
+    <script type="text/javascript">
+        var dueDateTest = document.getElementById("dueDate");
+
+        function dueDate() {
+            var date = new Date();
+            var year = date.getFullYear();
+            var month = date.getMonth();
+            var clockDate = date.getDate();
+            var day = date.getDay();
+            var week = ['일', '월', '화', '수', '목', '금', '토'];
+
+            dueDateTest.innerText = "입고 예정일은 " + `${year}년 ${month+1}월 ${clockDate+1}일 ${week[day+1]}요일` + "입니다.";
+        }
+        
+        dueDate();
+  </script>
+
+</body>
+</html>

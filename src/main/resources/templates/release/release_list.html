@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"/>
+
+    <title>chicken stock</title>
+    <link rel="shortcut icon" th:href="@{ /images/logo.png }" type="image/x-icon">
+
+    <link rel="stylesheet" th:href="@{/css/common/common.css}"/>
+    <!-- table css -->
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/common/style.css}">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/release/release_detail.css}">
+    <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+    <script src="/js/common.js"></script>
+</head>
+<body>
+<div class="wrap">
+    <!-- S: header -->
+    <div th:include="common/adminHeader.html"></div>
+
+    <!-- S: container -->
+    <div class="container px-0">
+        <div th:replace="common/adminSidebar.html"></div>
+        <!-- S: main layout -->
+        <div class="main_layout">
+            <div class="main_layout_inner">
+
+                <!-- 작업 영역 -->
+                <!-- S: table -->
+                <div class="container-fluid" style="margin-top:30px">
+                    <h3>
+                        <a th:href="@{/release/releaseSelect}">출고내역</a> ㅣ <a th:href="@{/release/orderSelect}">출고서작성</a>
+                    </h3>
+                    <br>
+                    <form th:action="@{ /release/releaseSelect }">
+                        <div class="input-group mb-3 col-5 float-right" style="min-width: max-content">
+                            <select type="" class="form-control" id="searchCategory" th:name="searchCategory" value=""
+                                    style="height: 40px; min-width: max-content">
+                                <option value="category">카테고리</option>
+                                <option value="searchRelDate" th:selected="${ releaseSelectCriteria.getSearchCategory() == 'searchRelDate'}">출고일</option>
+                                <option value="searchRelRegistDate" th:selected="${ releaseSelectCriteria.getSearchCategory() == 'searchRelRegistDate'}">등록일</option>
+                                <option value="searchStoreName" th:selected="${ releaseSelectCriteria.getSearchCategory() == 'searchStoreName'}">지점명</option>
+                                <option value="relDateStoreName" th:selected="${ releaseSelectCriteria.getSearchCategory() == 'relDateStoreName'}">출고일+지점명</option>
+                                <option value="registDateStoreName" th:selected="${ releaseSelectCriteria.getSearchCategory() == 'registDateStoreName'}">등록일+지점명</option>
+                            </select>
+                            <button class="btn btn-light px-1" type="button" disabled></button>
+                            <input type="date" class="form-control" id="searchDate" th:name="searchDate" th:value="${ releaseSelectCriteria.getSearchDate() }"
+                                   style="min-width: max-content">
+                            <button class="btn btn-light" type="button" disabled>~</button>
+                            <input type="date" class="form-control" id="searchDate2" th:name="searchDate2" th:value="${ releaseSelectCriteria.getSearchDate2() }"
+                                   style="min-width: max-content">
+                            <button class="btn btn-light px-1" type="button" disabled></button>
+                            <input class="form-control me-2" type="text" id="storeName" th:name="searchValue" th:value="${ releaseSelectCriteria.getSearchValue() }"
+                                   placeholder="지점명" style="min-width: max-content">
+                            <button class="btn btn-warning" onclick="find();" type="submit" style="color:#fff">검색
+                            </button>
+                        </div>
+                    </form>
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th>
+                                <div class="form-check pb-3">
+                                    <input type="checkbox" class="form-check-input" disabled>
+                                </div>
+                            </th>
+                            <th>번호</th>
+                            <th>지점</th>
+                            <th>품목</th>
+                            <th>금액</th>
+                            <th>출고서등록일</th>
+                            <th>출고완료일</th>
+                            <th>출고상태</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <div th:each="release : ${ releaseSelect }">
+                            <tr class="detail-main">
+                                <td>
+                                    <div class="form-check">
+                                        <input type="checkbox" class="form-check-input" name="option"
+                                               value="something">
+                                        <label class="form-check-label"></label>
+                                    </div>
+                                </td>
+                                <td class="relCode" th:text="${ release.relCode }"></td>
+                                <td th:text="${ release.storeName}"></td>
+                                <td th:text="${ release.relName }"></td>
+                                <td th:text="${ release.totalMoney }"></td>
+                                <td th:text="${ release.relListDate }"></td>
+                                <td th:text="${ release.relDate }"></td>
+                                <td th:text="${ release.relYn }"></td>
+                            </tr>
+                            <tr class="detail-sub-tr">
+                                <td class="detail-sub-td p-0" colspan="9">
+                                    <div class="detail-sub">
+                                        <table class="detail-table" width="100%" th:each="detail : ${ releaseSelectItem }" th:if="${ release.relCode eq detail[0].releaseItemDTO.relCode }">
+                                            <thead>
+                                            <tr>
+                                                <th>
+                                                    <div class="form-check pb-3">
+                                                        <input type="checkbox" class="form-check-input" disabled>
+                                                    </div>
+                                                </th>
+                                                <th>상품코드</th>
+                                                <th>썸네일</th>
+                                                <th>상품명</th>
+                                                <th>카테고리</th>
+                                                <th>규격</th>
+                                                <th>제조사</th>
+                                                <th>재고량</th>
+                                                <th>발주수량</th>
+                                                <th>출고수량</th>
+                                                <th>출고입력</th>
+                                                <th>요청일</th>
+                                                <th>출고일</th>
+                                                <th>출고상태</th>
+                                                <th>총매출단가</th>
+                                            </tr>
+                                            </thead>
+                                            <tr class="detail-tr" th:each="subDetail : ${ detail }">
+                                                <form name="releaseItemForm" class="releaseItemForm" onsubmit="return false">
+                                                <td>
+                                                    <div class="form-check">
+                                                        <input type="checkbox" class="form-check-input"
+                                                               name="option" value="something">
+                                                        <label class="form-check-label"></label>
+                                                    </div>
+                                                </td>
+                                                <!-- 상품상세조회 레이어 -->
+                                                <td>
+                                                    <button th:text="${ subDetail.releaseItemInfoDTO.itemNo }" onclick="openLayer('layerPop',100,300);" class="open-btn"></button>
+                                                </td>
+                                                <td>
+                                                    <div class="img-info">
+                                                        <div class="img-info__img">
+                                                            <img th:src="'/itemImage/' + ${ subDetail.releaseItemFileDTO.fileName }" alt="">
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td th:text="${ subDetail.releaseItemInfoDTO.itemName }"></td>
+                                                <td th:text="${ subDetail.releaseItemCategoryDTO.categoryName }"></td>
+                                                <td th:text="${ subDetail.releaseItemInfoDTO.itemStandard }"></td>
+                                                <td th:text="${ subDetail.releaseItemInfoDTO.itemMake }"></td>
+                                                <td class="itemAmount" th:text="${ subDetail.releaseItemInfoDTO.itemAmount }"></td>
+                                                <th:block th:if="${subDetail.releaseItemDTO.orderAmount == subDetail.releaseItemHistroyDTO.relSumAmount }">
+                                                    <td th:text="${ subDetail.releaseItemDTO.orderAmount }" style="color: green"></td>
+                                                    <td class="relSumAmount" th:text="${ subDetail.releaseItemHistroyDTO.relSumAmount }" style="color: green"></td>
+                                                </th:block>
+                                                <th:block th:if="${subDetail.releaseItemDTO.orderAmount != subDetail.releaseItemHistroyDTO.relSumAmount }">
+                                                    <td th:text="${ subDetail.releaseItemDTO.orderAmount }" style="color: red"></td>
+                                                    <td class="relSumAmount" th:text="${ subDetail.releaseItemHistroyDTO.relSumAmount }" style="color: red"></td>
+                                                </th:block>
+                                                <td>
+                                                    <input class="relAmount-input" type="number" min="1" name="relAmount" style="width:60px; text-align: center; border: 1px solid rgb(255, 255, 255); border-bottom: 1px solid black">
+                                                    <input type="hidden" th:name="itemAmount" th:value="${ subDetail.releaseItemInfoDTO.itemAmount }">
+                                                    <input type="hidden" th:name="orderAmount" th:value="${ subDetail.releaseItemDTO.orderAmount }">
+                                                    <input type="hidden" th:name="relSumAmount" th:value="${ subDetail.releaseItemHistroyDTO.relSumAmount }">
+                                                    <input type="hidden" th:name="itemNo" th:value="${ subDetail.releaseItemInfoDTO.itemNo}">
+                                                    <input type="hidden" th:name="relCode" th:value="${ subDetail.releaseItemDTO.relCode }">
+                                                    <input type="hidden" th:name="relCodeDetail" th:value="${ subDetail.releaseItemDTO.relCodeDetail }">
+                                                    <button type="button" class="rel-btn" style="border : none; background-color: #fff;">
+                                                        <img src="/images/truck.png" alt="출고" width="35px" height="35px">
+                                                    </button>
+                                                </td>
+                                                <td th:text="${ subDetail.releaseItemDTO.relItemRequestDate}"></td>
+                                                <td class="relDate" th:text="${ subDetail.releaseItemDTO.relDate}"></td>
+                                                <td class="relYn" th:text="${ subDetail.releaseItemDTO.relYn}"></td>
+                                                <td class="tomoney" th:text="${ subDetail.releaseItemDTO.totalItemMoney }"></td>
+                                            </form>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </td>
+                            </tr>
+                        </div>
+                        </tbody>
+                        <div id="layerPop" style="display:none;">
+                            <div class="bg-white shadow rounded-lg d-block d-sm-flex" style="height: max-content;">
+                                <div class="profile-tab-nav border-right">
+                                    <div class="p-4">
+                                        <div class="img-rounded text-center mb-3" id="imgDiv">
+                                            <img id="imgTab">
+                                        </div>
+                                        <h4 class="text-center">chicken stock</h4>
+                                    </div>
+                                    <div class="nav flex-column nav-pills imgTab" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+                                        <a class="nav-link active" id="item-tab" data-toggle="pill" href="#item" role="tab" aria-controls="item" aria-selected="true" style="text-align: center">
+                                            <i class="fa fa-shopping-cart text-warning mr-1"></i>
+                                            상품 상세 조회
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="row-md-4">
+                                        <label class="mb-2">상품명</label>
+                                        <input type="text" class="form-control" readonly>
+                                    </div>
+                                    <div class="row-md-4">
+                                        <label class="mb-2">매입단가</label>
+                                        <input type="text" class="form-control" readonly>
+                                    </div>
+                                    <div class="row-md-4">
+                                        <label class="mb-2">재고량</label>
+                                        <input type="text" class="form-control" readonly>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="row-md-4">
+                                        <label class="mb-2">상품 코드</label>
+                                        <input type="text" class="form-control" readonly>
+                                    </div>
+                                    <div class="row-md-4">
+                                        <label>매출단가</label>
+                                        <input type="text" class="form-control" readonly>
+                                    </div>
+                                    <div class="row-md-4">
+                                        <label class="mb-2">발주수량</label>
+                                        <input type="text" class="form-control" readonly>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="row-md-4">
+                                        <label class="mb-2">제조사</label>
+                                        <input type="text" class="form-control" readonly>
+                                    </div>
+                                    <div class="row-md-4">
+                                        <label class="mb-2">판매규격</label>
+                                        <input type="text" class="form-control" readonly>
+                                    </div>
+                                    <div class="row-md-4">
+                                        <label class="mb-2">출고수량</label>
+                                        <input type="text" class="form-control" readonly>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="detail-btn">
+                                <button class="btn btn-warning" type="button" id="itemInfoFix-btn" style="color:#fff">
+                                    수정
+                                </button>
+                                <button class="btn btn-warning" type="button" id="itemInfo-btn" style="color:#fff">
+                                    입고
+                                </button>
+                            </div>
+                            <div id="detailList" class="row">
+                            </div>
+                            <div class="close-btn">
+                                <a href="#" onclick="closeLayer('layerPop')" class="close">
+                                    <img onclick="closeLayer('layerPop')" class="close"
+                                         src="/images/x.png" alt="" width="18" height="18">
+                                </a>
+                            </div>
+                        </div>
+                    </table>
+                </div>
+                <!-- 페이지 처리 -->
+                <div class="pagingArea" align="center">
+                    <!-- 맨 앞으로 이동 버튼 -->
+                    <button class="btn btn-light mx-1" style="cursor:pointer; background: #ccc; color: #fff;"
+                            th:onclick="'location.href=\'/release/releaseSelect?currentPage='+ @{${releaseSelectCriteria.startPage}} + '&searchCategory=' + @{${ releaseSelectCriteria.getSearchCategory() }} + '&searchValue=' + @{${ releaseSelectCriteria.getSearchValue() }} + '\''"
+                            th:disabled="${releaseSelectCriteria.pageNo == 1}"
+                    >
+                        <<
+                    </button>
+                    <!-- 이전 페이지 버튼 -->
+                    <button class="btn btn-light" style="cursor:pointer; background: #ccc; color: #fff;"
+                            th:onclick="'location.href=\'/release/releaseSelect?currentPage='+ @{${releaseSelectCriteria.pageNo - 1}} + '&searchCategory=' + @{${ releaseSelectCriteria.getSearchCategory() }} + '&searchValue=' + @{${ releaseSelectCriteria.getSearchValue() }} + '\''"
+                            th:disabled="${releaseSelectCriteria.pageNo == 1}"
+                    >
+                        <
+                    </button>
+                    <!-- 숫자 버튼 -->
+                    <th:block th:each="page : ${#numbers.sequence(releaseSelectCriteria.startPage, releaseSelectCriteria.endPage)}">
+                        <button class="btn btn-warning mx-1" style="cursor:pointer; color: #fff;"
+                                th:text="${ page }"
+                                th:onclick="'location.href=\'/release/releaseSelect?currentPage='+ @{${page}} + '&searchCategory=' + @{${ releaseSelectCriteria.getSearchCategory() }} + '&searchValue=' + @{${ releaseSelectCriteria.getSearchValue() }} + '\''"
+                                th:disabled="${ releaseSelectCriteria.pageNo eq page }">
+                        </button>
+                    </th:block>
+
+                    <!-- 다음 페이지 버튼 -->
+                    <button class="btn btn-light mx-1" style="cursor:pointer; background: #ccc; color: #fff;"
+                            th:onclick="'location.href=\'/release/releaseSelect?currentPage='+ @{${releaseSelectCriteria.pageNo + 1}} + '&searchCategory=' + @{${ releaseSelectCriteria.getSearchCategory() }} + '&searchValue=' + @{${ releaseSelectCriteria.getSearchValue() }} + '\''"
+                            th:disabled="${releaseSelectCriteria.pageNo == releaseSelectCriteria.maxPage}"
+                    >
+                        >
+                    </button>
+                    <!-- 마지막 페이지로 이동 버튼 -->
+                    <button class="btn btn-light mx-1" style="cursor:pointer; background: #ccc; color: #fff;"
+                            th:onclick="'location.href=\'/release/releaseSelect?currentPage='+ @{${releaseSelectCriteria.maxPage}} + '&searchCategory=' + @{${ releaseSelectCriteria.getSearchCategory() }} + '&searchValue=' + @{${ releaseSelectCriteria.getSearchValue() }} + '\''"
+                            th:disabled="${releaseSelectCriteria.pageNo == releaseSelectCriteria.maxPage}"
+                    >
+                        >>
+                    </button>
+                </div>
+
+                <!-- E: paging -->
+
+            </div>
+        </div>
+        <!-- E: main layout -->
+
+    </div>
+    <!-- E: container -->
+</div>
+<script>
+    $("#itemInfoFix-btn").on('click',function (){
+        let itemName = $(".form-control")[4].value;
+        location.href="/item/admin/list?searchCondition=itemName" + "&searchValue=" + itemName;
+    });
+
+    $("#itemInfo-btn").on('click',function (){
+        let itemName = $(".form-control")[4].value;
+        location.href="/receive/admin/list/regist?searchCondition=itemName" + "&searchValue=" + itemName;
+    });
+
+</script>
+
+<script>
+    $(".open-btn").on('click', function (e){
+        let relCodeDetail = $(this).parents('tr').children().eq(11).find("input").eq(6).val();
+        let sendValue = "relCodeDetail=" + relCodeDetail;
+
+        console.log(relCodeDetail);
+
+        $.ajax({
+
+            url: '/release/releaseItemDetail',
+            type: 'get',
+            data: sendValue,
+            contentType: 'application/json',
+            success: function(data){
+                const selectDetail = (JSON.parse(data));
+               console.table(data);
+               $(".form-control")[4].value = selectDetail.itemName;
+               $(".form-control")[5].value = selectDetail.itemPurchase;
+               $(".form-control")[6].value = selectDetail.itemAmount;
+               $(".form-control")[7].value = selectDetail.itemNo;
+               $(".form-control")[8].value = selectDetail.itemSales;
+               $(".form-control")[9].value = selectDetail.orderAmount;
+               $(".form-control")[10].value = selectDetail.itemMake;
+               $(".form-control")[11].value = selectDetail.itemStandard;
+               $(".form-control")[12].value = selectDetail.relAmount;
+
+               $("#imgTab").empty();
+
+               $("#imgTab").attr({
+                   "src":"/itemImage/"+selectDetail.fileName,
+                   "alt":"Image",
+                   "class":"thum-detail",
+                   "width":"200",
+                   "height":"200"
+               });
+
+
+               let $list = $("#detailList");
+                $list.html("");
+
+               for(let index in selectDetail.releaseItemHistroyDTO){
+
+                   if(selectDetail.releaseItemHistroyDTO[index].relDateDetail == null){
+
+                       $div = $("<div>");
+                       $noInput = $("<input class=\"form-control\" style='text-align: center'>").val("출고 기록이 없습니다.");
+                       $div.append($noInput);
+                       $list.append($div);
+
+                   } else {
+
+                       $div = $("<div>");
+                       $noInput = $("<input class=\"form-control listInput\" >").val(parseInt(index) + 1 + "차출고");
+                       $dateInput = $("<input class=\"form-control listInput\" >").val(selectDetail.releaseItemHistroyDTO[index].relDateDetail);
+                       $amountInput = $("<input class=\"form-control listInput\" >").val(selectDetail.releaseItemHistroyDTO[index].relAmountDetail);
+
+                       $div.append($noInput);
+                       $div.append($dateInput);
+                       $div.append($amountInput);
+
+                       $list.append($div);
+                   }
+               }
+            },
+            error: function(error){
+                alert("왜실패니?");
+            }
+        });
+    });
+
+    $(".rel-btn").on('click', function (e) {
+
+        let tr = $(this).parents('tr');
+        let orderAmount = tr.children().eq(9).text();
+        let relSumAmount = tr.children().eq(10).text();
+        let relAmount = tr.children().eq(11).find('.relAmount-input').val();
+
+        console.log("orderAmount : " + orderAmount);
+        console.log("relSumAmount : " + relSumAmount);
+        console.log("relAmount : " + relAmount);
+
+        orderAmount = parseInt(orderAmount);
+        relSumAmount = parseInt(relSumAmount);
+        relAmount = parseInt(relAmount);
+
+        let sum = relSumAmount + relAmount;
+
+        console.log("sum : " + sum);
+
+        if (sum > orderAmount) {
+
+            alert("출고수량이 발주수량을 초과하였습니다.");
+            e.preventDefault();
+        } else {
+
+            let form = $(this).parents('tr').children().eq(0)
+            let relForm = form.serialize();
+            console.log(relForm);
+
+            let itemAmount8 = tr.children().eq(8);
+            let relSumAmount10 = tr.children().eq(10);
+            let relDate10 = tr.children().eq(13);
+            let relYn14 = tr.children().eq(14);
+            let orderAmount9 = tr.children().eq(9)
+
+            let hddnItemAmount = tr.children().eq(11).children().eq(1);
+            let hddnRelSumAmount = tr.children().eq(11).children().eq(3);
+
+            $.ajax({
+
+                url: "/release/releaseItem",
+                type: "POST",
+                data: relForm,
+                contentType: 'application/x-www-form-urlencoded',
+                // contentType: 'application/json',
+                dataType: 'json',
+                success: function(result) {
+
+                    if(confirm("출고하시겠습니까?") == true){
+
+                        console.log("result : " + result );
+                        JSON.stringify(result);
+                        let itemAmount = result.itemAmount;
+                        let relDate = result.relDate;
+                        let relYn = result.relYn;
+                        let relSumAmount = result.relSumAmount;
+
+                        itemAmount8.html(itemAmount);
+                        relSumAmount10.html(relSumAmount);
+                        relDate10.html(relDate);
+                        relYn14.html(relYn);
+                        tr.children().eq(11).find('.relAmount-input').val("");
+
+                        hddnItemAmount.attr('value',itemAmount);
+                        hddnRelSumAmount.attr('value',relSumAmount);
+
+                        if(relSumAmount == orderAmount){
+                            relSumAmount10.css('color', 'green');
+                            orderAmount9.css('color', 'green');
+                        }
+
+                        alert("출고하였습니다.");
+                    }
+                },
+                error: function() {
+
+                    alert("실패하였습니다.")
+                }
+            });
+
+        }
+        e.stopImmediatePropagation();
+    });
+
+    function find() {
+        let searchDate = $("#searchDate").val();
+        let searchDate2 = $("#searchDate2").val();
+        let searchCategory = $("#searchCategory").val();
+        let storeName = $("#storeName").val();
+
+        if (searchDate != null && searchDate != "" && searchDate2 == "") {
+            alert("마지막일을 입력해주세요.");
+            return false;
+        }
+        if (searchDate2 != null && searchDate2 != "" && searchDate == "") {
+            alert("시작일을 입력해주세요.");
+            return false;
+        }
+
+        if (searchCategory == "relDateStoreName" && storeName == "") {
+            alert("지점명을 입력해주세요.");
+            return false;
+        }
+
+        if (searchCategory == "registDateStoreName" && searchDate == "" && searchDate2 == "") {
+            alert("날짜를 입력해주세요.");
+            return false;
+        }
+
+        if (searchCategory == "registDateStoreName" && storeName == "") {
+            alert("지점명을 입력해주세요.");
+            return false;
+        }
+
+        if (searchCategory == "relDateStoreName" && searchDate == "" && searchDate2 == "") {
+            alert("날짜를 입력해주세요.");
+            return false;
+        }
+
+
+    }
+
+    $(".detail-main").click(function () {
+        $(this).next(".detail-sub-tr").find(".detail-sub").slideToggle(300);
+        $(this).toggleClass('on').siblings().removeClass('on');
+        $(this).next(".detail-sub-tr").find(".detail-sub").siblings(".detail-sub").slideUp(300);
+
+    });
+
+    function openLayer(IdName, tpos, lpos) {
+        var pop = document.getElementById(IdName);
+        pop.style.display = "block";
+        pop.style.top = tpos + "px";
+        pop.style.left = lpos + "px";
+    }
+
+    function closeLayer(IdName) {
+        var pop = document.getElementById(IdName);
+        pop.style.display = "none";
+    }
+</script>
+<!-- table js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+
+<!-- datepicker js -->
+<script src="/js/daterange.js"></script>
+</body>
+</html>

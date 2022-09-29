@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"/>
+
+  <title>chicken stock</title>
+  <link rel="shortcut icon" th:href="@{ /images/logo.png }" type="image/x-icon">
+
+  <link rel="stylesheet" type="text/css" th:href="@{/css/common/common.css}"/>
+  <!-- table css -->
+  <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+	<link rel="stylesheet" type="text/css" th:href="@{/css/common/style.css}">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+	<link rel="stylesheet" type="text/css" th:href="@{/css/release/release_detail.css}">
+  <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+  <script th:src="@{/js/common.js}"></script>
+
+  <style>
+    .table tbody tr td:nth-last-child(1) {
+	  border-radius: 0px 0px 0px 0px;
+    }
+    .table tbody tr td:nth-child(1) {
+	  border-radius: 0px 0px 0px 0px;
+    }
+    div::-webkit-scrollbar-track {
+      background-color: #f5f5f9;
+    }
+    div::-webkit-scrollbar-thumb {
+      background-color: rgb(222, 222, 222);
+    }
+    .table tbody tr {
+      border-bottom: 1px solid black;
+    }
+    .relese-text {
+      margin: 20px 0 0 0;
+      text-align: right;   
+    }
+    .release-btn {
+      padding-right: 10px;
+      display: inline-block;
+    }
+    .arrow {
+      margin: 20px 0 20px 0;
+      text-align: center;
+    }
+    .input-release {
+      height: 38px;
+      vertical-align: middle;
+    }
+    .container{
+      max-width: 100%;
+    }
+
+    .release-input {
+      text-align: center;
+      height: 38px;
+      border: 2px solid #e4e7ea;
+      background-color: white;
+    }
+
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <!-- S: header -->
+    <div th:include="common/adminHeader.html"></div>
+
+    <!-- S: container -->
+    <div class="container px-0">
+      <div th:replace="common/adminSidebar.html"></div>
+      <!-- S: main layout -->
+      <div class="main_layout">
+        <div class="main_layout_inner">
+
+          <!-- 작업 영역 -->
+          <!-- S: table -->
+          <div class="container-fluid" style="margin-top:30px">
+            <h3>
+              <a th:href="@{/release/releaseSelect}">출고내역</a> ㅣ <a th:href="@{/release/orderSelect}">출고서작성</a></h3>
+			      <br>
+            <form th:action="@{ /release/orderSelect }">
+            <div class="input-group mb-3 col-5 float-right" style="min-width: max-content">
+              <button class="btn btn-light px-1" type="button" disabled></button>
+              <input type="date" class="form-control" id="searchDate"  th:name="searchDate" th:value="${ releaseSelectCriteria.getSearchDate() }" style="min-width: max-content">
+              <button class="btn btn-light" type="button" disabled>~</button>
+              <input type="date" class="form-control" id="searchDate2" th:name="searchDate2" value="" style="min-width: max-content" th:value="${ releaseSelectCriteria.getSearchDate2() }">
+              <button class="btn btn-light px-1" type="button" disabled></button>
+              <input class="form-control me-2" type="text" th:name="searchValue" placeholder="지점명" style="min-width: max-content" th:value="${ releaseSelectCriteria.getSearchValue() }">
+              <button class="btn btn-warning" onclick="find();" type="submit" style="color:#fff">검색</button>
+            </div>
+            </form>
+            <div style="height: 250px; width: 100%; overflow: auto; border-top: 1px black solid;">
+
+            <table class="table" style="border-spacing: 0;padding: 0px; margin-bottom: 20px;">
+              <thead>
+                <tr>
+                  <th>상품코드</th>
+                  <th>발주번호</th>
+                  <th>상품명</th>
+                  <th>카테고리</th>
+                  <th>규격</th>
+                  <th>제조사(원산지)</th>
+                  <th>매입단가</th>
+                  <th>매출단가</th>
+                  <th>발주수량</th>
+                  <th>지점명</th>
+                  <th>요청일</th>
+                  <th>추가</th>
+                </tr>
+              </thead>
+              <tbody class="release-tbody-delete">
+                <tr th:each="order : ${ orderList }" class="release-tr-add">
+                  <form th:action="@{ /release/orderInsertUpdate }" method="post">
+                    <td th:text="${ order.releaseItemInfoDTO.itemNo }"></td>
+                    <td th:text="${ order.storeOrderDTO.orderNo }"></td>
+                    <td th:text="${ order.releaseItemInfoDTO.itemName }"></td>
+                    <td th:text="${ order.releaseItemCategoryDTO.categoryName}"></td>
+                    <td th:text="${ order.releaseItemInfoDTO.itemStandard }"></td>
+                    <td th:text="${ order.releaseItemInfoDTO.itemMake }"></td>
+                    <td th:text="${ order.releaseItemInfoDTO.itemPurchase }"></td>
+                    <td th:text="${ order.releaseItemInfoDTO.itemSales }"></td>
+                    <td th:text="${ order.releaseCartDTO.cartAmount }"></td>
+                    <td th:text="${ order.releaseCartDTO.storeName }"></td>
+                    <td th:text="${ order.storeOrderDTO.orderDate }"></td>
+                  <td class="plus-btns" style="padding: 0px">
+                    <button type="submit" style="background-color: white; border: 1px solid white; width: 100%; height: 47px">
+                    <img src="/images/plus.png" width="23" height="23" class="plusImg">
+                    </button>
+                  </td>
+                  <input type="hidden" th:name="itemNo" th:value="${ order.releaseItemInfoDTO.itemNo }">
+                  <input type="hidden" th:name="itemName" th:value="${ order.releaseItemInfoDTO.itemName }">
+                  <input type="hidden" th:name="categoryName" th:value="${ order.releaseItemCategoryDTO.categoryName }">
+                  <input type="hidden" th:name="itemStandard" th:value="${ order.releaseItemInfoDTO.itemStandard }">
+                  <input type="hidden" th:name="itemPurchase" th:value="${ order.releaseItemInfoDTO.itemPurchase }">
+                  <input type="hidden" th:name="itemMake" th:value="${ order.releaseItemInfoDTO.itemMake }">
+                  <input type="hidden" th:name="itemSales" th:value="${ order.releaseItemInfoDTO.itemSales }">
+                  <input type="hidden" th:name="cartAmount" th:value="${ order.releaseCartDTO.cartAmount }">
+                  <input type="hidden" th:name="storeName" th:value="${ order.releaseCartDTO.storeName }">
+                  <input type="hidden" th:name="orderDate" th:value="${ order.storeOrderDTO.orderDate }">
+                  <input type="hidden" th:name="orderNo" th:value="${ order.storeOrderDTO.orderNo }">
+                  <input type="hidden" th:name="cartNo" th:value="${ order.releaseCartDTO.cartNo }">
+                  <input type="hidden" th:name="relCode" th:value="${ relCode }">
+                </form>
+                </tr>
+              </tbody>
+            </table>
+            </div>
+
+          <div class="arrow">
+            <img src="/images/blackarrow.png" width="35" height="35" alt="">
+          </div>
+          <div style="text-align: right; margin-bottom: 16px" >
+            <form th:action="@{ /release/releaseInsertUpdate }" method="post">
+            <input type="text" class="release-input title" value="출고코드" style="width: 120px;" readonly>
+            <input type="text" class="release-input" th:name="relCode" th:value="${ relCode }" style="width: 80px; background-color: #f5f5f9" readonly>
+            <input type="text" class="release-input title" value="등록일" style="width: 120px;" readonly>
+            <input type="text" class="release-input" th:name="relListDate" th:value="${ #calendars.format(#calendars.createNow(), 'yyyy-MM-dd')}" style="width: fit-content; background-color: #f5f5f9" readonly>
+            <input type="text" class="release-input title" value="지점명" style="width: 120px;" readonly>
+            <input id="storeName" class="release-input" type="text" th:name="storeName" style="width: fit-content; background-color: #f5f5f9" readonly>
+            <input type="text" class="release-input title" value="품목명" style="width: 120px;" readonly>
+            <input id="relName" class="release-input" type="text" th:name="relName" style="width: 230px; background-color: #f5f5f9" readonly>
+            <input type="text" class="release-input title" value="총매출액" style="width: 120px;" readonly>
+            <input type="text" class="release-input" th:name="totalMoney" th:value="${ totalMoney }" style="width: 80px; background-color: #f5f5f9" readonly>
+            <button class="btn btn-warning" type="submit" style="color:#fff; vertical-align: baseline;">등록</button>
+            </form>
+          </div>
+            <div style="height: 250px; width: 100%; overflow: auto; border-top: 1px black solid;">
+          <table class="table" id="tableY" style="border-spacing: 0;padding: 0px; margin: 0px;">
+            <thead>
+              <tr>
+                <th>상품코드</th>
+                <th>발주번호</th>
+                <th>상품명</th>
+                <th>카테고리</th>
+                <th>규격</th>
+                <th>제조사(원산지)</th>
+                <th>매입단가</th>
+                <th>매출단가</th>
+                <th>발주수량</th>
+                <th>지점명</th>
+                <th>요청일</th>
+                <th>추가</th>
+              </tr>
+            </thead>
+            <tbody class="release-tbody-add">
+            <tr th:each="orderN : ${ orderListN }" class="tr-itemName">
+            <form th:action="@{ /release/orderDeleteUpdate }" method="post">
+                <td th:text="${ orderN.releaseItemInfoDTO.itemNo }"></td>
+                <td th:text="${ orderN.storeOrderDTO.orderNo }"></td>
+                <td th:text="${ orderN.releaseItemInfoDTO.itemName }"></td>
+                <td th:text="${ orderN.releaseItemCategoryDTO.categoryName}"></td>
+                <td th:text="${ orderN.releaseItemInfoDTO.itemStandard }"></td>
+                <td th:text="${ orderN.releaseItemInfoDTO.itemMake }"></td>
+                <td th:text="${ orderN.releaseItemInfoDTO.itemPurchase }"></td>
+                <td th:text="${ orderN.releaseItemInfoDTO.itemSales }"></td>
+                <td th:text="${ orderN.releaseItemDTO.orderAmount }"></td>
+                <td th:text="${ orderN.releaseItemDTO.storeName }"></td>
+                <td th:text="${ orderN.releaseItemDTO.relItemRequestDate }"></td>
+                <td class="plus-btns" style="padding: 0px">
+                  <button type="submit" style="background-color: white; border: 1px solid white; width: 100%; height: 47px">
+                    <img src="/images/minus.png" width="23" height="23" class="plusImg">
+                  </button>
+                </td>
+                <input type="hidden" th:name="itemNo" th:value="${ orderN.releaseItemInfoDTO.itemNo }">
+                <input type="hidden" th:name="itemName" th:value="${ orderN.releaseItemInfoDTO.itemName }">
+                <input type="hidden" th:name="categoryName" th:value="${ orderN.releaseItemCategoryDTO.categoryName }">
+                <input type="hidden" th:name="itemStandard" th:value="${ orderN.releaseItemInfoDTO.itemStandard }">
+                <input type="hidden" th:name="itemPurchase" th:value="${ orderN.releaseItemInfoDTO.itemPurchase }">
+                <input type="hidden" th:name="itemMake" th:value="${ orderN.releaseItemInfoDTO.itemMake }">
+                <input type="hidden" th:name="itemSales" th:value="${ orderN.releaseItemInfoDTO.itemSales }">
+                <input type="hidden" th:name="cartAmount" th:value="${ orderN.releaseItemDTO.orderAmount }">
+                <input type="hidden" th:name="storeName" th:value="${ orderN.releaseItemDTO.storeName }">
+                <input type="hidden" th:name="orderDate" th:value="${ orderN.releaseItemDTO.relItemRequestDate }">
+                <input type="hidden" th:name="orderNo" th:value="${ orderN.releaseItemDTO.orderNo }">
+                <input type="hidden" th:name="relCodeDetail" th:value="${ orderN.releaseItemDTO.relCodeDetail}">
+                <input type="hidden" th:name="cartNo" th:value="${ orderN.releaseCartDTO.cartNo  }">
+                <input type="hidden" th:name="relCode" th:value="${ relCode }">
+            </form>
+            </tr>
+            </tbody>
+          </table>
+          </div>
+          </div>
+        </div>
+      </div> 
+      <!-- E: main layout -->
+      
+    </div>
+    <!-- E: container -->
+  </div>
+  <style>
+    th {
+      vertical-align: inherit;
+      font-weight: bold;
+      text-align: center;
+    }
+  </style>
+  <script>
+
+      var tr1 = $("#tableY > tbody > tr:nth-child(1)");
+      var td = tr1.children();
+      var relName = td.eq(3).text();
+      var storeName = td.eq(10).text();
+      var lengths = $("#tableY > tbody > tr").length;
+
+      switch (lengths) {
+        case 0: document.getElementById("relName").value = ""; break;
+        case 1: document.getElementById("relName").value = relName;
+                document.getElementById("storeName").value = storeName; break;
+        default : var lengths = lengths -1;
+                  document.getElementById("relName").value = relName + " 외 " + lengths + "개 품목";
+                  document.getElementById("storeName").value = storeName; break;
+      }
+
+        function find(){
+          console.log($("#searchDate").val());
+          console.log($("#searchDate2").val());
+          if($("#searchDate").val() != null && $("#searchDate").val() != "" && $("#searchDate2").val() ==""){
+
+            alert("마지막일을 입력하세요.");
+            return false;
+          }
+
+          if($("#searchDate2").val() != null && $("#searchDate2").val() != "" && $("#searchDate").val() ==""){
+
+            alert("시작일을 입력하세요.");
+            return false;
+          }
+
+          if($("#searchDate").val() > $("#searchDate2").val()) {
+
+            alert("시작일이 마지막일보다 작을 수 없습니다.");
+            return false;
+          }
+        }
+
+    <!-- jQuery 발주품목 추가 제거 -->
+    // $(document).on("click", ".plus-btn", function(){
+    //   var $trAdd = $(this).parent(".release-tr-add");
+    //   var $tbodyAdd = $(".release-tbody-add");
+    //   $tbodyAdd.append($trAdd);
+    //   if($trAdd.parent = $tbodyAdd){
+    //     $tbodyAdd.find(".plus-btn").removeClass('plus-btn').addClass('minus-btn');
+    //     $tbodyAdd.find(".release-tr-add").removeClass('release-tr-add').addClass('release-tr-delete');
+    //     $tbodyAdd.find(".plusImg").attr('src', '/images/minus.png');
+    //     $tbodyAdd.find(".plusImg").removeClass('plusImg').addClass('minusImg');
+    //   }
+    // });
+    //
+    // $(document).on("click", ".minus-btn", function(){
+    //   var $trDelete = $(this).parent(".release-tr-delete");
+    //   var $tbodyDelete = $(".release-tbody-delete");
+    //   $tbodyDelete.append($trDelete);
+    //   if($trDelete.parent = $tbodyDelete){
+    //     $tbodyDelete.find(".minus-btn").removeClass('minus-btn').addClass('plus-btn');
+    //     $tbodyDelete.find(".release-tr-delete").removeClass('release-tr-delete').addClass('release-tr-add');
+    //     $tbodyDelete.find(".minusImg").attr('src', '/images/plus.png');
+    //     $tbodyDelete.find(".minusImg").removeClass('minusImg').addClass('plusImg');
+    //   }
+    // });
+
+</script>
+<!-- table js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+
+<!-- datepicker js -->
+<script src="/js/daterange.js"></script>
+</body>
+</html>

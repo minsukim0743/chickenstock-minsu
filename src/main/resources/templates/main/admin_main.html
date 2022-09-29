@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"/>
+
+  <title>chicken stock</title>
+  <link rel="shortcut icon" th:href="@{ /images/logo.png }" type="image/x-icon">
+
+  <link rel="stylesheet" th:href="@{/css/common/common.css}"/>
+  <!-- table css -->
+  <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"/>
+  <link rel="stylesheet" type="text/css" th:href="@{/css/common/style.css}"/>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"/>
+  <!-- datepicker js & css -->
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/jquery/latest/jquery.min.js"/>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"/>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"/>
+  <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+  <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+
+  <!-- fullcalendar -->
+  <link href='https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/4.2.0/core/main.min.css' rel='stylesheet' />
+  <link href='https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/4.2.0/daygrid/main.min.css' rel='stylesheet' />
+  <link href='https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/4.2.0/timegrid/main.min.css' rel='stylesheet' />
+  <link href='https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/4.2.0/list/main.min.css' rel='stylesheet' />
+
+  <script th:src="@{/js/common.js}"></script>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- S: header -->
+  <div th:include="common/adminHeader.html"></div>
+  <!-- E: header -->
+
+  <!-- S: container -->
+  <div class="container px-0">
+
+    <!-- S: aside -->
+    <div th:replace="common/adminSidebar.html"></div>
+    <!-- E: aside -->
+
+    <!-- S: main layout -->
+    <div class="main_layout">
+      <div class="main_layout_inner">
+
+        <!-- 작업 영역 -->
+        <!-- S: table -->
+        <div class="container-fluid" style="margin-top:30px">
+          <div class="row mx-5">
+            <div class="col px-5 py-1">
+              <h4>재고현황</h4>
+              <div class=" d-flex justify-content-end">
+                <button class="fa fa-plus mx-4" style="color: #aaa; cursor: pointer; border: none"
+                        th:onclick="'location.href=\'/item/admin/list\''"></button>
+                <button class="fa fa-refresh" style="color: #aaa; cursor: pointer; border: none"
+                        th:onclick="'location.href=\'/member/moveMain\''"></button>
+              </div>
+              <table class="table">
+                <thead>
+                <tr>
+                  <th>상품코드</th>
+                  <th>썸네일</th>
+                  <th>상품명</th>
+                  <th>카테고리</th>
+                  <th>규격</th>
+                  <th>제조사</th>
+                  <th>매입단가</th>
+                  <th>재고량</th>
+                  <th>품절여부</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="item : ${ itemList }">
+                  <td th:text="${ item.itemNo }">100000</td>
+                  <td>
+                    <div class="img-info">
+                      <div class="img-info__img">
+                        <img th:src="'/itemImage/' + ${ item.itemFile.fileName }" alt="">
+                      </div>
+                    </div>
+                  </td>
+                  <td th:text="${ item.itemName }">닭다리</td>
+                  <td th:text="${ item.categoryName }">식재료</td>
+                  <td th:text="${ item.itemStandard }">1kg</td>
+                  <td th:text="${ item.itemMake }">하림(국내산)</td>
+                  <td th:text="${ item.itemPurchase }"></td>
+                  <td th:text="${ item.itemAmount }">100</td>
+                  <td th:if="${ item.itemSoldoutYn eq 'Y' }" >
+                    <span class="active-circle bg-danger"></span><span th:text="${ '품절' }"></span>
+                  </td>
+                  <td th:if="${ item.itemSoldoutYn eq 'N' }" >
+                    <span class="active-circle bg-success"></span><span th:text="${ '보유' }"></span>
+                  </td>
+                </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="row mx-5">
+            <div class="col p-5">
+              <h4>일정</h4>
+              <div class=" d-flex justify-content-end">
+                <i class="fa fa-plus mx-4" style="color: #aaa; cursor: pointer;"></i>
+                <i class="fa fa-refresh" style="color: #aaa; cursor: pointer;"></i>
+              </div>
+              <div id='calendar-container' class="px-5">
+                <div id='calendar' class="py-1"></div>
+              </div>
+            </div>
+            <div class="col p-5">
+              <h4>공지사항</h4>
+              <div class=" d-flex justify-content-end">
+                <button class="fa fa-plus mx-4" style="color: #aaa; cursor: pointer; border: none"
+                        th:onclick="'location.href=\'/notice/admin/list\''"> 더보기</button>
+                <button class="fa fa-refresh" style="color: #aaa; cursor: pointer; border: none"
+                        th:onclick="'location.href=\'/member/moveMain\''"></button>
+              </div>
+              <table id="noticeTable" class="table">
+                <thead>
+                  <tr>
+                    <th>번호</th>
+                    <th>제목</th>
+                    <th>작성자</th>
+                    <th>등록일</th>
+                  </tr>
+                </thead>
+                <tbody>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- E: main layout -->
+  </div>
+  <!-- E: container -->
+</div>
+
+<!-- table js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+
+<!-- datepicker js -->
+<script src="../assets/js/daterange.js"></script>
+
+<!-- fullcalendar js -->
+<script src='https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/4.2.0/core/main.min.js'></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/4.2.0/interaction/main.min.js'></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/4.2.0/daygrid/main.min.js'></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/4.2.0/timegrid/main.min.js'></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/4.2.0/list/main.min.js'></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    var calendarEl = document.getElementById('calendar');
+    var calendar = new FullCalendar.Calendar(calendarEl, {
+      plugins: [ 'interaction', 'dayGrid', 'timeGrid', 'list' ],
+      height: 'parent',
+      header: {
+        left: 'prev,next today',
+        center: 'title',
+        right: 'dayGridMonth'
+      },
+      defaultView: 'dayGridMonth',
+      navLinks: true, // can click day/week names to navigate views
+      editable: true,
+      eventLimit: true, // allow "more" link when too many events
+      events: [
+        {
+          title: 'All Day Event',
+          start: '2020-02-01',
+        },
+        {
+          title: 'Long Event',
+          start: '2020-02-07',
+          end: '2020-02-10'
+        },
+        {
+          title: 'Conference',
+          start: '2020-02-11',
+          end: '2020-02-13'
+        }
+      ]
+    });
+
+    calendar.render();
+  });
+</script>
+<script>
+  $.ajax({
+    url : "noticeMain",
+    type : "GET",
+    dateType : "json",
+    contentType: 'application/json',
+
+    success:function(data){
+
+      console.table(data)
+
+      const notice = JSON.parse(data);
+
+      console.log(notice);
+
+      const $table = $("#noticeTable tbody");
+      // table 초기화
+      $table.html("");
+
+      for (let idx in notice){
+
+          $tr = $("<tr>");
+          $noticeNo = $('<td class="notice">').text(notice[idx].noticeNo);
+          $noticeName = $('<td class="notice">').text(notice[idx].noticeName.substring(0,20));
+          $empName = $('<td class="notice">').text(notice[idx].empName);
+          $noticeRegistDate = $('<td class="notice">').text(notice[idx].noticeRegistDate);
+
+
+          $tr.append($noticeNo);
+          $tr.append($noticeName);
+          $tr.append($empName);
+          $tr.append($noticeRegistDate);
+
+          $table.append($tr);
+      }
+    },
+
+    error: function(error) {
+
+      console.log(error);
+    }
+  });
+</script>
+</body>
+</html>

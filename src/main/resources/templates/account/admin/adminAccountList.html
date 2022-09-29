@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"/>
+
+  <title>chicken stock</title>
+  <link rel="shortcut icon" th:href="@{ /images/logo.png }" type="image/x-icon">
+
+  <link rel="stylesheet" type="text/css" th:href="@{/css/common/common.css}"/>
+  <link rel="stylesheet" type="text/css" th:href="@{/css/common/style.css}"/>
+  <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+  <link rel="stylesheet" type="text/css" th:href="@{/css/notice/notice.css}"/>
+  <link rel="stylesheet" type="text/css" th:href="@{/css/account/account_admin_list.css}"/>
+  <link rel="stylesheet" type="text/css" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+
+  <script type="text/javascript" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script th:src="@{/js/common.js}"></script>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- S: header -->
+  <div th:include="common/adminHeader.html"></div>
+  <!-- E: header -->
+
+  <!-- S: container -->
+  <div class="container px-0">
+
+    <!-- S: aside -->
+    <div th:replace="common/adminSidebar.html"></div>
+    <!-- E: aside -->
+
+    <!-- S: main layout -->
+    <div class="main_layout">
+      <div class="main_layout_inner">
+
+        <!-- 작업 영역 -->
+        <!-- S: table -->
+        <div class="container-fluid" style="margin-top:30px">
+          <h3>입금 신청내역 조회</h3>
+          <br>
+
+          <table class="table">
+            <colgroup>
+              <col style="width: 8%;">
+              <col style="width: 28%;">
+              <col style="width: 28%;">
+              <col style="width: 10%;">
+              <col style="width: 10%;">
+              <col style="width: 10%;">
+            </colgroup>
+            <thead>
+            <tr>
+              <th>건수</th>
+              <th>가맹점 명</th>
+              <th>입금액</th>
+              <th>일시</th>
+              <th>상태</th>
+              <th>확인</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="accountApply : ${ accountApplyList }">
+              <td th:text="${ accountApply.depositNum }"></td>
+              <td th:text="${ accountApply.storeName }"></td>
+              <td th:text="${ #numbers.formatInteger(accountApply.getAccountDTO().getAccountDeposit(), 0, 'COMMA') }"></td>
+              <td th:text="${ accountApply.getDepositRegistDate() }"></td>
+              <td th:text="${ accountApply.depositYn }"></td>
+              <input type="hidden" id="accountDeposit" th:value="${ accountApply.getAccountDTO().getAccountDeposit() }">
+              <input type="hidden" id="storeName" th:value="${ accountApply.getStoreName() }">
+              <td>
+                <button class="btn btn-warning" type="submit" style="color: #fff;" th:if="${ accountApply.depositYn eq '대기' || accountApply.depositYn eq '반려'}"
+                        th:onclick="'location.href=\'/account/admin/update?depositNum=' + @{${ accountApply.depositNum }} + '&storeName='+ @{${ accountApply.storeName }} + '&accountDeposit='+ @{${ accountApply.getAccountDTO().getAccountDeposit() }} +'\''">승인</button>
+                <button class="btn btn-warning" type="submit" style="color: #fff;" th:if="${ accountApply.depositYn eq '대기'}"
+                        th:onclick="'location.href=\'/account/admin/update2?depositNum=' + @{${ accountApply.depositNum }} + '\''">반려</button>
+              </td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+        <!-- E: table -->
+        <!-- S: paging -->
+        <div class="pagingArea" align="center">
+          <!-- 맨 앞으로 이동 버튼 -->
+          <button class="btn btn-light mx-1" style="cursor:pointer; background: #ccc; color: #fff;"
+                  th:onclick="'location.href=\'/account/admin/list?currentPage='+ @{${selectCriteria.startPage}} + '\''"
+                  th:disabled="${selectCriteria.pageNo == 1}"
+          >
+            <<
+          </button>
+          <!-- 이전 페이지 버튼 -->
+          <button class="btn btn-light mx-1" style="cursor:pointer; background: #ccc; color: #fff;"
+                  th:onclick="'location.href=\'/account/admin/list?currentPage='+ @{${selectCriteria.pageNo - 1}} + '\''"
+                  th:disabled="${selectCriteria.pageNo == 1}"
+          >
+            <
+          </button>
+          <!-- 숫자 버튼 -->
+          <th:block th:each="page : ${#numbers.sequence(selectCriteria.startPage, selectCriteria.endPage)}">
+            <button class="btn btn-warning mx-1" style="cursor:pointer; color: #fff;"
+                    th:text="${ page }"
+                    th:onclick="'location.href=\'/account/admin/list?currentPage='+ @{${page}} + '\''"
+                    th:disabled="${ selectCriteria.pageNo eq page }">
+            </button>
+          </th:block>
+
+          <!-- 다음 페이지 버튼 -->
+          <button class="btn btn-light mx-1" style="cursor:pointer; background: #ccc; color: #fff;"
+                  th:onclick="'location.href=\'/account/admin/list?currentPage='+ @{${selectCriteria.pageNo + 1}} + '\''"
+                  th:disabled="${selectCriteria.pageNo == selectCriteria.maxPage}"
+          >
+            >
+          </button>
+          <!-- 마지막 페이지로 이동 버튼 -->
+          <button class="btn btn-light mx-1" style="cursor:pointer; background: #ccc; color: #fff;"
+                  th:onclick="'location.href=\'/account/admin/list?currentPage='+ @{${selectCriteria.maxPage}} + '\''"
+                  th:disabled="${selectCriteria.pageNo == selectCriteria.maxPage}"
+          >
+            >>
+          </button>
+        </div>
+        <!-- E: paging -->
+      </div>
+    </div>
+    <!-- E: main layout -->
+  </div>
+  <!-- E: container -->
+</div>
+<script th:inline="javascript">
+  let message = [[${message}]];
+
+  if(message != null && message !== '') {
+    alert(message);
+  }
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+</body>
+</html>

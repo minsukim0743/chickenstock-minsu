@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"/>
+
+  <title>chicken stock</title>
+  <link rel="shortcut icon" th:href="@{ /images/logo.png }" type="image/x-icon">
+
+  <link rel="stylesheet" type="text/css" th:href="@{/css/common/common.css}"/>
+  <link rel="stylesheet" type="text/css" th:href="@{/css/common/style.css}"/>
+  <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+  <link rel="stylesheet" type="text/css" th:href="@{/css/notice/notice.css}"/>
+  <link rel="stylesheet" type="text/css" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+
+  <script type="text/javascript" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script th:src="@{/js/common.js}"></script>
+</head>
+<body>
+  <div class="wrap">
+
+    <!-- S: header -->
+    <div th:include="common/adminHeader.html"></div>
+    <!-- E: header -->
+
+    <!-- S: container -->
+    <div class="container px-0">
+
+      <!-- S: aside -->
+      <div th:replace="common/adminSidebar.html"></div>
+      <!-- E: aside -->
+
+      <!-- S: main layout -->
+      <div class="main_layout">
+        <div class="main_layout_inner">
+
+          <!-- 작업 영역 -->
+          <!-- S: table -->
+          <div class="container-fluid" style="margin-top:30px">
+            <h3>가맹점 정보 수정</h3>
+			      <br>
+
+            <form th:action="@{/store/admin/update}" method="post">
+              <table class="table">
+                <colgroup>
+                  <col style="width:170px">
+                  <col>
+                </colgroup>
+                <tbody>
+                      <input type="hidden" name="storeId" th:value="${ store.storeId }"/>
+                  <tr>
+                    <th>계좌번호</th>
+                    <td>
+                      <input type="text" name="storeAccount" th:value="${ store.storeAccount }"/>
+                    </td>
+                  </tr>
+                  <tr>
+                    <th>대표자 명</th>
+                    <td>
+                      <input type="text" name="storeRep" th:value="${ store.storeRep }"/>
+                    </td>
+                  </tr>
+                  <tr>
+                    <th>주소</th>
+                    <td>
+                      <input type="text" name="storeAddress" th:value="${ store.storeAddress }"/>
+                    </td>
+                  </tr>
+                  <tr>
+                    <th>전화번호</th>
+                    <td>
+                      <input type="text" name="storePhone" th:value="${ store.storePhone }"/>
+                    </td>
+                  </tr>
+                  <tr>
+                    <th>이메일</th>
+                    <td>
+                      <input type="text" name="storeEmail" th:value="${ store.storeEmail }"/>
+                    </td>
+                  </tr>
+                  <tr>
+                    <th>사업자 등록번호</th>
+                    <td>
+                      <input type="text" name="storeNo" th:value="${ store.storeNo }"/>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+                <div class="input-group mb-3 col-7 flex-right">
+                  <button class="btn btn-warning ml-1" type="submit" style="color:#fff">수정</button>
+                  <button class="btn btn-warning ml-1" type="reset" style="color:#fff"
+                          th:onclick="'location.href=\'/store/admin/list\''">취소</button>
+                </div>
+            </form>
+          </div>
+          <!-- E: table -->
+        </div>
+      </div> 
+      <!-- E: main layout -->
+    </div>
+    <!-- E: container -->
+  </div>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+</body>
+</html>

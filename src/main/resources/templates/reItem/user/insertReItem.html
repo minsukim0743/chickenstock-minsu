@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"/>
+
+    <title>chicken stock</title>
+    <link rel="shortcut icon" th:href="@{ /images/logo.png }" type="image/x-icon">
+
+    <link rel="stylesheet" type="text/css" th:href="@{/css/common/common.css}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/returnItem/returnReItem.css}"/>
+    <!-- datepicker js & css -->
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+
+    <!-- table css -->
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/common/style.css}"/>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script th:src="@{/js/common.js}"></script>
+    <style>
+        .tableWrapper {
+            width: auto;
+            height: 600px;
+            overflow: auto;
+            border: 1px solid #000;
+        }
+
+        #userListTable {
+            width: auto;
+            border: 0px;
+            border-collapse: collapse;
+        }
+
+        #userListTable th {
+            position: sticky;
+            top: 0px;
+            background-color: #ffc107 !important;
+            color: #fff;
+            z-index: 999px;
+        }
+    </style>
+
+</head>
+<body>
+<div class="wrap">
+
+    <!-- S: header -->
+    <div th:include="common/userHeader.html"></div>
+    <!-- S: header -->
+
+    <!-- S: container -->
+    <div class="container px-0">
+
+        <!-- sidebar -->
+        <div th:replace="common/userSidebar.html"></div>
+
+        <!-- S: main layout -->
+        <div class="main_layout">
+            <div class="main_layout_inner">
+
+                <!-- 작업 영역 -->
+                <!-- S: table -->
+                <div class="container-fluid" style="margin-top:30px">
+                    <h3>반품 신청</h3>
+                    <br>
+                    <form id="rItemForm" name="rItemForm" th:action="@{/reItem/user/insertReItem}" method="post">
+                    <div class="input-group mb-3 col-12 float-start" style="margin-left: 970px;" >
+                        <select id="rReason" name="rReason" class="form-control col-4" style="max-width: max-content; margin-right: 10px; display: inline-block;">
+                            <option value="date"> - 반품사유 - </option>
+                            <option value="date1">실수로 잘못 주문함</option>
+                            <option value="date2">배송중 손상됨</option>
+                            <option value="date3">더이상 필요하지 않음</option>
+                            <option value="date4">유통기한이 지난(짧은) 상품 배송</option>
+                        </select>
+                        <input type="text" class="release-input title" value="총반품액" style="width: 120px; text-align: center; margin-right: 2px;" readonly>
+                        <input type="text" id="returnTotalMoney" class="returnTotalMoney"  style="width: 150px; background-color: #f5f5f9" readonly>
+                        <input type="hidden" name="returnTotalMoney" id="reTotal">
+                        <button type="button" class="btn btn-warning mx-1" style="color: #fff; margin-left: 10px;" onclick="insertList()">반품신청</button>
+                    </div>
+                    <div class="tableWrapper">
+                        <table class="table" id="waill" style="margin-top: -14px;">
+                            <thead id="userListTable">
+                            <tr>
+                                <th>상품코드</th>
+                                <th>썸네일</th>
+                                <th>상품명</th>
+                                <th>카테고리</th>
+                                <th>규격</th>
+                                <th>제조사(원산지)</th>
+                                <th>판매가격</th>
+                                <th>재고수량</th>
+                                <th>반품수량</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each=" sItem : ${ storeItems }">
+                                <td th:text="${ sItem.itemNo }"></td>
+                                <input type="hidden" name="itemNo2" th:value="${ sItem.itemNo }">
+                                <td>
+                                    <div class="img-info">
+                                        <div class="img-info__img">
+                                            <img th:src="'/itemImage/' + ${ sItem.fileName }" alt="">
+                                        </div>
+                                    </div>
+                                </td>
+                                <td th:text="${ sItem.itemName }"></td>
+                                <td th:text="${ sItem.categoryName }"></td>
+                                <td th:text="${ sItem.itemStandard }"></td>
+                                <td th:text="${ sItem.itemMake }"></td>
+                                <td id="itemPurchase" class="itemPurchase" th:text="|${ #numbers.formatInteger(sItem.itemSales, 0, 'COMMA') }원|"></td>
+                                <td th:text="${ sItem.storeAmount }"></td>
+                                <td>
+                                    <input type="number" name="returnAmount" min="0" th:max="${ sItem.storeAmount }" style="width:60px; text-align: center; border: 1px solid rgb(255, 255, 255); border-bottom: 1px solid;" class="returnAmount" id="returnCount" onchange="inputValueChange(this);">
+                                    <input type="hidden" name="returnCount2">
+                                    <input type="hidden" id="returnItemMoney" class="returnItemMoney">
+                                    <button type="submit" style="border : none; background-color: #fff;"></button>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div> <!-- E: wail  -->
+                    </form>
+                </div>
+                <!-- E: table -->
+            </div>
+        </div>
+        <!-- E: main layout -->
+    </div>
+    <!-- E: container -->
+</div>
+<!-- 반품신청 -->
+<script type="text/javascript">
+
+    function inputValueChange(check){
+
+         // 반품수량
+         let inputValue = $(check.parentElement)[0].children[0].value;
+
+         $(check.parentElement)[0].children[1].value = inputValue;
+
+        let returnAmount = $(".returnAmount");
+        let itemPurchase = $(".itemPurchase");
+
+        let total = 0;
+        for(let i = 0; i < returnAmount.length; i++){
+
+            total += returnAmount[i].value * parseInt(itemPurchase[i].innerText.replace(',',''));
+        }
+        console.log(total);
+        document.getElementById('returnTotalMoney').value = total.toLocaleString('ko-KR') + "원";
+        document.getElementById('reTotal').value = total;
+
+    }
+
+    function insertList() {
+        let result = confirm("반품신청 하시겠습니까?");
+
+        if(result) {
+            let f = document.getElementById("rReason");
+            if (f.value == "date") {
+
+                alert("반품사유를 선택해주세요");
+                f.focus();
+
+                return false;
+            }else{
+                $('#rItemForm').submit();
+
+                alert("반품신청이 완료되었습니다.");
+            }
+        }else{
+
+            return false;
+        }
+
+    }
+</script>
+<!-- table js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+</body>
+</html>

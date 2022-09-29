@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"/>
+
+    <title>chicken stock</title>
+
+    <link rel="stylesheet" type="text/css" th:href="@{/css/common/common.css}"/>
+    <!-- table css -->
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/item/item_receive.css}"/>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <!-- datepicker js & css -->
+    <script type="text/javascript" th:src="@{http://code.jquery.com/jquery-3.6.0.min.js}"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css"/>
+
+    <script th:src="@{/js/common.js}"></script>
+</head>
+<body>
+<div class="wrap">
+
+    <!-- S: header -->
+    <div th:include="common/userHeader.html"></div>
+    <!-- S: header -->
+
+    <!-- S: container -->
+    <div class="container px-0">
+
+        <!-- S: aside -->
+        <div th:include="common/userSidebar.html"></div>
+        <!-- E: aside -->
+
+        <!-- S: main layout -->
+        <div class="main_layout">
+            <div class="main_layout_inner">
+
+                <!-- 작업 영역 -->
+                <!-- S: table -->
+                <div class="container-fluid" style="margin-top:30px">
+                    <h3>입고 관리</h3>
+                    <br>
+                    <form action="/storeReceive/user/list">
+                        <div>
+                            <div class="input-group mb-3 col-12 float-start">
+                                <select id="searchCondition" name="searchCondition" class="form-control col-2" style="max-width: max-content;">
+                                    <option value="itemName">상품명</option>
+                                </select>
+                                <div id="reportrange" class="form-control" style="cursor: pointer; max-width: max-content;">
+                                    <i class="fa fa-calendar"></i>
+                                    <span class="date" style="margin-left: 7px;">
+                                        <!-- 날짜 입력한 값 들어감 -->
+                                    </span>
+                                    <input type="hidden" id="startDate" name="startDate">
+                                    <input type="hidden" id="endDate" name="endDate">
+                                </div>
+
+                                <!-- <button class="btn btn-light px-3" type="button" disabled></button> -->
+                                <!-- <select id="searchCondition" class="form-control col-1" style="max-width: max-content;">
+                                  <option value="date">상품명</option>
+                                </select> -->
+                                <input class="form-control me-2 col-3" type="text" name="searchValue" id="searchValue" placeholder="검색어를 입력해주세요.">
+                                <button class="btn btn-warning" type="submit" style="color:#fff">검색</button>
+                            </div>
+
+
+                            <table class="table">
+                                <thead>
+                                <tr>
+                                    <th>번호</th>
+                                    <th>발주 번호</th>
+                                    <th>입고 번호</th>
+                                    <th>상품명</th>
+                                    <th>입고 수량</th>
+                                    <th>입고 금액</th>
+                                    <th>주문일</th>
+                                    <th>입고일</th>
+                                    <th>가맹점</th>
+                                    <th>입고 상태</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <div th:each="release, stat : ${ releaseList }">
+                                    <tr class="detail-main">
+                                        <td th:text="${ release.rNum }">1</td>
+                                        <td th:text="${ release.orderCode }">190201</td>
+                                        <td th:if="${ release.recCode eq null }"></td>
+                                        <td th:if="${ release.recCode ne null }" th:text="${ release.recCode }"></td>
+                                        <td th:text="${ release.relName }"></td>
+                                        <td th:if="${ release.recCode eq null }"></td>
+                                        <td th:if="${ release.recCode ne null }" th:text="${ release.recAmount }"></td>
+                                        <td th:if="${ release.recCode eq null }"></td>
+                                        <td th:if="${ release.recCode ne null }" th:text="|${ #numbers.formatInteger(release.recTotalMoney, 0, 'COMMA') }원|"></td>
+                                        <td th:text="${ release.orderDate }"></td>
+                                        <td th:if="${ release.recCode eq null }"></td>
+                                        <td th:if="${ release.recCode ne null }" th:text="${ release.recDate }"></td>
+                                        <td th:text="${ release.storeName }"></td>
+                                        <td th:if="${ release.recCode eq null }"><button type="button" class="btn btn-warning btn-sm" onclick="insertReceive(this)" style="color: #fff;">입고 등록</button></td>
+                                        <td th:if="${ release.recCode ne null }"><button type="button" class="btn btn-light btn-sm" disabled style="color: #fff; background: #ccc;">입고 완료</button></td>
+                                    </tr>
+                                    <tr class="detail-sub-tr" th:if="${ receiveItem.get(stat.index).size() ne 0 }">
+                                        <td class="detail-sub-td p-0" colspan="10">
+                                            <div class="detail-sub" style="display: none">
+                                                <table width="100%" th:each="receive : ${ receiveItem }"
+                                                       th:if="${ release.relCode eq receive[0].relCode}"
+                                                class="recTable" id="recTable">
+                                                    <thead>
+                                                    <tr>
+                                                        <th>번호</th>
+                                                        <th>발주 번호</th>
+                                                        <th>입고 번호</th>
+                                                        <th>상품코드</th>
+                                                        <th>썸네일</th>
+                                                        <th>상품명</th>
+                                                        <th>카테고리</th>
+                                                        <th>규격</th>
+                                                        <th>제조사</th>
+                                                        <th>발주 수량</th>
+                                                        <th>출고 수량</th>
+                                                        <th>입고 단가</th>
+                                                        <th>입고 금액</th>
+                                                        <th th:if="${ release.recCode eq null }" th:text="주문일">주문일</th>
+                                                        <th th:if="${ release.recCode ne null }" th:text="입고일">주문일</th>
+                                                    </tr>
+                                                    </thead>
+                                                    <tr th:each="receive2, stat : ${ receive }">
+                                                        <td th:text="${ stat.count }">1</td>
+                                                        <td th:text="${ receive2.orderCode }">190201</td>
+<!--                                                        <td th:if="${ releaseList.get(stat.index).recCode eq null }"></td>-->
+<!--                                                        <td th:if="${ releaseList.get(stat.index).recCode ne null }" th:text="${ receive2.recCode }"></td>-->
+                                                        <td th:text="${ receive2.recCode }"></td>
+                                                        <td class="recItemNo" th:value="${ receive2.itemNo }" th:text="${ receive2.itemNo }">100001</td>
+                                                        <td>
+                                                            <div class="img-info">
+                                                                <div class="img-info__img">
+                                                                    <img th:src="'/itemImage/' + ${ receive2.fileName }" alt="">
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                        <td th:text="${ receive2.itemName }">닭다리</td>
+                                                        <td th:text="${ receive2.categoryName }">식재료</td>
+                                                        <td th:text="${ receive2.itemStandard }">1kg</td>
+                                                        <td th:text="${ receive2.itemMake }">하림</td>
+                                                        <td class="ordAmount" th:text="${ receive2.orderAmount }">30</td>
+                                                        <td class="recAmount" th:value="${ receive2.relAmount }" th:text="${ receive2.relAmount }"></td>
+                                                        <td class="sales" th:value="${ receive2.itemSales }" th:text="|${ #numbers.formatInteger(receive2.itemSales, 0, 'COMMA') }원|">4,500</td>
+                                                        <td th:if="${ receive2.recCode eq null }"></td>
+                                                        <td th:if="${ receive2.recCode ne null }" th:text="|${ #numbers.formatInteger(receive2.recMoney, 0, 'COMMA') }원|"></td>
+                                                        <td th:if="${ receive2.recCode eq null }" th:text="${ receive2.orderDate }"></td>
+                                                        <td th:if="${ receive2.recCode ne null }" th:text="${ receive2.recDate }"></td>
+                                                        <input type="hidden" id="categoryNo" class="categoryNo" th:value="${ receive2.itemCategory.categoryNo }">
+                                                        <input type="hidden" id="recOrderNo" class="recOrderNo" th:value="${ receive2.orderNo }">
+                                                    </tr>
+                                                </table>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </div>
+                                </tbody>
+                            </table>
+                        </div>
+                    </form>
+
+                </div>
+                <!-- E: table -->
+                <!-- S: paging -->
+                <!-- 페이지 처리 -->
+                <div class="pagingArea" align="center">
+                    <!-- 맨 앞으로 이동 버튼 -->
+                    <button class="btn btn-light mx-1" style="cursor:pointer; background: #ccc; color: #fff;"
+                            th:onclick="'location.href=\'/storeReceive/user/list?currentPage='+ @{${selectCriteria.startPage}} + '\''"
+                            th:disabled="${selectCriteria.pageNo == 1}"
+                    >
+                        <<
+                    </button>
+                    <!-- 이전 페이지 버튼 -->
+                    <button class="btn btn-light" style="cursor:pointer; background: #ccc; color: #fff;"
+                            th:onclick="'location.href=\'/storeReceive/user/list?currentPage='+ @{${selectCriteria.pageNo - 1}} + '\''"
+                            th:disabled="${selectCriteria.pageNo == 1}"
+                    >
+                        <
+                    </button>
+                    <!-- 숫자 버튼 -->
+                    <th:block th:each="page : ${#numbers.sequence(selectCriteria.startPage, selectCriteria.endPage)}">
+                        <button class="btn btn-warning mx-1" style="cursor:pointer; color: #fff;"
+                                th:text="${ page }"
+                                th:onclick="'location.href=\'/storeReceive/user/list?currentPage='+ @{${page}} + '\''"
+                                th:disabled="${ selectCriteria.pageNo eq page }">
+                        </button>
+                    </th:block>
+
+                    <!-- 다음 페이지 버튼 -->
+                    <button class="btn btn-light mx-1" style="cursor:pointer; background: #ccc; color: #fff;"
+                            th:onclick="'location.href=\'/storeReceive/user/list?currentPage='+ @{${selectCriteria.pageNo + 1}} + '\''"
+                            th:disabled="${selectCriteria.pageNo == selectCriteria.maxPage}"
+                    >
+                        >
+                    </button>
+                    <!-- 마지막 페이지로 이동 버튼 -->
+                    <button class="btn btn-light mx-1" style="cursor:pointer; background: #ccc; color: #fff;"
+                            th:onclick="'location.href=\'/storeReceive/user/list?currentPage='+ @{${selectCriteria.maxPage}} + '\''"
+                            th:disabled="${selectCriteria.pageNo == selectCriteria.maxPage}"
+                    >
+                        >>
+                    </button>
+                </div>
+                <!-- E: paging -->
+
+            </div>
+        </div>
+        <!-- E: main layout -->
+    </div>
+    <!-- E: container -->
+</div>
+
+<!-- 체크 박스 전체 선택 -->
+<script type="text/javascript">
+    function selectAll(selectAll)  {
+        const checkboxes = document.getElementsByName('option');
+
+        checkboxes.forEach((checkbox) => {
+            checkbox.checked = selectAll.checked;
+        })
+    }
+</script>
+
+<!--&lt;!&ndash; 입고 등록 메시지 띄우기 &ndash;&gt;-->
+<!--<script>-->
+<!--    function insertReceive(check){-->
+<!--        console.log(check);-->
+
+<!--        // var answer = confirm('입고를 진행하시겠습니까?');-->
+<!--        // if(answer){-->
+<!--        //     // location.href='user_receive.html';-->
+<!--        //-->
+<!--        // }-->
+<!--        // if(answer){-->
+<!--        //     var answer2 = alert('입고가 완료되었습니다.'); // 선택 항목만 입고되도록, 입고등록 완료시 alert 띄우고 조회화면으로 이동-->
+<!--        // }-->
+
+<!--    }-->
+<!--</script>-->
+
+<!-- table js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+
+<!-- datepicker js -->
+<script>
+    var jb = jQuery.noConflict();
+    var form = document.getElementsByClassName('form-check');
+
+    jb(document).ready(function () {
+        // 1. 상품 상세 조회
+        // $("tbody tr").click(function(){
+        //       location.href = 'javascript:showItemDetail()';
+        // });
+        // $("tbody tr input").click(function(event){
+        //   event.stopPropagation();
+        // });
+        // 2. 상품 등록
+        jb("#btnInsertItem").click(function () {
+            location.href = 'javascript:showInsertItem()';
+        });
+
+        jb(".detail-main").click(function () {
+            jb(this).next(".detail-sub-tr").find(".detail-sub").slideToggle(300);
+            jb(this).toggleClass('on').siblings().removeClass('on');
+            jb(this).next(".detail-sub-tr").find(".detail-sub").siblings(".detail-sub").slideUp(300);
+            //
+            // var str = "";
+            // var tdArr = new Array();
+            //
+            // var tr = $(this);
+            // var td = tr.children();
+            //
+            // alert(tr.text());
+
+        });
+
+        $(function () {
+
+            let start = moment();
+            let end = moment();
+
+            function cb(start, end) {
+                jb('#reportrange span').html(start.format('YYYY-MM-DD') + ' ~ ' + end.format('YYYY-MM-DD'));
+                jb('#reportrange #startDate').val(start.format('YYYY-MM-DD'));
+                jb('#reportrange #endDate').val(end.format('YYYY-MM-DD'));
+            }
+
+            $('#reportrange').daterangepicker({
+                showDropdowns: true,
+                minYear: 2020,
+                maxYear: 2030,
+                "autoApply": true,
+                autoUpdateInput: false,
+                "linkedCalendars": false,
+                "locale": {
+                    "format": "YYYY/MM/DD",
+                    "separator": " ~ ",
+                    "applyLabel": "확인",
+                    "cancelLabel": "취소",
+                    "fromLabel": "From",
+                    "toLabel": "To",
+                    "customRangeLabel": "Custom",
+                    "weekLabel": "W",
+                    "daysOfWeek": [
+                        "일",
+                        "월",
+                        "화",
+                        "수",
+                        "목",
+                        "금",
+                        "토"
+                    ],
+                    "monthNames": [
+                        "1월",
+                        "2월",
+                        "3월",
+                        "4월",
+                        "5월",
+                        "6월",
+                        "7월",
+                        "8월",
+                        "9월",
+                        "10월",
+                        "11월",
+                        "12월"
+                    ],
+                    "firstDay": 7
+                },
+                startDate: start,
+                endDate: end,
+            }, cb)
+
+            cb(start, end);
+        });
+    });
+
+</script>
+
+<!-- 입고 -->
+<script>
+    function insertReceive(check){
+
+        let click = $(check.parentElement.parentElement.nextElementSibling.getElementsByClassName('recTable')[0].children[1]);
+        console.log(click);
+        let tr = click[0].children;
+
+        let receiveList = []; // 배열
+        let receive = {};  // 객체
+        // push를 이용해서 객체배열을 만들려고함
+
+        let count = 0;
+        for(let i = 0; i < tr.length; i++){
+
+            if($(click[0].children).find(".recAmount")[i].innerText == $(click[0].children).find(".ordAmount")[i].innerText){
+                count++;
+            }
+        }
+        console.log(tr.length);
+
+        for(let i = 0; i < tr.length; i++){
+
+            if(count == tr.length){
+
+                receive = {
+                    recItemNo : $(click[0].children).find(".recItemNo")[i].innerText,
+                    recAmount : $(click[0].children).find(".recAmount")[i].innerText,
+                    sales : $(click[0].children).find(".sales")[i].innerText.replace(/[^0-9]/gi, ''),
+                    categoryNo : $(click[0].children).find(".categoryNo").val(),
+                    recOrderNo : $(click[0].children).find(".recOrderNo").val()
+                }
+                receiveList.push(receive);
+                } else{
+                alert('발주 수량과 출고 수량을 다시 확인해주세요.');
+                return;
+            }
+        }
+        console.log(receiveList);
+
+        let answer = confirm('입고를 진행하시겠습니까?');
+        if(answer){
+            let form = document.createElement('form');
+
+            let hidden = document.createElement('input');
+            hidden.setAttribute('type', 'hidden');
+            hidden.setAttribute('name', 'receiveList');
+            hidden.setAttribute('value', JSON.stringify(receiveList));
+
+            form.appendChild(hidden);
+            form.setAttribute('method', 'post');
+            form.setAttribute('action', '/storeReceive/user/regist');
+            document.body.appendChild(form);
+            form.submit();
+        }
+
+
+
+
+        // if(rowLength == 0){
+        //     alert('입고할 품목을 등록해주세요.');
+        // } else{
+            // let answer = confirm('입고를 진행하시겠습니까?');
+            // let receiveItem = [];
+            // let receiveItemNo = '';
+            // let receiveAmount = '';
+            // let receiveSales = '';
+            // let receiveOrderNo = '';
+            // for(let i = 0; i < rowLength; i++){
+            //     receiveItemNo = document.getElementsByClassName('recItemNo')[i].value;
+            //     receiveAmount = document.getElementsByClassName('recAmount')[i].value;
+            //     receiveSales = document.getElementsByClassName('sales')[i].value;
+            //     receiveOrderNo = document.getElementsByClassName('recOrderNo')[i].value;
+            //     receiveItem[i] = receiveItemNo + ' ' + receiveAmount + ' ' + receiveSales + ' ' + receiveOrderNo;
+            // }
+            // console.log(receiveItem);
+            // alert(receiveItem);
+            //
+            // let form = document.createElement('form');
+            //
+            // let registList = document.createElement('input');
+            // registList.setAttribute('type', 'hidden');
+            // registList.setAttribute('name', 'registList');
+            // registList.setAttribute('value', receiveItem.toString());
+            //
+            // let empName = document.createElement('input');
+            // empName.setAttribute('type', 'hidden');
+            // empName.setAttribute('name', 'empName');
+            // empName.setAttribute('value', empNameHidden);
+            //
+            // form.appendChild(registList);
+            // form.appendChild(empName);
+            // form.setAttribute('method', 'post');
+            // form.setAttribute('action', '/receive/admin/regist');
+            // document.body.appendChild(form);
+            // form.submit();
+        // }
+    }
+</script>
+</body>
+</html>
