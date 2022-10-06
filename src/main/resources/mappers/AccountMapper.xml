@@ -27,8 +27,8 @@
     </resultMap>
 
     <resultMap id="balanceResultMap" type="BalanceDTO">
-        <id property="storeName" column="STORE_NAME"></id>
-        <result property="balance" column="BALANCE"></result>
+        <id property="storeName" column="STORE_NAME"/>
+        <result property="balance" column="BALANCE"/>
 
         <collection property="accountDTO" ofType="AccountDTO">
             <result property="storeName" column="STORE_NAME"/>
