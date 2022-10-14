@@ -64,7 +64,7 @@ public class AccountController {
 
         SelectCriteria selectCriteria = null;
 
-        /* 페이지 이동시 인자값 같이 넘기기*/
+        /* 페이지 이동시 인자값 같이 넘기기 */
         selectCriteria = Pagenation.getSelectCriteria(pageNo, totalCount, limit, buttonAmount);
         log.info("[AccountController] selectCriteria = " + selectCriteria);
 

@@ -38,6 +38,7 @@ public class NoticeController {
     @GetMapping("/admin/list")
     public ModelAndView adminNoticeList(ModelAndView mv, HttpServletRequest request){
 
+        /* 현재 페이지 인덱스 가져오기 */
         String currentPage = request.getParameter("currentPage");
         int pageNo = 1;
 
@@ -45,24 +46,31 @@ public class NoticeController {
             pageNo = Integer.parseInt(currentPage);
         }
 
+        /* 검색 조건 가져오기 */
         String searchCondition = request.getParameter("searchCondition");
+        /* 검색 값 가져오기 */
         String searchValue = request.getParameter("searchValue");
 
         Map<String, String> searchMap = new HashMap<>();
+        /* HaspMap에 검색조건, 검색 값 담아 조회할 때 같이 넘겨주기 */
         searchMap.put("searchCondition", searchCondition);
         searchMap.put("searchValue", searchValue);
 
         log.info("[NoticeController] searchMap = " + searchMap);
 
+        /* 페이징처리를 위해 전체 개수 조회 */
         int totalCount = noticeService.selectTotalCount(searchMap);
 
         log.info("[NoticeController] totalCount = " + totalCount);
 
+        /* 한 페이지당 최대 조회 개수 */
         int limit = 6;
+        /* 페이지 이동 버튼 최대 개수 */
         int buttonAmount = 5;
 
         SelectCriteria selectCriteria = null;
 
+        /* 페이지 이동시 인자값 같이 넘기기 */
         if(searchCondition != null && !"".equals(searchCondition)) {
             selectCriteria = Pagenation.getSelectCriteria(pageNo, totalCount, limit, buttonAmount, searchCondition, searchValue);
         } else {
@@ -71,6 +79,7 @@ public class NoticeController {
 
         log.info("[NoticeController] selectCriteria = " + selectCriteria);
 
+        /* 공지사항 리스트 조회하기 */
         List<NoticeDTO> noticeList = noticeService.selectNoticeList(selectCriteria);
 
         log.info("[NoticeController] noticeList = " + noticeList);
@@ -86,6 +95,7 @@ public class NoticeController {
     @GetMapping("/user/list")
     public ModelAndView userNoticeList(ModelAndView mv, HttpServletRequest request){
 
+        /* 현재 페이지 인덱스 가져오기 */
         String currentPage = request.getParameter("currentPage");
         int pageNo = 1;
 
@@ -93,24 +103,31 @@ public class NoticeController {
             pageNo = Integer.parseInt(currentPage);
         }
 
+        /* 검색 조건 가져오기 */
         String searchCondition = request.getParameter("searchCondition");
+        /* 검색 값 가져오기 */
         String searchValue = request.getParameter("searchValue");
 
+        /* HaspMap에 검색조건, 검색 값 담아 조회할 때 같이 넘겨주기 */
         Map<String, String> searchMap = new HashMap<>();
         searchMap.put("searchCondition", searchCondition);
         searchMap.put("searchValue", searchValue);
 
         log.info("[NoticeController] searchMap = " + searchMap);
 
+        /* 페이징처리를 위해 전체 개수 조회 */
         int totalCount = noticeService.selectTotalCount(searchMap);
 
         log.info("[NoticeController] totalCount = " + totalCount);
 
+        /* 한 페이지당 최대 조회 개수 */
         int limit = 6;
+        /* 페이지 이동 버튼 최대 개수 */
         int buttonAmount = 5;
 
         SelectCriteria selectCriteria = null;
 
+        /* 페이지 이동시 인자값 같이 넘기기 */
         if(searchCondition != null && !"".equals(searchCondition)) {
             selectCriteria = Pagenation.getSelectCriteria(pageNo, totalCount, limit, buttonAmount, searchCondition, searchValue);
         } else {
@@ -119,6 +136,7 @@ public class NoticeController {
 
         log.info("[NoticeController] selectCriteria = " + selectCriteria);
 
+        /* 공지사항 리스트 조회하기 */
         List<NoticeDTO> noticeList = noticeService.selectNoticeList(selectCriteria);
 
         log.info("[NoticeController] noticeList = " + noticeList);
