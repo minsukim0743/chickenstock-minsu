@@ -80,7 +80,12 @@
     <!-- 1:1 문의 인덱스로 해당 게시글 내용 조회하기 -->
     <select id="selectCounselByNo" resultMap="counselResultMap">
         SELECT
-               *
+               COUNSEL_NO
+             , COUNSEL_NAME
+             , COUNSEL_CONTENT
+             , COUNSEL_REGIST_DATE
+             , STORE_NAME
+             , COUNSEL_YN
           FROM COUNSEL
          WHERE COUNSEL_NO = #{ counselNo }
     </select>
@@ -115,7 +120,10 @@
     <!-- 1:1 문의 인덱스로 해당 1:1 문의 답변 내용 조회 -->
     <select id="selectCounselApplyByNo" resultMap="counselApplyResultMap">
         SELECT
-               *
+               COUNSEL_NO
+             , ANSWER_CONTENT
+             , ANSWER_REGIST_DATE
+             , EMP_NAME
           FROM COUNSEL_APPLY
          WHERE COUNSEL_NO = #{ counselNo }
     </select>
@@ -123,7 +131,12 @@
     <!-- 현재 로그인 계정 1:1 문의 리스트 조회하기 -->
     <select id="selectCounselByStoreName" resultMap="counselResultMap">
         SELECT
-               *
+               COUNSEL_NO
+             , COUNSEL_NAME
+             , COUNSEL_CONTENT
+             , COUNSEL_REGIST_DATE
+             , STORE_NAME
+             , COUNSEL_YN
           FROM COUNSEL
          WHERE STORE_NAME = #{ storeName }
     </select>
