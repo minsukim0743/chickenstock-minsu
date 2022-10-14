@@ -1,5 +1,6 @@
 package com.chicken.project.counsel.model.service;
 
+import com.chicken.project.common.paging.SelectCriteria;
 import com.chicken.project.counsel.model.dao.CounselMapper;
 import com.chicken.project.counsel.model.dto.CounselApplyDTO;
 import com.chicken.project.counsel.model.dto.CounselDTO;
@@ -27,9 +28,9 @@ public class CounselServiceImpl implements CounselService{
 
     }
     @Override
-    public List<CounselDTO> selectCounsel() {
+    public List<CounselDTO> selectCounsel(SelectCriteria selectCriteria) {
 
-        return counselMapper.selectCounsel();
+        return counselMapper.selectCounsel(selectCriteria);
     }
 
     @Override
@@ -60,5 +61,11 @@ public class CounselServiceImpl implements CounselService{
     public List<CounselDTO> selectCounselByStoreName(String storeName) {
 
         return counselMapper.selectCounselByStoreName(storeName);
+    }
+
+    @Override
+    public int selectTotalCount() {
+
+        return counselMapper.selectTotalCount();
     }
 }

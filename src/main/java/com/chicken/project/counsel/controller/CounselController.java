@@ -1,5 +1,7 @@
 package com.chicken.project.counsel.controller;
 
+import com.chicken.project.common.paging.Pagenation;
+import com.chicken.project.common.paging.SelectCriteria;
 import com.chicken.project.counsel.model.dto.CounselApplyDTO;
 import com.chicken.project.counsel.model.dto.CounselDTO;
 import com.chicken.project.counsel.model.service.CounselService;
@@ -48,11 +50,30 @@ public class CounselController {
 
     /* 관리자 1:1 문의 조회 */
     @GetMapping("/admin/list")
-    public ModelAndView adminCounselListPage(ModelAndView mv){
+    public ModelAndView adminCounselListPage(ModelAndView mv, HttpServletRequest request){
 
-        List<CounselDTO> counselList = counselService.selectCounsel();
+        String currentPage = request.getParameter("currentPage");
+        int pageNo = 1;
+
+        if(currentPage != null && !"".equals(currentPage)) {
+            pageNo = Integer.parseInt(currentPage);
+        }
+
+        int totalCount = counselService.selectTotalCount();
+        log.info("[CounselController] totalCount = " + totalCount);
+
+        int limit = 6;
+        int buttonAmount = 5;
+
+        SelectCriteria selectCriteria = null;
+
+        selectCriteria = Pagenation.getSelectCriteria(pageNo, totalCount, limit, buttonAmount);
+
+        log.info("[CounselController] selectCriteria = " + selectCriteria);
+        List<CounselDTO> counselList = counselService.selectCounsel(selectCriteria);
 
         mv.addObject("counselList", counselList);
+        mv.addObject("selectCriteria", selectCriteria);
         mv.setViewName("/counsel/admin/adminCounselList");
 
         return mv;

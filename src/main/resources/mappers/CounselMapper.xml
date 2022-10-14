@@ -20,6 +20,13 @@
         <result property="empName" column="EMP_NAME"/>
     </resultMap>
 
+    <select id="selectTotalCount" parameterType="CounselDTO" resultType="_int">
+        SELECT
+               COUNT(*)
+          FROM COUNSEL
+         ORDER BY COUNSEL_NO DESC
+    </select>
+
     <insert id="insertCounsel">
         INSERT
           INTO COUNSEL
@@ -34,11 +41,44 @@
         )
     </insert>
 
+<!--    <select id="selectCounsel" resultMap="counselResultMap">-->
+<!--        SELECT-->
+<!--               *-->
+<!--          FROM COUNSEL-->
+<!--         ORDER BY COUNSEL_NO DESC-->
+<!--    </select>-->
+
     <select id="selectCounsel" resultMap="counselResultMap">
         SELECT
-               *
-          FROM COUNSEL
-         ORDER BY COUNSEL_NO DESC
+               A.RNUM
+             , A.COUNSEL_NO
+             , A.COUNSEL_NAME
+             , A.COUNSEL_CONTENT
+             , A.COUNSEL_REGIST_DATE
+             , A.STORE_NAME
+             , A.COUNSEL_YN
+          FROM (SELECT ROWNUM RNUM
+                     , B.COUNSEL_NO
+                     , B.COUNSEL_NAME
+                     , B.COUNSEL_CONTENT
+                     , B.COUNSEL_REGIST_DATE
+                     , B.STORE_NAME
+                     , B.COUNSEL_YN
+                  FROM (SELECT C.COUNSEL_NO
+                             , C.COUNSEL_NAME
+                             , C.COUNSEL_CONTENT
+                             , C.COUNSEL_REGIST_DATE
+                             , C.STORE_NAME
+                             , C.COUNSEL_YN
+                          FROM COUNSEL C
+      ORDER BY C.COUNSEL_NO DESC
+      ) B
+      <![CDATA[
+                WHERE ROWNUM <= #{ endRow }
+                  ]]>
+      ) A
+      WHERE A.RNUM >= #{ startRow }
+      ORDER BY 1 ASC
     </select>
 
     <select id="selectCounselByNo" resultMap="counselResultMap">

@@ -53,16 +53,6 @@
         <result property="content" column="CONTENT"/>
     </resultMap>
 
-<!--    <select id="selectAccountApplyList" resultMap="accountApplyResultMap">-->
-<!--        SELECT-->
-<!--               A.RNUM-->
-<!--             , A.*-->
-<!--             , B.ACCOUNT_DEPOSIT-->
-<!--          FROM ACCOUNT_APPLY A-->
-<!--          LEFT JOIN ACCOUNT B ON (A.DEPOSIT_NUM = B.DEPOSIT_NUM)-->
-<!--         ORDER BY B.DEPOSIT_NUM DESC-->
-<!--    </select>-->
-
     <select id="selectAccountApplyList" resultMap="accountApplyResultMap">
         SELECT
                A.RNUM
