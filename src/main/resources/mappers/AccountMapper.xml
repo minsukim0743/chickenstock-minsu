@@ -57,11 +57,20 @@
     <select id="selectAccountApplyList" resultMap="accountApplyResultMap">
         SELECT
                A.RNUM
-             , A.*
+             , A.STORE_NAME
+             , A.DEPOSIT_NUM
+             , A.DEPOSIT_REGIST_DATE
+             , A.DEPOSIT_YN
              , D.ACCOUNT_DEPOSIT
           FROM(SELECT ROWNUM RNUM
-                    , B.*
-                 FROM (SELECT C.*
+                    , B.STORE_NAME
+                    , B.DEPOSIT_NUM
+                    , B.DEPOSIT_REGIST_DATE
+                    , B.DEPOSIT_YN
+                 FROM (SELECT C.STORE_NAME
+                            , C.DEPOSIT_NUM
+                            , C.DEPOSIT_REGIST_DATE
+                            , C.DEPOSIT_YN
                          FROM ACCOUNT_APPLY C
                  LEFT JOIN ACCOUNT D ON (C.DEPOSIT_NUM = D.DEPOSIT_NUM)
          ORDER BY C.DEPOSIT_NUM DESC
@@ -203,15 +212,22 @@
     <!-- 관리자 가맹점 입금액 조회 -->
     <select id="selectStoreDeposit" resultMap="storeDepositResultMap">
         SELECT
-               *
+               STORE_NAME
+             , DEPOSIT_MONEY
+             , DEPOSIT_DATE
+             , CONTENT
           FROM STORE_DEPOSIT
          WHERE STORE_NAME = #{ storeName }
+         ORDER BY DEPOSIT_DATE
     </select>
 
     <!-- 가맹점 출금액 조회 -->
     <select id="selectStoreBreakdown" resultMap="storeBreakdownResultMap">
         SELECT
-               *
+               STORE_NAME
+             , BREAKDOWN_DATE
+             , WITHDRAWAL
+             , CONTENT
           FROM STORE_BREAKDOWN
          WHERE STORE_NAME = #{ storeName }
          ORDER BY BREAKDOWN_DATE
