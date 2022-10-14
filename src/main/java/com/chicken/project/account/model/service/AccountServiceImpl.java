@@ -45,10 +45,12 @@ public class AccountServiceImpl implements AccountService{
     @Transactional
     public int accountInsert(int accountDeposit, String storeName) {
 
+        /* 가맹점 입금신청 시 입금신청 정보 등록 */
         int result = accountMapper.accountInsert(accountDeposit, storeName);
 
         if(result > 0) {
 
+            /* 가맹점 입금신청 성공 시 관리자 입금신청 정보 등록 */
             int result2 = accountMapper.accountApplyInsert(storeName);
         }
 
@@ -67,10 +69,12 @@ public class AccountServiceImpl implements AccountService{
     @Transactional
     public int accountApplyUpdate2(int depositNum) {
 
+        /* 가맹점 입금 반려 시 입금신청 상태 '반려'로 변경 */
         int result = accountMapper.accountApplyUpdate2(depositNum);
 
         if(result > 0){
 
+            /* 가맹점 입금 반려 시 관리자 입금신청 상태 '반려'로 변경 */
             int result2 = accountMapper.accountUpdate2(depositNum);
         }
 
@@ -82,18 +86,22 @@ public class AccountServiceImpl implements AccountService{
     @Transactional
     public int balanceUpdate(AccountApplyDTO accountApply, int accountDeposit, String storeName) {
 
+        /* 입금 승인 시 해당 store 잔액 수정 */
         int result = accountMapper.balanceUpdate(accountApply, accountDeposit, storeName);
 
         if(result > 0){
 
+            /* 입금 승인 시 입금신청 상태 '승인'으로 변경 */
             int result2 = accountMapper.accountApplyUpdate(accountApply);
 
             if(result2 > 0){
 
+                /* 입금 승인 시 관리자 입금신청 상태 '승인'으로 변경 */
                 int result3 = accountMapper.accountUpdate(accountApply);
 
                 if(result3 > 0 ){
 
+                    /* 입금 승인 시 해당 store 입금내역 추가 */
                     int result4 = accountMapper.depositInsert(accountDeposit, storeName);
                 }
             }
@@ -102,14 +110,14 @@ public class AccountServiceImpl implements AccountService{
         return result;
     }
 
-    /* 본사 가맹점 잔액 조회 */
+    /* 관리자 가맹점 잔액 조회 */
     @Override
     public List<BalanceDTO> balanceSelect() {
 
         return accountMapper.balanceSelect();
     }
 
-    /* 가맹점 입금액 조회 */
+    /* 관리자 가맹점 입금액 조회 */
     @Override
     public List<StoreDepositDTO> selectStoreDeposit(String storeName) {
 
@@ -123,9 +131,10 @@ public class AccountServiceImpl implements AccountService{
         return accountMapper.selectStoreBreakdown(storeName);
     }
 
+    /* 페이징을 위한 전체 개수 조회 */
     @Override
-    public int selectTotalCount(Map<String, String> searchMap) {
+    public int selectTotalCount() {
 
-        return accountMapper.selectTotalCount(searchMap);
+        return accountMapper.selectTotalCount();
     }
 }

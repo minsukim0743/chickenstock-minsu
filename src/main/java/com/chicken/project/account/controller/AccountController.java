@@ -44,6 +44,7 @@ public class AccountController {
     @GetMapping("/admin/list")
     public ModelAndView accountAdminList(ModelAndView mv, HttpServletRequest request) {
 
+        /* 현재 페이지 인덱스 가져오기 */
         String currentPage = request.getParameter("currentPage");
         int pageNo = 1;
 
@@ -51,30 +52,23 @@ public class AccountController {
             pageNo = Integer.parseInt(currentPage);
         }
 
-        String searchCondition = request.getParameter("searchCondition");
-
-        Map<String, String> searchMap = new HashMap<>();
-        searchMap.put("searchCondition", searchCondition);
-
-        log.info("[AccountController] searchMap = " + searchMap);
-
-        int totalCount = accountService.selectTotalCount(searchMap);
+        /* 페이징처리를 위해 전체 개수 조회 */
+        int totalCount = accountService.selectTotalCount();
 
         log.info("[AccountController] totalCount = " + totalCount);
 
+        /* 한 페이지당 최대 조회 개수 */
         int limit = 6;
+        /* 페이지 이동 버튼 최대 개수 */
         int buttonAmount = 5;
 
         SelectCriteria selectCriteria = null;
 
-        if(searchCondition != null && !"".equals(searchCondition)) {
-            selectCriteria = Pagenation.getSelectCriteria(pageNo, totalCount, limit, buttonAmount, searchCondition);
-        } else {
-            selectCriteria = Pagenation.getSelectCriteria(pageNo, totalCount, limit, buttonAmount);
-        }
-
+        /* 페이지 이동시 인자값 같이 넘기기*/
+        selectCriteria = Pagenation.getSelectCriteria(pageNo, totalCount, limit, buttonAmount);
         log.info("[AccountController] selectCriteria = " + selectCriteria);
 
+        /* 입금 신청 리스트 조회하기 */
         List<AccountApplyDTO> accountApplyList = accountService.selectAccountApplyList(selectCriteria);
 
         mv.addObject("accountApplyList", accountApplyList);
@@ -84,13 +78,16 @@ public class AccountController {
         return mv;
     }
 
-    /* 유저 본인이 입금신청 한 내역 조회 */
+    /* 본인이 입금신청 한 내역 조회 */
     @GetMapping("/user/list")
     public ModelAndView accountUserList(ModelAndView mv, @AuthenticationPrincipal User user) {
 
+        /* 현재 로그인 storeName 가져오기 */
         String storeName = ((StoreImpl) user).getStoreName();
 
+        /* 현재 로그인 계정 입금신청 내역 조회하기 */
         List<AccountDTO> accountList = accountService.selectAccountListByStoreName(storeName);
+        /* 현재 로그인 계정 잔액 조회하기 */
         BalanceDTO balance = accountService.selectBalance(storeName);
 
         log.info("[AccountController] accountList : " + accountList );
@@ -108,15 +105,19 @@ public class AccountController {
     @GetMapping("/admin/update")
     public String adminAccountApplyUpdate(@ModelAttribute AccountApplyDTO accountApply,HttpServletRequest request, RedirectAttributes rttr){
 
+        /* 입금신청 금액 가져오기 */
         int accountDeposit = Integer.parseInt(request.getParameter("accountDeposit"));
+        /* 입금신청한 storeName 가져오기 */
         String storeName = request.getParameter("storeName");
 
         log.info("[AccountController] accountDeposit : " + accountDeposit);
         log.info("[AccountController] storeName : " + storeName);
         log.info("[AccountController] accountApply : " + accountApply);
 
+        /* 입금 승인시 입금신청한 store 잔액 update 해주기 */
         accountService.balanceUpdate(accountApply, accountDeposit, storeName);
 
+        /* 입금 승인시 alert창으로 message 띄워주기 위해 넘겨줌 */
         rttr.addFlashAttribute("message", "입금을 승인 하였습니다.");
 
         return "redirect:/account/admin/list";
@@ -126,10 +127,13 @@ public class AccountController {
     @GetMapping("/admin/update2")
     public String adminAccountApplyUpdate2(HttpServletRequest request, RedirectAttributes rttr){
 
+        /* 입금신청한 index 가져오기 */
         int depositNum = Integer.parseInt(request.getParameter("depositNum"));
 
+        /* 입금신청한 index 반려하기 */
         accountService.accountApplyUpdate2(depositNum);
 
+        /* 입금신청 반려시 alert창으로 message 띄워주기 위해 넘겨줌 */
         rttr.addFlashAttribute("message", "입금을 반려 하였습니다.");
 
         return "redirect:/account/admin/list";
@@ -141,12 +145,15 @@ public class AccountController {
 
         log.info("[AccountController] accountDeposit : " + accountDeposit);
 
+        /* 현재 로그인 storeName 가져오기 */
         String storeName = ((StoreImpl) user).getStoreName();
 
         log.info("[AccountController] storeName : " + storeName);
 
+        /* 입금신청 하기 */
         accountService.accountInsert(accountDeposit, storeName);
 
+        /* 입금신청 시 alert창으로 message 띄워주기 위해 넘겨줌 */
         rttr.addFlashAttribute("message", "입금 신청을 하였습니다.");
 
         return "redirect:/account/user/list";
@@ -157,10 +164,14 @@ public class AccountController {
     @GetMapping("/user/bank")
     public ModelAndView userBankPage(ModelAndView mv, @AuthenticationPrincipal User user){
 
+        /* 현재 로그인 storeName 가져오기 */
         String storeName = ((StoreImpl) user).getStoreName();
 
+        /* 현재 로그인 잔액 조회 */
         BalanceDTO balance = accountService.selectBalance(storeName);
+        /* 현재 로그인 입금내역 조회 */
         List<StoreDepositDTO> storeDeposit = accountService.selectStoreDeposit(storeName);
+        /* 현재 로그인 출금내역 조회 */
         List<StoreBreakdownDTO> storeBreakdown = accountService.selectStoreBreakdown(storeName);
 
         log.info("[AccountController] balance : " + balance);
@@ -178,6 +189,7 @@ public class AccountController {
     @GetMapping("/admin/balance")
     public ModelAndView adminBalanceSelect(ModelAndView mv){
 
+        /* 전체 가맹점 잔액 조회 */
         List<BalanceDTO> balanceSelect = accountService.balanceSelect();
 
         mv.addObject("balanceSelect", balanceSelect);

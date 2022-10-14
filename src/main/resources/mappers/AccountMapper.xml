@@ -53,6 +53,7 @@
         <result property="content" column="CONTENT"/>
     </resultMap>
 
+    <!-- 본사 가맹점 입금신청 조회 -->
     <select id="selectAccountApplyList" resultMap="accountApplyResultMap">
         SELECT
                A.RNUM
@@ -74,26 +75,35 @@
          ORDER BY 1 ASC
     </select>
 
-    <select id="selectTotalCount" resultType="_int" parameterType="hashmap">
+    <!-- 페이징을 위한 전체 개수 조회 -->
+    <select id="selectTotalCount" resultType="_int" parameterType="AccountDTO">
     SELECT
            COUNT(*)
       FROM ACCOUNT
      ORDER BY DEPOSIT_NUM DESC
     </select>
 
+    <!--  -->
     <select id="selectAccountList" resultMap="accountResultMap">
         SELECT
-               *
+               STORE_NAME
+             , DEPOSIT_NUM
+             , ACCOUNT_DATE
+             , ACCOUNT_DEPOSIT
+             , ACCOUNT_YN
           FROM ACCOUNT
     </select>
 
+    <!-- 가맹점 잔액 조회 -->
     <select id="selectBalance" resultMap="balanceResultMap">
         SELECT
-               *
+               STORE_NAME
+             , BALANCE
           FROM BALANCE
          WHERE STORE_NAME = #{ storeName }
     </select>
 
+    <!-- 가맹점 입금신청 시 입금신청 정보 등록 -->
     <insert id="accountInsert">
         INSERT
           INTO ACCOUNT
@@ -108,6 +118,7 @@
         )
     </insert>
 
+    <!-- 가맹점 입금신청 성공 시 관리자 입금신청 정보 등록 -->
     <insert id="accountApplyInsert">
         INSERT
           INTO ACCOUNT_APPLY
@@ -126,13 +137,19 @@
         )
     </insert>
 
+    <!-- 가맹점명으로 입금신청 조회 -->
     <select id="selectAccountListByStoreName" resultMap="accountResultMap">
         SELECT
-               *
+               STORE_NAME
+             , DEPOSIT_NUM
+             , ACCOUNT_DATE
+             , ACCOUNT_DEPOSIT
+             , ACCOUNT_YN
           FROM ACCOUNT
          WHERE STORE_NAME = #{ storeName }
     </select>
 
+    <!-- 가맹점 입금 반려 시 입금신청 상태 '반려'로 변경 -->
     <update id="accountApplyUpdate">
         UPDATE
                ACCOUNT_APPLY
@@ -140,6 +157,7 @@
          WHERE DEPOSIT_NUM = #{ depositNum }
     </update>
 
+    <!-- 가맹점 입금 반려 시 관리자 입금신청 상태 '반려'로 변경 -->
     <update id="accountUpdate">
         UPDATE
                ACCOUNT
@@ -147,6 +165,7 @@
          WHERE DEPOSIT_NUM = #{ depositNum }
     </update>
 
+    <!-- 입금 승인 시 해당 store 잔액 수정 -->
     <update id="balanceUpdate">
         UPDATE
                BALANCE A
@@ -157,6 +176,7 @@
          WHERE A.STORE_NAME = #{ storeName }
     </update>
 
+    <!-- 가맹점 입금 반려 시 입금신청 상태 '반려'로 변경 -->
     <update id="accountApplyUpdate2">
         UPDATE
                ACCOUNT_APPLY
@@ -164,6 +184,7 @@
          WHERE DEPOSIT_NUM = #{ depositNum }
     </update>
 
+    <!-- 가맹점 입금 반려 시 관리자 입금신청 상태 '반려'로 변경 -->
     <update id="accountUpdate2">
         UPDATE
                ACCOUNT
@@ -171,12 +192,15 @@
          WHERE DEPOSIT_NUM = #{ depositNum }
     </update>
 
+    <!-- 관리자 가맹점 잔액 조회 -->
     <select id="balanceSelect" resultMap="balanceResultMap">
         SELECT
-               *
+               STORE_NAME
+             , BALANCE
           FROM BALANCE
     </select>
 
+    <!-- 관리자 가맹점 입금액 조회 -->
     <select id="selectStoreDeposit" resultMap="storeDepositResultMap">
         SELECT
                *
@@ -184,6 +208,7 @@
          WHERE STORE_NAME = #{ storeName }
     </select>
 
+    <!-- 가맹점 출금액 조회 -->
     <select id="selectStoreBreakdown" resultMap="storeBreakdownResultMap">
         SELECT
                *
@@ -192,6 +217,7 @@
          ORDER BY BREAKDOWN_DATE
     </select>
 
+    <!-- 입금 승인 시 해당 store 입금내역 추가 -->
     <insert id="depositInsert">
         INSERT
           INTO STORE_DEPOSIT

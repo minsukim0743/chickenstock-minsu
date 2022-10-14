@@ -20,6 +20,7 @@
         <result property="empName" column="EMP_NAME"/>
     </resultMap>
 
+    <!-- 페이징을 위한 전체 개수 조회 -->
     <select id="selectTotalCount" parameterType="CounselDTO" resultType="_int">
         SELECT
                COUNT(*)
@@ -27,6 +28,7 @@
          ORDER BY COUNSEL_NO DESC
     </select>
 
+    <!-- 유저 1:1 문의 작성하기 -->
     <insert id="insertCounsel">
         INSERT
           INTO COUNSEL
@@ -41,13 +43,7 @@
         )
     </insert>
 
-<!--    <select id="selectCounsel" resultMap="counselResultMap">-->
-<!--        SELECT-->
-<!--               *-->
-<!--          FROM COUNSEL-->
-<!--         ORDER BY COUNSEL_NO DESC-->
-<!--    </select>-->
-
+    <!-- 1:1 문의 리스트 조회하기 -->
     <select id="selectCounsel" resultMap="counselResultMap">
         SELECT
                A.RNUM
@@ -81,6 +77,7 @@
       ORDER BY 1 ASC
     </select>
 
+    <!-- 1:1 문의 인덱스로 해당 게시글 내용 조회하기 -->
     <select id="selectCounselByNo" resultMap="counselResultMap">
         SELECT
                *
@@ -88,6 +85,7 @@
          WHERE COUNSEL_NO = #{ counselNo }
     </select>
 
+    <!-- 관리자 1:1 문의 답변 등록하기 -->
     <insert id="insertCounselApply">
         INSERT
           INTO COUNSEL_APPLY
@@ -106,6 +104,7 @@
         )
     </insert>
 
+    <!-- 1:1 문의 답변 등록 성공 시 counsel 상태 '답변 완료'로 변경 -->
     <update id="updateCounsel">
         UPDATE
                COUNSEL
@@ -113,6 +112,7 @@
          WHERE COUNSEL_NO = #{ counselNo }
     </update>
 
+    <!-- 1:1 문의 인덱스로 해당 1:1 문의 답변 내용 조회 -->
     <select id="selectCounselApplyByNo" resultMap="counselApplyResultMap">
         SELECT
                *
@@ -120,6 +120,7 @@
          WHERE COUNSEL_NO = #{ counselNo }
     </select>
 
+    <!-- 현재 로그인 계정 1:1 문의 리스트 조회하기 -->
     <select id="selectCounselByStoreName" resultMap="counselResultMap">
         SELECT
                *

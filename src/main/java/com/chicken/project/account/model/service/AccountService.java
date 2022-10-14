@@ -40,6 +40,6 @@ public interface AccountService {
     /* 가맹점 출금액 조회 */
     List<StoreBreakdownDTO> selectStoreBreakdown(String storeName);
 
-    /* 본사 입금신청 갯수 조회 */
-    int selectTotalCount(Map<String, String> searchMap);
+    /* 페이징을 위한 전체 개수 조회 */
+    int selectTotalCount();
 }
