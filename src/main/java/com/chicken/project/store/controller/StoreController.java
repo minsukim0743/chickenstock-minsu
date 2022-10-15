@@ -39,7 +39,9 @@ public class StoreController {
     @GetMapping("/admin/list")
     public ModelAndView storeListPage(ModelAndView mv) {
 
+        /* 가맹점 리스트 조회하기 */
         List<StoreDTO> storeList = storeService.storeList();
+        log.info("[storeController] storeList : " + storeList);
 
         mv.addObject("storeList", storeList);
         mv.setViewName("/store/admin/adminStoreList");
@@ -51,7 +53,9 @@ public class StoreController {
     @GetMapping("/user/list")
     public ModelAndView userStoreListPage(ModelAndView mv) {
 
+        /* 가맹점 리스트 조회하기 */
         List<StoreDTO> storeList = storeService.storeList();
+        log.info("[storeController] storeList : " + storeList);
 
         mv.addObject("storeList", storeList);
         mv.setViewName("/store/user/userStoreList");
@@ -63,10 +67,14 @@ public class StoreController {
     @GetMapping("/admin/delete")
     public String deleteStore(HttpServletRequest request, RedirectAttributes rttr) throws Exception {
 
+        /* 가맹점 명  가져오기 */
         String storeName = request.getParameter("storeName");
+        log.info("[storeController] storeName : " + storeName);
 
+        /* 가져온 가맹점 명으로 해당 가맹점 정보 삭제  */
         storeService.deleteStore(storeName);
 
+        /* 가맹점 정보 삭제 시 alert창으로 message 띄워주기 위해 넘겨줌 */
         rttr.addFlashAttribute("message", "가맹점 정보 삭제 성공!");
 
         return "redirect:/store/admin/list";
@@ -83,16 +91,19 @@ public class StoreController {
     @PostMapping("/admin/insert")
     public String insertStore(@ModelAttribute StoreDTO store, HttpServletRequest request ,RedirectAttributes rttr, ModelAndView mv) throws StoreInsertException {
 
+        /* 주소API를 사용하여 가져온 정보를 합쳐준다. */
         String storeAddress = request.getParameter("addr1") + " " + request.getParameter("addr2") + " " + request.getParameter("addr3");
 
         store.setStorePhone(store.getStorePhone().replace("-", ""));
-        store.setStorePwd(passwordEncoder.encode(store.getStorePwd()));
+        store.setStorePwd(passwordEncoder.encode(store.getStorePwd())); // 정보 보호를 위하여 password는 Encode 해줌.
         store.setStoreAddress(storeAddress);
 
         log.info("[StoreController] store : " + store);
 
+        /* 가맹점 등록 */
         storeService.insertStore(store);
 
+        /* 가맹점 등록 성공 시 alert창으로 message를 띄워주기 위해 넘겨줌 */
         rttr.addFlashAttribute("message", "가맹점 등록 성공!");
 
         mv.addObject("store", store);
@@ -104,10 +115,11 @@ public class StoreController {
     @GetMapping("/admin/update")
     public ModelAndView updateStorePage(HttpServletRequest request, RedirectAttributes rttr, ModelAndView mv) {
 
+        /* 가맹점 정보 수정을 위하여 해당 가맹점 명을 가져옴 */
         String storeName = request.getParameter("storeName");
-
         log.info("[StoreController] storeName : " + storeName);
 
+        /* 가맹점 명으로 해당 가맹점 정보 조회 */
         StoreDTO store = storeService.selectStoreByName(storeName);
 
         mv.addObject("store", store);
@@ -123,8 +135,10 @@ public class StoreController {
         log.info("[StoreController] store : " + store);
         log.info("[StoreController] storeId : " + store.getStoreId());
 
+        /* 해당 가맹점 정보 수정 */
         storeService.updateStore(store);
 
+        /* 수정 성공 시 alert창으로 message를 띄워주기 위해 넘겨줌 */
         rttr.addFlashAttribute("message", "가맹점 정보 수정 성공!");
 
         return "redirect:/store/admin/list";

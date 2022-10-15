@@ -327,6 +327,7 @@
          WHERE R_NO = #{ rNo }
     </update>
 
+    <!-- 반품 시 반품금액만큼 잔액 테이블 +해주기 -->
     <update id="updateMoney" parameterType="BalanceDTO">
         UPDATE BALANCE
            SET BALANCE = (SELECT RETURN_ACCOUNT FROM RETURN_ITEM WHERE R_NO = #{ rNo } AND  RETURN_PROGRESS = '반품완료') + BALANCE

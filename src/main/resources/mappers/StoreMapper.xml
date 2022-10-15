@@ -28,6 +28,7 @@
         <result property="storeId" column="STORE_ID"></result>
     </resultMap>
 
+    <!-- 가맹점 리스트 조회 -->
     <select id="storeList" resultMap="storeResultMap">
         SELECT
                STORE_NAME
@@ -41,6 +42,7 @@
          WHERE STORE_YN = 'Y'
     </select>
 
+    <!-- 가맹점 정보 삭제 -->
     <update id="deleteStore" parameterType="StoreDTO">
         UPDATE
                STORE
@@ -48,6 +50,7 @@
          WHERE STORE_NAME = #{ storeName }
     </update>
 
+    <!-- 가맹점 등록 -->
     <insert id="insertStore">
         INSERT
           INTO STORE
@@ -64,6 +67,7 @@
         )
     </insert>
 
+    <!-- 가맹점 잔액 테이블 생성 -->
     <insert id="insertBalance">
         INSERT
           INTO BALANCE
@@ -78,6 +82,7 @@
         )
     </insert>
 
+    <!-- 가맹점 등록 시 권한 부여 -->
     <insert id="insertStoreRole">
         INSERT
           INTO STORE_ROLE
@@ -94,13 +99,24 @@
         )
     </insert>
 
+    <!-- 가맹점 명을 받아 가맹점 정보 조회  -->
     <select id="selectStoreByName" resultMap="storeResultMap">
         SELECT
-               *
+               STORE_NAME
+             , STORE_ACCOUNT
+             , STORE_REP
+             , STORE_ADDRESS
+             , STORE_PHONE
+             , STORE_EMAIL
+             , STORE_ID
+             , STORE_PWD
+             , STORE_NO
+             , STORE_YN
           FROM STORE
          WHERE STORE_NAME = #{ storeName }
     </select>
 
+    <!-- 가맹점 정보 수정 -->
     <update id="updateStore">
         UPDATE
                STORE

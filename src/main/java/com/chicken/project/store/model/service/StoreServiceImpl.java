@@ -25,28 +25,27 @@ public class StoreServiceImpl implements StoreService{
     @Override
     public List<StoreDTO> storeList() {
 
+        /* 가맹점 리스트 조회 */
         return storeMapper.storeList();
     }
 
     /* 가맹점 삭제 */
     @Override
     @Transactional
-    public void deleteStore(String storeName) throws StoreDeleteException {
+    public int deleteStore(String storeName) {
 
+        /* 가맹점 정보 삭제 */
         int result = storeMapper.deleteStore(storeName);
 
-        if(!(result > 0)){
-
-            throw new StoreDeleteException("가맹점 정보 삭제에 실패하셨습니다.");
-        }
-
+        return result;
     }
 
     /* 가맹점 등록 */
     @Override
     @Transactional
-    public void insertStore(StoreDTO store) throws StoreInsertException {
+    public int insertStore(StoreDTO store) throws StoreInsertException {
 
+        /* 가맹점 등록 */
         int result = storeMapper.insertStore(store);
 
         if(!(result > 0)){
@@ -54,16 +53,20 @@ public class StoreServiceImpl implements StoreService{
             throw new StoreInsertException("가맹점 등록 실패!");
         } else {
 
+            /* 가맹점 등록 성공 시 해당 가맹점 잔액 테이블 생성 */
             int result2 = storeMapper.insertBalance(store.getStoreName(), store.getStoreId());
 
             if(result2 > 0){
 
+                /* 해당 가맹점 잔액 테이블 생성 성공 시 가맹점 권한부여 */
                 int result3 = storeMapper.insertStoreRole(store.getStoreName(), store.getStoreId());
             }
         }
+
+        return result;
     }
 
-    /* 가맹점 명을 받아 가맹점 조회 */
+    /* 가맹점 명을 받아 가맹점 정보 조회 */
     @Override
     public StoreDTO selectStoreByName(String storeName) {
 
@@ -73,14 +76,9 @@ public class StoreServiceImpl implements StoreService{
     /* 가맹점 정보 수정 */
     @Override
     @Transactional
-    public int updateStore(StoreDTO store) throws StoreUpdateException {
+    public int updateStore(StoreDTO store) {
 
         int result = storeMapper.updateStore(store);
-
-        if(!(result > 0)) {
-
-            throw new StoreUpdateException("가맹점 정보 수정 실패!");
-        }
 
         return result;
     }

@@ -12,8 +12,9 @@ import java.util.List;
 import java.util.Map;
 
 public interface NoticeService {
+
     /* 공지사항 등록 */
-    int noticeInsert(NoticeDTO notice) throws NoticeInsertException;
+    int noticeInsert(NoticeDTO notice);
 
     /* 공지사항 파일 등록*/
     int noticeFileInsert(NoticeFileDTO noticeFile);
@@ -22,10 +23,10 @@ public interface NoticeService {
     NoticeDTO noticeDetailByNo(int noticeNo);
 
     /* 공지사항 삭제 */
-    int deleteNotice(int noticeNo) throws NoticeDeleteException;
+    int deleteNotice(int noticeNo);
 
     /* 공지사항 수정 */
-    int updateNotice(NoticeDTO notice) throws NoticeUpdateException;
+    int updateNotice(NoticeDTO notice);
 
     /* 공지사항 전체 글 개수 조회 */
     int selectTotalCount(Map<String, String> searchMap);

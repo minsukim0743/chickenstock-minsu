@@ -647,7 +647,7 @@
             )
     </insert>
 
-    <!-- 예치금 잔액 업데이트 -->
+    <!-- 주문 성공 시 잔액 주문금액만큼 -해주기 -->
     <update id="updateStoreBalance">
         UPDATE BALANCE
         SET BALANCE = BALANCE - (SELECT B.TOTAL_PRICE FROM ORDER_HANDLER B WHERE B.CART_NO = #{ cartNo })
