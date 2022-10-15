@@ -30,14 +30,15 @@ public interface NoticeService {
     /* 공지사항 전체 글 개수 조회 */
     int selectTotalCount(Map<String, String> searchMap);
 
-    /* 공지사항 글 조회 */
+    /* 공지사항 리스트 조회 */
     List<NoticeDTO> selectNoticeList(SelectCriteria selectCriteria);
 
-    /* 공지사항 파일 수정 */
+    /* 공지사항 첨부파일 수정 */
     int updateNoticeFile(NoticeFileDTO noticeFile);
 
-    /* 공지사항 파일 삭제 */
+    /* 공지사항 첨부파일 삭제 */
     int deleteNoticeFile(int noticeNo);
 
+    /* 메인페이지 공지사항 조회 */
     List<NoticeDTO> selectMainNotice();
 }

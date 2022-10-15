@@ -164,17 +164,19 @@ public class NoticeController {
 
         NoticeFileDTO noticeFile = new NoticeFileDTO();
 
+        /* 공지사항 등록 */
         int result = noticeService.noticeInsert(notice);
 
         log.info("[NoticeController]" + notice);
         log.info("[NoticeController]" + file);
 
+        /* 공지사헝 첨부파일 첨부 시 저장 루트 설정 */
         String root = ResourceUtils.getURL("src/main/resources").getPath();
-
         String filePath = root + "static/uploadFiles";
 
         log.info("루트ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ" + filePath);
 
+        /* 저장 루트 폴더 없을 시 폴더 생성 */
         File mkdir = new File(filePath);
         if(!mkdir.exists()) {
             mkdir.mkdirs();
@@ -186,26 +188,31 @@ public class NoticeController {
         String savedPath = "";
 
         if(file.getSize() > 0) {
-            originFileName = file.getOriginalFilename();
-            ext = originFileName.substring(originFileName.lastIndexOf("."));
-            changeName = UUID.randomUUID().toString().replace("-",  "");
-            savedPath = filePath + "/" + changeName + ext;
+            originFileName = file.getOriginalFilename(); // 첨부 파일명
+            ext = originFileName.substring(originFileName.lastIndexOf(".")); // 첨부파일명 끝 확장자
+            changeName = UUID.randomUUID().toString().replace("-",  ""); // 첨부 파일명 랜덤 설정
+            savedPath = filePath + "/" + changeName + ext; // 저장 경로 및 파일명
 
+            /* 첨부파일정보 noticeFile DTO에 담기 */
             noticeFile.setOriginName(originFileName);
             noticeFile.setFileName(changeName + ext);
             noticeFile.setSavedPath(savedPath);
 
+            /* 첨부 파일 등록시 파일정보 등록 */
             noticeService.noticeFileInsert(noticeFile);
 
             try {
+                /* 등록 성공 시 파일명 changeName + ext로 변경하여 저장 */
                 file.transferTo(new File(filePath + "\\" + changeName + ext));
             } catch (IOException e) {
 
+                /* 등록 실패 시 해당 파일 삭제 */
                 e.printStackTrace();
                 new File(filePath + "\\" + changeName + ext).delete();
             }
         }
 
+        /* 등록 성공 시 alert창으로 message 띄워주기 위해 넘겨줌 */
         rttr.addFlashAttribute("message", "공지사항 등록 성공!");
 
         return "redirect:/notice/admin/list";
@@ -215,13 +222,13 @@ public class NoticeController {
     @GetMapping("/admin/detail")
     public ModelAndView adminNoticeDetail(ModelAndView mv, HttpServletRequest request){
 
+        /* 공지사항 index 가져오기 */
         int noticeNo = Integer.parseInt(request.getParameter("noticeNo"));
+        log.info("[noticeController] noticeNo : " + noticeNo);
 
-        System.out.println("noticeNo = " + noticeNo);
-
+        /* 공지사항 index로 해당 게시물 상세정보 조회 */
         NoticeDTO noticeDetail = noticeService.noticeDetailByNo(noticeNo);
-
-        System.out.println(noticeDetail);
+        log.info("[noticeController] noticeDetail : " + noticeDetail);
 
         mv.addObject("noticeDetail", noticeDetail);
         mv.setViewName("/notice/admin/adminNoticeDetail");
@@ -233,13 +240,13 @@ public class NoticeController {
     @GetMapping("/user/detail")
     public ModelAndView userNoticeDetail(ModelAndView mv, HttpServletRequest request){
 
+        /* 공지사항 index 가져오기 */
         int noticeNo = Integer.parseInt(request.getParameter("noticeNo"));
+        log.info("[noticeController] noticeNo : " + noticeNo);
 
-        System.out.println("noticeNo = " + noticeNo);
-
+        /* 공지사항 index로 해당 게시물 상세정보 조회 */
         NoticeDTO noticeDetail = noticeService.noticeDetailByNo(noticeNo);
-
-        System.out.println(noticeDetail);
+        log.info("[noticeController] noticeDetail : " + noticeDetail);
 
         mv.addObject("noticeDetail", noticeDetail);
         mv.setViewName("/notice/user/userNoticeDetail");
@@ -251,10 +258,13 @@ public class NoticeController {
     @GetMapping("/admin/delete")
     public String deleteNotice(HttpServletRequest request, RedirectAttributes rttr) throws NoticeDeleteException {
 
+        /* 공지사항 index 가져오기 */
         int noticeNo = Integer.parseInt(request.getParameter("noticeNo"));
 
+        /* 공지사항 index로 해당 게시물 삭제하기 */
         int result = noticeService.deleteNotice(noticeNo);
 
+        /* 삭제 성공 시 alert창으로 message를 띄워주기 위해 넘겨줌 */
         rttr.addFlashAttribute("message", "공지사항 삭제 성공!");
 
         return "redirect:/notice/admin/list";
@@ -264,8 +274,10 @@ public class NoticeController {
     @GetMapping("/admin/update")
     public ModelAndView updateNoticePage(HttpServletRequest request, ModelAndView mv) {
 
+        /* 공지사항 index 가져오기 */
         int noticeNo = Integer.parseInt(request.getParameter("noticeNo"));
 
+        /* 공지사항 index로 해당 게시물 상세정보 조회 */
         NoticeDTO noticeDetail = noticeService.noticeDetailByNo(noticeNo);
 
         mv.addObject("noticeDetail", noticeDetail);
@@ -281,15 +293,19 @@ public class NoticeController {
                                @RequestParam(value="file", required=false) MultipartFile file,
                                RedirectAttributes rttr) throws Exception{
 
+        /* 공지사항 정보 수정하기 */
+        int result = noticeService.updateNotice(notice);
+
         log.info("[NoticeController]" + notice);
         log.info("[NoticeController]" + file);
 
+        /* 공지사헝 첨부파일 첨부 시 저장 루트 설정 */
         String root = ResourceUtils.getURL("src/main/resources").getPath();
-
         String filePath = root + "static/uploadFiles";
 
         log.info("루트ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ" + filePath);
 
+        /* 저장 루트 폴더 없을 시 폴더 생성 */
         File mkdir = new File(filePath);
         if(!mkdir.exists()) {
             mkdir.mkdirs();
@@ -300,13 +316,11 @@ public class NoticeController {
         String changeName = "";
         String savedPath = "";
 
-        int result = noticeService.updateNotice(notice);
-
         if(file.getSize() > 0) {
-            originFileName = file.getOriginalFilename();
-            ext = originFileName.substring(originFileName.lastIndexOf("."));
-            changeName = UUID.randomUUID().toString().replace("-",  "");
-            savedPath = filePath + "/" + changeName + ext;
+            originFileName = file.getOriginalFilename(); // 첨부 파일명
+            ext = originFileName.substring(originFileName.lastIndexOf(".")); // 첨부파일명 끝 확장자
+            changeName = UUID.randomUUID().toString().replace("-",  ""); // 첨부 파일명 랜덤 설정
+            savedPath = filePath + "/" + changeName + ext; // 저장 경로 및 파일명
 
             NoticeFileDTO noticeFile = new NoticeFileDTO();
 
@@ -314,8 +328,10 @@ public class NoticeController {
 
                 if(notice.getNoticeFile() != null){
 
+                    /* 수정 할 공지사항에 파일 정보가 존재하면 삭제한다. */
                     int result2 = noticeService.deleteNoticeFile(noticeNo);
 
+                    /* 파일 정보 삭제 후 파일 재첨부시 DTO에 담아 재등록 한다. */
                     if(result2 > 0) {
 
                         noticeFile.setNoticeNo(noticeNo);
@@ -328,6 +344,7 @@ public class NoticeController {
 
                 } else {
 
+                        /* 첨부 파일 등록시 DTO에 담아 파일정보 등록 */
                         noticeFile.setNoticeNo(noticeNo);
                         noticeFile.setOriginName(originFileName);
                         noticeFile.setFileName(changeName);
@@ -339,14 +356,17 @@ public class NoticeController {
             }
 
             try {
+                /* 등록 성공 시 파일명 changeName + ext로 변경하여 저장 */
                 file.transferTo(new File(filePath + "\\" + changeName + ext));
             } catch (IOException e) {
 
+                /* 등록 실패 시 해당 파일 삭제 */
                 e.printStackTrace();
                 new File(filePath + "\\" + changeName + ext).delete();
             }
         }
 
+        /* 수정 성공 시 alert창으로 message를 띄어주기 위해 넘겨줌 */
         rttr.addFlashAttribute("message", "공지사항 수정 성공!");
 
         return "redirect:/notice/admin/list";
