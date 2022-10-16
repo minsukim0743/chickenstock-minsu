@@ -45,8 +45,16 @@
       <a href="/billTax/tsbilltaxList" title=""><img src="/images/bill.png" width="18px" height="18px"> 거래명세서</a>
     </div>
 
-    <div class="accordion_dep type1 ">
-      <a href="/store/admin/list" title=""><img src="/images/shop.png" width="18px" height="18px"> 가맹점관리</a>
+    <div class="accordion_dep type2">
+      <a href="#" title=""><img src="/images/shop.png" width="18px" height="18px"> 가맹점관리</a>
+      <ul>
+        <li>
+          <a href="/store/admin/list" title="">가맹점 조회</a>
+        </li>
+        <li>
+          <a href="/store/admin/insert" title="">가맹점 등록</a>
+        </li>
+      </ul>
     </div>
 
     <div class="accordion_dep type1 ">
@@ -75,9 +83,6 @@
       <ul>
         <li>
           <a href="/notice/admin/insert" title="">공지사항 작성</a>
-        </li>
-        <li>
-          <a href="/store/admin/insert" title="">가맹점 등록</a>
         </li>
         <li>
           <a th:href="@{/calendar/calendar}" title="">일정관리</a>

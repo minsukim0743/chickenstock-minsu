@@ -67,7 +67,7 @@ public class StoreController {
     @GetMapping("/admin/delete")
     public String deleteStore(HttpServletRequest request, RedirectAttributes rttr) throws Exception {
 
-        /* 가맹점 명  가져오기 */
+        /* 가맹점 명 가져오기 */
         String storeName = request.getParameter("storeName");
         log.info("[storeController] storeName : " + storeName);
 
